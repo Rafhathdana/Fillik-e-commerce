@@ -444,15 +444,11 @@
               src="/images/<%=productsList[i].images[0]%>"
               alt="IMG-PRODUCT"
             />
-
+            <% let productData=productsList[i] %>
             <a
               href="#"
               class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1"
-              data-product-id="<%=productsList[i]._id%>"
-              data-product-name="<%=productsList[i].name%>"
-              data-product-ourPrice="<%=((productsList[i].ourPrice)/100)%>"
-              data-product-orginalPrice="<%=productsList[i].orginalPrice%>d"
-              data-product-image="<%=productsList[i].images %>"
+              data-product-data="<%=JSON.stringify(productData)%>"
             >
               > Quick View
             </a>

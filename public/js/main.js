@@ -265,30 +265,16 @@
   $(".js-show-modal1").on("click", function (e) {
     e.preventDefault();
 
-    var productData = {
-      // pass any necessary data for the product
-      // such as product ID, name, price, image, etc.
-      productId: $(this).data("product-id"),
-      productName: $(this).data("product-name"),
-      productOurPrice: $(this).data("product-ourPrice"),
-      productOrginalPrice: $(this).data("product-orginalPrice"),
-      productImage: $(this).data("product-image"),
-      // add more data properties as needed
-    };
-    console.log(productData);
-    console.log(productData.productOurPrice);
-    $(".js-modal1 .js-name-detail").text(productData.productName);
-    $(".js-modal1 .productOurPrice").text(productData.productOurPrice);
-    $(".js-modal1 .productOrginalPrice").text(productData.productOrginalPrice);
-
-    const slick3 = document.querySelector(".slick3.gallery-lb");
-
-    slick3.querySelectorAll(".item-slick3").forEach((item, index) => {
-      const img = item.querySelector("img");
-      img.src = productData.productImage[index];
-      const link = item.querySelector("a");
-      link.href = productData.productImage[index];
-    });
+    var productData = $(this).data("product-data");
+    let value =
+      parseInt(productData.orginalPrice) - parseInt(productData.ourPrice / 100);
+    let discount = (value / parseInt(productData.orginalPrice)) * 100;
+    discount = discount.toFixed(0);
+    $(".js-modal1 .js-name-detail").text(productData.name);
+    $(".js-modal1 .productOurPrice").text(productData.ourPrice / 100);
+    $(".js-modal1 .productOrginalPrice").text(productData.orginalPrice);
+    $(".js-modal1 .productDescription").text(productData.description);
+    $(".js-modal1 .discoutPercentage").text(discount);
 
     $(".js-modal1").addClass("show-modal1").data("product", productData);
   });
