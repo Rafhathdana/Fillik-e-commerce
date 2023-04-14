@@ -1,0 +1,36 @@
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg449436" viewBox="0 0 1024 768" height="768px" width="1024px" version="1.1">
+  <metadata id="metadata449442">
+    <rdf:rdf>
+      <cc:work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type>
+      </cc:work>
+    </rdf:rdf>
+  </metadata>
+  <defs id="defs449440"></defs>
+  <linearGradient spreadMethod="pad" y2="30%" x2="-10%" y1="120%" x1="30%" id="3d_gradient2-logo-89509c4a-1147-4fd4-996c-026f7a6de933">
+    <stop id="stop449417" stop-opacity="1" stop-color="#ffffff" offset="0%"></stop>
+    <stop id="stop449419" stop-opacity="1" stop-color="#000000" offset="100%"></stop>
+  </linearGradient>
+  <linearGradient gradientTransform="rotate(-30)" spreadMethod="pad" y2="30%" x2="-10%" y1="120%" x1="30%" id="3d_gradient3-logo-89509c4a-1147-4fd4-996c-026f7a6de933">
+    <stop id="stop449422" stop-opacity="1" stop-color="#ffffff" offset="0%"></stop>
+    <stop id="stop449424" stop-opacity="1" stop-color="#cccccc" offset="50%"></stop>
+    <stop id="stop449426" stop-opacity="1" stop-color="#000000" offset="100%"></stop>
+  </linearGradient>
+  <g id="logo-group">
+    <image xlink:href="" id="container" x="272" y="144" width="480" height="480" style="display: none;" transform="translate(0 0)"></image>
+    <g id="logo-center" transform="translate(0 0)">
+      <image xlink:href="https://app.brandmark.io/nounpreview/967694.png" id="icon_container" x="-314" y="156" style="display: none;"></image>
+      <g id="slogan" style="font-style:normal;font-weight:300;font-size:32px;line-height:1;font-family:'Montserrat Light Alt1';font-variant-ligatures:none;text-align:center;text-anchor:middle" transform="translate(0 0)"></g>
+      <g id="title" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" transform="translate(0 0)">
+        <path id="path449445" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 422.43763,-50.4 h -26.85601 -0.21599 c -8.928,0 -15.33601,0 -19.512,2.016 -0.144,0.072 -0.216,0.144 -0.28801,0.144 -0.072,0.072 -0.144,0.072 -0.216,0.144 h -0.072 c -3.096,1.728 -4.824,4.752 -5.32799,9.936 h 52.488 z m -0.072,19.08 h -52.56 v 12.24 h 0.072 V 0 h 15.26399 v -19.08 h 37.22401 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(295.49459750000005 24.800000000000004) scale(1.5) translate(-369.80563 50.4)"></path>
+        <path id="path449447" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 431.82125,0 h 15.336 v -50.4 h -15.336 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(388.5180275 24.800000000000004) scale(1.5) translate(-431.82125 50.4)"></path>
+        <path id="path449449" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 509.33037,-12.168 h -20.30399 c -9.36,0 -16.92,-0.288 -16.92,-9.288 V -50.4 h -15.33601 v 34.92 c 0,15.48 14.472,15.48 32.32801,15.48 h 20.23199 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(425.9417075 24.800000000000004) scale(1.5) translate(-456.77037 50.4)"></path>
+        <path id="path449451" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 567.83037,-12.168 h -20.30399 c -9.36,0 -16.92001,-0.288 -16.92001,-9.288 V -50.4 h -15.336 v 34.92 C 515.27037,0 529.74238,0 547.59838,0 h 20.23199 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(513.6917074999999 24.800000000000004) scale(1.5) translate(-515.27037 50.4)"></path>
+        <path id="path449453" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 574.27437,0 h 15.336 v -50.4 h -15.336 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(602.1977075 24.800000000000004) scale(1.5) translate(-574.27437 50.4)"></path>
+        <path id="path449455" style="font-style:normal;font-weight:normal;font-size:72px;line-height:1;font-family:'Brandmark Sans 22';font-variant-ligatures:normal;text-align:center;text-anchor:middle" d="m 599.7275,0 h 15.336 v -50.4 h -15.336 z m 32.256,-25.2 26.496,-25.2 h -17.28 l -22.968,21.888 v 6.624 L 641.1995,0 h 17.28 z" stroke-width="0" stroke-linejoin="miter" stroke-miterlimit="2" fill="#554f4f" stroke="#554f4f" transform="translate(0 321.4) translate(640.3774025 24.800000000000004) scale(1.5) translate(-599.7275 50.4)"></path>
+      </g>
+      <image xlink:href="https://app.brandmark.io/v3/custom_icons/preview/audiowide/F.png" id="icon" x="-314" y="156" style="display: none;"></image>
+    </g>
+  </g>
+</svg>
