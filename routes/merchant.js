@@ -18,10 +18,11 @@ function merchantverify(req, res, next) {
     res.redirect("/merchant/login");
   }
 }
-router.get("/", merchantauth, function (req, res, next) {
+router.get("/",function (req, res, next) {
   res.render("merchant/index", {
     title: "merchant",
     merchantLoggedin: null,
+    author: "Merchant#123!",
   });
 });
 router.get("/profile", merchantverify, merchantController.getProfile);

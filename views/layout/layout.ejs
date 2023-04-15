@@ -21,7 +21,7 @@
     <% if(locals.author==="Admin#123!"){%> <%-
     include('../partials/admin/adminHeader.ejs') %> <%-body %>
     <%-include('../partials/admin/adminFooter.ejs') %> <%}else
-    if(locals.merchantLoggedin==="Merchant#123!"){%>
+    if(locals.author==="Merchant#123!"){%>
     <%-include('../partials/merchant/merchantHeader.ejs') %> <%- body %>
     <%-include('../partials/merchant/merchantFooter.ejs') %> <%} else{%>
     <%-include('../partials/user/userHeader.ejs') %> <%- body %>
