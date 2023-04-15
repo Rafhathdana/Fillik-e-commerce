@@ -11,16 +11,17 @@ const mongoose = require("mongoose");
 
 module.exports = {
   getSignUp: (req, res, next) => {
-    res.render("user/signup2", {
+    res.render("user/signup", {
       title: "user",
       err_msg: req.session.errmsg,
       loggedin: false,
       cartItems: req.cartItems,
+      noShow: true,
     });
     req.session.errmsg = null;
   },
   getSignIn: (req, res, next) => {
-    res.render("user/login", {
+    res.render("user/signin", {
       title: "user",
       err_msg: req.session.errmsg,
       loggedin: false,
@@ -197,6 +198,29 @@ module.exports = {
       console.log(error);
     }
   },
+  emailVerify: async (req, res, next) => {
+    const response = {};
+    try {
+      const vUser = await User.findOne({
+        $or: [{ email: req.body.email }, { mobile: req.body.mobile }],
+      }).exec();
+
+      if (vUser) {
+        response.success = false;
+        res.status(200).send({
+          response,
+          success: false,
+          message: "User found",
+        });
+      } else {
+        res.status(500).send({ success: true, message: "No user found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ success: false, message: "Error verifying user" });
+    }
+  },
+
   sendOtp: async (req, res, next) => {
     try {
       console.log(req.body.mobile);

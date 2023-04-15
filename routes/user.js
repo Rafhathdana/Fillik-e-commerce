@@ -18,19 +18,12 @@ function verify(req, res, next) {
     res.redirect("/login");
   }
 }
-router.get("/", userController.getFilter,
-userController.getCartLocal,
-userController.productHome)
-
-
-
-
-
-
-
-
-
-
+router.get(
+  "/",
+  userController.getFilter,
+  userController.getCartLocal,
+  userController.productHome
+);
 
 router.get(
   "/signup",
@@ -38,6 +31,7 @@ router.get(
   userController.getCartLocal,
   userController.getSignUp
 );
+
 router.get(
   "/login",
   userauth,
@@ -92,4 +86,5 @@ router.post(
   userController.postAddCart
 );
 router.get("/forgetPassword", userauth, userController.forgetPassword);
+router.post("/emailexists", userController.emailVerify);
 module.exports = router;

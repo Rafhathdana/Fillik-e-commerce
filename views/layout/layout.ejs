@@ -1,0 +1,32 @@
+<% if (locals.noShow) {%> <%- body %> <%} else{%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="images/favicon.png" type="" />
+    <title>Fillik</title>
+  </head>
+  <body>
+    <% if(locals.author==="Admin#123!"){%> <%-
+    include('../partials/admin/adminHeader.ejs') %> <%-body %>
+    <%-include('../partials/admin/adminFooter.ejs') %> <%}else
+    if(locals.merchantLoggedin==="Merchant#123!"){%>
+    <%-include('../partials/merchant/merchantHeader.ejs') %> <%- body %>
+    <%-include('../partials/merchant/merchantFooter.ejs') %> <%} else{%>
+    <%-include('../partials/user/userHeader.ejs') %> <%- body %>
+    <%-include('../partials/user/userFooter.ejs') %> <%}%>
+  </body>
+</html>
+
+<% } %>

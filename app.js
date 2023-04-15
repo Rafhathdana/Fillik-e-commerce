@@ -8,6 +8,7 @@ const session = require("express-session");
 const cache = require("node-cache");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const expresslayout = require("express-ejs-layouts");
 var db = require("./config/connection");
 
 var usersRouter = require("./routes/user");
@@ -19,7 +20,8 @@ const cacheInstance = new cache({ stdTTL: 9000000000000000 * 900000000000 });
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
-
+app.set("layout", "./layout/layout");
+app.use(expresslayout);
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,7 +42,6 @@ app.use(bodyParser.json());
 app.use("/", usersRouter);
 app.use("/merchant/", merchantRouter);
 app.use("/admin/", adminRouter);
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
