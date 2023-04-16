@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <meta name="generator" content="Hugo 0.111.3" />
-    <title>Fillik Merchant</title>
+    <title>Zia</title>
     <link
       href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
       rel="stylesheet"
@@ -77,14 +77,18 @@
   <div class="container mt-5 mt-md-0">
     <div class="row justify-content-center align-items-center vh-50">
       <div class="col-12 col-md-8 col-lg-6">
+        <div class="d-flex justify-content-between links">
+          <a href="/login" class="text-white" id="forget">User Login</a>
+          <a href="/merchant/login" class="text-white">Sign In</a>
+        </div>
         <div class="box p-4">
           <h1
             class="signin-heading mb-4"
             style="color: rgb(255, 255, 255); font-family: 'Abel', sans-serif"
           >
-            Sign In
+            Merchant Sign Up
           </h1>
-          <form id="signin-form" method="post">
+          <form id="signup-form">
             <div class="form-floating mb-3">
               <input
                 type="email"
@@ -95,7 +99,66 @@
               />
               <label for="email">Email address</label>
             </div>
-
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="brandName"
+                name="brandName"
+                placeholder="John Doe"
+              />
+              <label for="name">Brand Name</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="outletName"
+                name="outletName"
+                placeholder="1234567890"
+              />
+              <label for="outletName">Outlet Name</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="mobile"
+                name="mobile"
+                placeholder="1234567890"
+              />
+              <label for="mobile">Mobile Number</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="regNumber"
+                name="regNumber"
+                placeholder="1234567890"
+              />
+              <label for="regNumber">Reg Number</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="gpsCoordinates"
+                name="gpsCoordinates"
+                placeholder="1234567890"
+              />
+              <label for="gpsCoordinates">Gps Co-ordinates</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="pin"
+                name="pin"
+                placeholder="567890"
+              />
+              <label for="pin">Pin</label>
+            </div>
             <div class="form-floating mb-3">
               <input
                 type="password"
@@ -105,6 +168,16 @@
                 placeholder="Password"
               />
               <label for="password">Password</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="confirm Password"
+              />
+              <label for="confirmPassword">Confirm Password</label>
             </div>
             <div class="mb-4">
               <div class="form-check">
@@ -122,7 +195,7 @@
               </div>
             </div>
             <% if(locals.err_msg) { %>
-            <div class="alert alert-danger mt-2" role="alert" }>
+            <div class="alert alert-danger mt-2" role="alert">
               <%=err_msg %>
             </div>
             <% } %>
@@ -131,6 +204,7 @@
               <button
                 class="btn btn-signin btn-lg mt-3"
                 type="submit"
+                id="Submitting"
                 style="
                   background-color: rgb(0, 0, 0);
                   color: white;
@@ -143,15 +217,11 @@
                 onmouseout="this.style.backgroundColor='rgb(0, 0, 0)';
                 "
               >
-                Sign In
+                Sign Up
               </button>
             </div>
           </form>
-          <div class="d-flex justify-content-between links">
-            <a href="#" class="text-white" id="forget">Forgot Password</a>
-            <a href="/signup" class="text-white">Create New User</a>
-          </div>
-          <!-- <div id="otp-section" class="d-none">
+          <div id="otp-section" class="d-none">
             <form>
               <h6>OTP</h6>
               <div class="pin-input">
@@ -192,7 +262,7 @@
                 >back</a
               >
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>
@@ -203,6 +273,13 @@
 <script>
   $(document).ready(function () {
     $.validator.addMethod(
+      "noSpecialChars",
+      function (value, element) {
+        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+      },
+      "Special characters and spaces are not allowed"
+    );
+    $.validator.addMethod(
       "email",
       function (value, element) {
         return (
@@ -212,15 +289,58 @@
       },
       "Please enter a valid email address"
     );
-    $("#signin-form").validate({
+    $.validator.addMethod(
+      "number",
+      function (value, element) {
+        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
+      },
+      "numbers only allowed"
+    );
+
+    $("#signup-form").validate({
       rules: {
         email: {
           required: true,
           email: true,
         },
+        brandName: {
+          required: true,
+          minlength: 3,
+          noSpecialChars: true,
+        },
+        outletName: {
+          required: true,
+          minlength: 3,
+          noSpecialChars: true,
+        },
+        mobile: {
+          required: true,
+          maxlength: 10,
+          minlength: 10,
+          number: true,
+        },
+        regNumber: {
+          required: true,
+          maxlength: 25,
+          minlength: 6,
+          number: true,
+        },
+        gpsCoordinates: {
+          required: true,
+        },
+        pin: {
+          required: true,
+          minlength: 6,
+          maxlength: 6,
+          number: true,
+        },
         password: {
           required: true,
           minlength: 8,
+        },
+        confirmPassword: {
+          required: true,
+          equalTo: "#password",
         },
         termsCheckbox: {
           required: true,
@@ -231,9 +351,40 @@
           required: "Please enter your email address",
           email: "Please enter a valid email address",
         },
+        brandName: {
+          required: "Please enter your full name",
+          minlength: "Your name must be at least 3 characters long",
+          noSpecialChars: "Special characters and spaces are not allowed",
+        },
+        mobile: {
+          required: "Please enter Mobile Number",
+          minlength: "10 digit indian number should be there",
+          maxlength: "maximum 10 digit allowed in indian number",
+          number: "only numbers allowed",
+        },
+        regNumber: {
+          required: "Please enter Register Number",
+          minlength: "minimum 6 digit register number is there for your outlet",
+          maxlength:
+            "maximum 25 digit register number is there for your outlet",
+          number: "only numbers allowed",
+        },
+        gpsCoordinates: {
+          required: "Please enter gps Coordinates",
+        },
+        pin: {
+          required: "Please enter pin Number",
+          minlength: "6 digit indian post office number should be there",
+          maxlength: "6 digit indian post office number should be there",
+          number: "only numbers allowed",
+        },
         password: {
           required: "Please enter a password",
           minlength: "Your password must be at least 8 characters long",
+        },
+        confirmPassword: {
+          required: "Please confirm your password",
+          equalTo: "Your passwords do not match",
         },
         termsCheckbox: {
           required: "Please agree to the Terms & Conditions",
@@ -255,6 +406,7 @@
         }
       },
     });
+
     $.validator.addMethod(
       "required",
       $.validator.methods.required,
@@ -262,7 +414,7 @@
     );
   });
 </script>
-<!-- <script>
+<script>
   const inputs = document.querySelectorAll(".pin-box");
 
   inputs.forEach((input, index) => {
@@ -283,32 +435,38 @@
       }
     });
   });
-</script> -->
-<!-- 
+</script>
+
 <script>
-  const signupForm = document.getElementById("signin-form");
+  const signupForm = document.getElementById("signup-form");
   const otpSection = document.getElementById("otp-section");
   const present = document.getElementById("present");
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const validator = $("#signin-form").validate();
+    const validator = $("#signup-form").validate();
     if (validator.form()) {
       const mobileInput = document.getElementById("mobile").value;
       const emailInput = document.getElementById("email").value;
 
-      if (emailInput) {
-        checkEmailExists(emailInput);
+      if (mobileInput && emailInput) {
+        var processing = "Please Wait";
+        $("#Submitting")
+          .prop("disabled", true)
+          .text(processing)
+          .css("cursor", "none");
+        checkEmailExists(mobileInput, emailInput);
       } else {
         normalSection();
       }
     }
   });
 
-  async function checkEmailExists(email) {
-    console.log(email);
-    fetch("`/emailexists", {
+  async function checkEmailExists(mobile, email) {
+    console.log(mobile + email);
+    fetch("/merchant/emailmobileexists", {
       method: "POST",
       body: JSON.stringify({
+        mobile: mobile,
         email: email,
       }),
       headers: {
@@ -320,9 +478,9 @@
       })
       .then((data) => {
         if (data.success) {
-          sendOTP(data.mobile);
+          sendOTP(mobile);
         } else {
-          alert("Email Not registered");
+          alert("Email or Mobile already registered");
           normalSection();
         }
       })
@@ -333,7 +491,7 @@
   }
 
   function sendOTP(mobile) {
-    fetch("`/sendotp", {
+    fetch("/merchant/sendotp", {
       method: "POST",
       body: JSON.stringify({
         mobile: mobile,
@@ -371,6 +529,11 @@
     present.classList.remove("d-none");
   }
   function normalSection() {
+    var processing = "Sign In";
+    $("#Submitting")
+      .prop("disabled", false)
+      .text(processing)
+      .css("cursor", "pointer");
     otpSection.classList.add("d-none");
     signupForm.classList.remove("d-none");
     present.classList.add("d-none");
@@ -392,10 +555,13 @@
   });
   async function verifyOTP(otp) {
     var processing = "Please Wait";
-    $("#verifyOtp").text(processing).css("cursor", "None");
+    $("#verifyOtp")
+      .prop("disabled", true)
+      .text(processing)
+      .css("cursor", "none");
     console.log(otp);
     try {
-      const response = await fetch("`/verifyotp", {
+      const response = await fetch("/merchant/verifyotp", {
         method: "POST",
         body: JSON.stringify({
           userOtp: otp,
@@ -419,7 +585,11 @@
         // OTP verification failed, display an error message
         alert("Invalid OTP!");
         var processing = "Verify OTP";
-        $("#verifyOtp").text(processing).css("cursor", "Pointer");
+        $("#verifyOtp")
+          .prop("disabled", false)
+          .text(processing)
+          .css("cursor", "pointer");
+
         showOTPSection();
       }
     } catch (error) {
@@ -430,11 +600,24 @@
 
   function signinUser() {
     const email = document.getElementById("email").value;
+    const brandName = document.getElementById("brandName").value;
+    const outletName = document.getElementById("outletName").value;
+    const mobile = document.getElementById("mobile").value;
+    const regNumber = document.getElementById("regNumber").value;
+    const gpsCoordinates = document.getElementById("gpsCoordinates").value;
+    const pin = document.getElementById("pin").value;
     const password = document.getElementById("password").value;
-    fetch("`/login", {
+
+    fetch("/merchant/signup", {
       method: "POST",
       body: JSON.stringify({
         email: email,
+        brandName: brandName,
+        outletName: outletName,
+        mobile: mobile,
+        regNumber: regNumber,
+        gpsCoordinates: gpsCoordinates,
+        pin: pin,
         password: password,
       }),
       headers: {
@@ -443,7 +626,7 @@
     })
       .then((response) => {
         if (response.ok) {
-          window.location.href = "`/login";
+          window.location.href = "/merchant/login";
         } else {
           alert("An error occurred. Please try again later.");
         }
@@ -453,4 +636,4 @@
         alert("An error occurred. Please try again later.");
       });
   }
-</script> -->
+</script>

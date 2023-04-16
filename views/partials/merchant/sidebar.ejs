@@ -9,13 +9,13 @@
         </div>
         <div class="nav-profile-text d-flex flex-column">
           <span class="font-weight-bold mb-2">David Grey. H</span>
-          <span class="text-secondary text-small">Project Manager</span>
+          <span class="text-secondary text-small">Merchant</span>
         </div>
         <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="index.html">
+      <a class="nav-link" href="/merchant/dashboard">
         <span class="menu-title">Dashboard</span>
         <i class="mdi mdi-home menu-icon"></i>
       </a>
@@ -24,107 +24,99 @@
       <a
         class="nav-link"
         data-bs-toggle="collapse"
-        href="#ui-basic"
+        href="#Products"
         aria-expanded="false"
-        aria-controls="ui-basic"
+        aria-controls="Products"
       >
-        <span class="menu-title">Basic UI Elements</span>
+        <span class="menu-title">Products</span>
         <i class="menu-arrow"></i>
-        <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+        <i class="mdi mdi-tshirt-crew menu-icon"></i>
       </a>
-      <div class="collapse" id="ui-basic">
+      <div class="collapse" id="Products">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
-            <a class="nav-link" href="pages/ui-features/buttons.html"
-              >Buttons</a
-            >
+            <a class="nav-link" href="/merchant/addproduct">Add Products </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="pages/ui-features/typography.html"
-              >Typography</a
+            <a class="nav-link" href="/merchant/productList">View Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/merchant/searchProduct"
+              >Search Products</a
             >
           </li>
         </ul>
       </div>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="pages/icons/mdi.html">
-        <span class="menu-title">Icons</span>
-        <i class="mdi mdi-contacts menu-icon"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="pages/forms/basic_elements.html">
-        <span class="menu-title">Forms</span>
-        <i class="mdi mdi-format-list-bulleted menu-icon"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="pages/charts/chartjs.html">
-        <span class="menu-title">Charts</span>
-        <i class="mdi mdi-chart-bar menu-icon"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="pages/tables/basic-table.html">
-        <span class="menu-title">Tables</span>
-        <i class="mdi mdi-table-large menu-icon"></i>
-      </a>
     </li>
     <li class="nav-item">
       <a
         class="nav-link"
         data-bs-toggle="collapse"
-        href="#general-pages"
+        href="#Orders"
         aria-expanded="false"
-        aria-controls="general-pages"
+        aria-controls="Orders"
       >
-        <span class="menu-title">Sample Pages</span>
+        <span class="menu-title">Orders</span>
         <i class="menu-arrow"></i>
-        <i class="mdi mdi-medical-bag menu-icon"></i>
+        <i class="mdi mdi-cart menu-icon"></i>
       </a>
-      <div class="collapse" id="general-pages">
+      <div class="collapse" id="Orders">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
-            <a class="nav-link" href="pages/samples/blank-page.html">
-              Blank Page
+            <a class="nav-link" href="pages/ui-features/buttons.html">
+              All Orders
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="pages/samples/login.html"> Login </a>
+            <a class="nav-link" href="pages/ui-features/typography.html"
+              >Accepted Orders</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="pages/samples/register.html">
-              Register
-            </a>
+            <a class="nav-link" href="pages/ui-features/typography.html"
+              >Pending Orders</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="pages/samples/error-404.html"> 404 </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="pages/samples/error-500.html"> 500 </a>
+            <a class="nav-link" href="pages/ui-features/typography.html"
+              >Rejected Orders</a
+            >
           </li>
         </ul>
       </div>
     </li>
-    <li class="nav-item sidebar-actions">
-      <span class="nav-link">
-        <div class="border-bottom">
-          <h6 class="font-weight-normal mb-3">Projects</h6>
-        </div>
-        <button class="btn btn-block btn-lg btn-gradient-primary mt-4">
-          + Add a project
-        </button>
-        <div class="mt-4">
-          <div class="border-bottom">
-            <p class="text-secondary">Categories</p>
-          </div>
-          <ul class="gradient-bullet-list mt-4">
-            <li>Free</li>
-            <li>Pro</li>
-          </ul>
-        </div>
-      </span>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        data-bs-toggle="collapse"
+        href="#Profile"
+        aria-expanded="false"
+        aria-controls="Profile"
+      >
+        <span class="menu-title">Profile</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-account menu-icon"></i>
+      </a>
+      <div class="collapse" id="Profile">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" href="/merchant/profile"> View Profile </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/merchant/editprofile">Edit Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pages/ui-features/typography.html"
+              >Change Password</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/merchant/logout"
+              >Logout <i class="mdi mdi-power menu-icon"></i
+            ></a>
+          </li>
+        </ul>
+      </div>
     </li>
   </ul>
 </nav>

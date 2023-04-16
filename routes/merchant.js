@@ -4,7 +4,7 @@ const merchantController = require("../controllers/merchantControllers");
 const multer = require("multer");
 function merchantauth(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
-    res.redirect("/merchant/home");
+    res.redirect("/merchant/");
     console.log(req.session.merchantLoggedIn);
   } else {
     next();
@@ -18,16 +18,10 @@ function merchantverify(req, res, next) {
     res.redirect("/merchant/login");
   }
 }
-router.get("/",function (req, res, next) {
-  res.render("merchant/index", {
-    title: "merchant",
-    merchantLoggedin: null,
-    author: "Merchant#123!",
-  });
-});
+router.get("/", merchantverify, merchantController.getDashBoard); //almost
+router.get("/signup", merchantauth, merchantController.getSignIn); //almost
+router.get("/login", merchantauth, merchantController.getLogin); //almost
 router.get("/profile", merchantverify, merchantController.getProfile);
-router.get("/signup", merchantauth, merchantController.getSignIn);
-router.get("/login", merchantauth, merchantController.getLogin);
 router.get("/home", merchantverify, merchantController.getProductList);
 router.post("/signup", merchantauth, merchantController.postSignup);
 router.post("/login", merchantauth, merchantController.postSignin);
@@ -56,4 +50,8 @@ router.post(
   merchantverify,
   merchantController.statusProductUpdate
 );
+router.post("/emailpassexists", merchantController.emailPasswordVerify);
+router.post("/emailmobileexists", merchantController.emailMobileVerify);
+router.post("/sendotp", merchantController.sendOtp);
+router.post("/verifyotp", merchantController.verifyOtp);
 module.exports = router;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <meta name="generator" content="Hugo 0.111.3" />
-    <title>Zia</title>
+    <title>Fillik Sign Up</title>
     <link
       href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
       rel="stylesheet"
@@ -140,6 +140,7 @@
               <button
                 class="btn btn-signin btn-lg mt-3"
                 type="submit"
+                id="Submitting"
                 style="
                   background-color: rgb(0, 0, 0);
                   color: white;
@@ -332,11 +333,16 @@
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const validator = $("#signup-form").validate();
-    if (validator.valid()) {
+    if (validator.form()) {
       const mobileInput = document.getElementById("mobile").value;
       const emailInput = document.getElementById("email").value;
 
       if (mobileInput && emailInput) {
+        var processing = "Please Wait";
+        $("#Submitting")
+          .prop("disabled", true)
+          .text(processing)
+          .css("cursor", "none");
         checkEmailExists(mobileInput, emailInput);
       } else {
         normalSection();
@@ -412,6 +418,11 @@
     present.classList.remove("d-none");
   }
   function normalSection() {
+    var processing = "Sign In";
+    $("#Submitting")
+      .prop("disabled", false)
+      .text(processing)
+      .css("cursor", "pointer");
     otpSection.classList.add("d-none");
     signupForm.classList.remove("d-none");
     present.classList.add("d-none");
@@ -433,7 +444,10 @@
   });
   async function verifyOTP(otp) {
     var processing = "Please Wait";
-    $("#verifyOtp").text(processing).css("cursor", "None");
+    $("#verifyOtp")
+      .prop("disabled", true)
+      .text(processing)
+      .css("cursor", "none");
     console.log(otp);
     try {
       const response = await fetch("/verifyotp", {
@@ -460,7 +474,10 @@
         // OTP verification failed, display an error message
         alert("Invalid OTP!");
         var processing = "Verify OTP";
-        $("#verifyOtp").text(processing).css("cursor", "Pointer");
+        $("#verifyOtp")
+          .prop("disabled", false)
+          .text(processing)
+          .css("cursor", "pointer");
         showOTPSection();
       }
     } catch (error) {
