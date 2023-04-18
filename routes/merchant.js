@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const merchantController = require("../controllers/merchantControllers");
+const productController = require("../controllers/productController");
 const multer = require("multer");
 function merchantauth(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
@@ -21,24 +22,24 @@ function merchantverify(req, res, next) {
 router.get("/", merchantverify, merchantController.getDashBoard); //almost
 router.get("/signup", merchantauth, merchantController.getSignIn); //almost
 router.get("/login", merchantauth, merchantController.getLogin); //almost
+router.get("/addproduct", merchantverify, productController.getAddProduct); //almost exept crop
+router.post("/addproduct", merchantverify, productController.postAddProduct); //almost
+router.get("/productList", merchantverify, productController.getProductList);
 router.get("/profile", merchantverify, merchantController.getProfile);
-router.get("/home", merchantverify, merchantController.getProductList);
 router.post("/signup", merchantauth, merchantController.postSignup);
 router.post("/login", merchantauth, merchantController.postSignin);
-router.get("/addproduct", merchantverify, merchantController.getAddProduct);
 router.get(
   "/editproduct/:Id",
   merchantverify,
-  merchantController.getEditProduct
+  productController.getEditProduct
 );
 router.post(
   "/editproduct/:Id",
   merchantverify,
-  merchantController.postEditProduct
+  productController.postEditProduct
 );
 router.get("/editprofile", merchantverify, merchantController.getEditProfile);
 router.post("/editprofile", merchantverify, merchantController.postEditProfile);
-router.post("/addproduct", merchantController.postAddProduct);
 router.get("/logout", merchantController.logout);
 router.delete(
   "/deleteProduct/:Id",

@@ -1,0 +1,368 @@
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Add Products</h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">View Products</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Add Products<a
+              href="#"
+              class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1"
+            >
+              Quick View
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+              <p class="text-danger" id="message"></p>
+              <div class="form-group">
+                <label for="name">Name of the Product</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  placeholder="Enter the Name of..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="description">Short Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description"
+                  name="description"
+                  placeholder="Enter the Description..."
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="genderType">Gender Type</label>
+                <select
+                  class="form-control"
+                  id="genderType"
+                  style="padding: 1rem"
+                >
+                  <% for (let i = 0; i < genderType.length; i++) { %>
+                  <option
+                    class="selectoption"
+                    value="<%= genderType[i]._id %>"
+                    style="min-height: 1rem; padding: 1rem"
+                  >
+                    <%= genderType[i].values %>
+                  </option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="category">Add Category</label>
+                <select
+                  class="form-control"
+                  id="category"
+                  style="padding: 1rem"
+                >
+                  <% for (let i = 0; i < category.length; i++) { %>
+                  <option
+                    class="selectoption"
+                    value="<%= category[i]._id %>"
+                    style="min-height: 1rem; padding: 1rem"
+                  >
+                    <%= category[i].values %>
+                  </option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="colour">Colour</label>
+                <select class="form-control" id="colour" style="padding: 1rem">
+                  <% for (let i = 0; i < colour.length; i++) { %>
+                  <option
+                    class="selectoption"
+                    value="<%= colour[i]._id %>"
+                    style="min-height: 1rem; padding: 1rem"
+                  >
+                    <%= colour[i].values %>
+                  </option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pattern">Pattern</label>
+                <select class="form-control" id="pattern" style="padding: 1rem">
+                  <% for (let i = 0; i < pattern.length; i++) { %>
+                  <option
+                    class="selectoption"
+                    value="<%= pattern[i]._id %>"
+                    style="min-height: 1rem; padding: 1rem"
+                  >
+                    <%= pattern[i].values %>
+                  </option>
+                  <% } %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="orginalPrice">Orginal Price</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="orginalPrice"
+                  name="orginalPrice"
+                  placeholder="Enter the actual price..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="sellerPrice ">Your Price:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sellerPrice"
+                  name="sellerPrice"
+                  placeholder="Enter the actual price..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputCity1">Sizes and Quantity</label>
+                <div class="form-group row" style="width: 60%">
+                  <label for="small" class="col-sm-3 col-form-label"
+                    >Small</label
+                  >
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      name="small"
+                      class="form-control"
+                      min="0"
+                      id="small"
+                      placeholder="0"
+                      value="0"
+                    />
+                  </div>
+                </div>
+                <div class="form-group row" style="width: 60%">
+                  <label for="medium" class="col-sm-3 col-form-label"
+                    >Medium</label
+                  >
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="medium"
+                      min="0"
+                      id="medium"
+                      placeholder="0"
+                      value="0"
+                    />
+                  </div>
+                </div>
+                <div class="form-group row" style="width: 60%">
+                  <label for="large" class="col-sm-3 col-form-label"
+                    >Large</label
+                  >
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="large"
+                      min="0"
+                      id="large"
+                      placeholder="0"
+                      value="0"
+                    />
+                  </div>
+                </div>
+                <div class="form-group row" style="width: 60%">
+                  <label for="extraLarge" class="col-sm-3 col-form-label"
+                    >Extra Large</label
+                  >
+                  <div class="col-sm-9">
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="extraLarge"
+                      min="0"
+                      id="extraLarge"
+                      placeholder="0"
+                      value="0"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="moreinfo">More Text or Comments</label>
+                <textarea
+                  class="form-control"
+                  id="moreinfo"
+                  name="moreinfo"
+                  rows="4"
+                ></textarea>
+              </div>
+              <!--  <div class="form-group">
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view1"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image1"
+                    type="file"
+                    name="images[]"
+                    id="image1"
+                    required
+                  />
+                </label>
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view2"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image2"
+                    type="file"
+                    name="images[]"
+                    id="image2"
+                    required
+                  />
+                </label>
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view3"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image3"
+                    type="file"
+                    name="images[]"
+                    id="image3"
+                    required
+                  />
+                </label>
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view4"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image4"
+                    type="file"
+                    name="images[]"
+                    id="image4"
+                    required
+                  />
+                </label>
+              </div> -->
+              <!-- in case of file uploading use in above form as enctype="multipart/form-data" -->
+              <div class="form-group">
+                <label class="form-label categoryname" for="image-input"
+                  >Main Image</label
+                >
+                <div class="form-file">
+                  <input
+                    type="file"
+                    class="form-file-input"
+                    id="images"
+                    name="images"
+                    accept="image/*"
+                    multiple
+                    onchange="previewImages(event)"
+                  />
+                  <label class="form-file-label" for="images">
+                    <span class="form-file-text">Choose a file...</span>
+                    <span class="form-file-button">Browse</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="preview-container" class="row gx-3 mt-5"></div>
+              <template id="image-preview-template">
+                <div class="col-md-2">
+                  <div class="raf">
+                    <img class="raf-img-top" src="" alt="" />
+                    <div class="raf-body">
+                      <button
+                        type="button"
+                        class="btn1 btn-sm"
+                        onclick="removeImage(event)"
+                      >
+                        X
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <button
+                type="submit"
+                id="button"
+                class="btn btn-gradient-primary me-2"
+              >
+                Submit
+              </button>
+
+              <button id="clearBtn" class="btn btn-light">Clear</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const form = document.querySelector("#myForm");
+  const clearBtn = document.querySelector("#clearBtn");
+
+  clearBtn.addEventListener("click", (event) => {
+    event.preventDefault(); // prevent the button from submitting the form
+    form.reset(); // reset all form fields to their default values
+  });
+
+  function previewImages(event) {
+    const previewContainer = document.getElementById("preview-container");
+    previewContainer.innerHTML = ""; // Clear previous previews
+    const files = event.target.files;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = function () {
+        const imagePreviewTemplate = document.getElementById(
+          "image-preview-template"
+        );
+        const imagePreview = imagePreviewTemplate.content.cloneNode(true);
+        imagePreview.querySelector("img").src = reader.result;
+        previewContainer.appendChild(imagePreview);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeImage(event) {
+    const raf = event.target.closest(".raf");
+    raf.remove();
+    const previewContainer = document.getElementById("preview-container");
+    const files = document.getElementById("images").files;
+    if (previewContainer.children.length < files.length) {
+      document.getElementById("images").value = ""; // Clear selected files if images were removed
+    }
+  }
+</script>

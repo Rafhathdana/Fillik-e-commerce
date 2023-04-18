@@ -1,0 +1,135 @@
+<div class="mainheading">
+  Product Details
+  <div class="flex" style="margin-left: auto">
+    <div class="dropdown me-auto">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        count
+      </button>
+
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li><a class="dropdown-item" href="?count=10&page=1">10</a></li>
+        <li><a class="dropdown-item" href="?count=25&page=1">25</a></li>
+        <li><a class="dropdown-item" href="?count=50&page=1">50</a></li>
+      </ul>
+    </div>
+  </div>
+  <%if(locals.endIndex>0){%> <% for (let i = locals.startIndex; i <
+  locals.endIndex; i++) { %>
+
+  <div class="outer-box">
+    <img
+      class="inner-img"
+      src="/images/<%= productList[i].images[0] %>"
+      alt="Product Image"
+    />
+    <div class="productinfo">
+      <div class="flex">
+        <div class="product-id">Product ID:</div>
+        <div class="product-id-value"><%= productList[i].productcode %></div>
+      </div>
+      <div class="flex">
+        <div class="product-id">Status:</div>
+        <%if(productList[i].isActive){%>
+
+        <div class="status-value">Active</div>
+        <% } else{ %>
+        <div class="status-value">InActive</div>
+        <% } %>
+      </div>
+    </div>
+    <div class="text-block">
+      <div class="plain-pattern">
+        Color:
+        <span class="pink-color"><%= productList[i].colour[0].values %> </span>
+      </div>
+      <div class="plain-pattern">
+        Pattern:
+        <span class="pink-color"><%= productList[i].pattern[0].values %></span>
+      </div>
+      <div class="plain-pattern">
+        Gender Type:
+        <span class="pink-color"
+          ><%= productList[i].genderType[0].values %></span
+        >
+      </div>
+      <div class="plain-pattern">
+        Category:
+        <span class="pink-color"><%= productList[i].category[0].values %></span>
+      </div>
+    </div>
+    <div class="sizes-box">
+      <div class="heading">Quantity</div>
+      <div class="sizes">
+        <div class="size">Small: <%= productList[i].Quantity.small %></div>
+        <div class="size">Medium: <%= productList[i].Quantity.medium %></div>
+        <div class="size">large: <%= productList[i].Quantity.large %></div>
+        <div class="size">
+          X-Large: <%= productList[i].Quantity.extraLarge %>
+        </div>
+      </div>
+    </div>
+
+    <div class="prices mx-auto">
+      <div class="product-price">Product Price:</div>
+      <div class="product-price-value">
+        RS.<%= productList[i].orginalPrice %>
+      </div>
+      <div class="product-price">Actual Price:</div>
+      <div class="product-price-value">
+        RS.<%= productList[i].ourPrice/100 %>
+      </div>
+      <span class="shorttext"> (After deducting 5% cut to us)</span>
+    </div>
+    <div class="flex-column">
+      <div class="action-box1">
+        <a
+          class="action-text"
+          href="/merchant/editproduct/<%= productList[i]._id %>"
+          >Edit</a
+        >
+      </div>
+      <div class="action-box1">
+        <a
+          class="action-text"
+          href="/merchant/editproduct/<%= productList[i]._id %>"
+          >Details</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <% } %> <% } else{%>
+  <div class="mx-auto justify-content-center d-flex">
+    <a class="mx-auto" href="/merchant/addproduct">
+      Product Empty!<br />
+      Click here to ADD Product</a
+    >
+  </div>
+  <% } %>
+  <div class="pagenumbers">
+    <% for (let i = 1; i <= locals.totalPages; i++) { %>
+    <a
+      href="?count=<%= count %>&page=<%= i %>"
+      class="page<%= i === parseInt(page) ? ' active' : '' %>"
+      ><%= i %></a
+    >
+    <% } %>
+  </div>
+  <div class="nextprev">
+    <% if (locals.page > 1) { %>
+    <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
+      >Prev</a
+    >
+    <% } %> <% if (locals.page < locals.totalPages) { %>
+    <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
+      >Next</a
+    >
+    <% } %>
+  </div>
+</div>

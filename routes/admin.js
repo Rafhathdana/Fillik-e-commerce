@@ -21,7 +21,7 @@ function adminVerify(req, res, next) {
 router.get("/", function (req, res, next) {
   res.render("admin/index", {
     title: "product",
-    author:"Admin#123!"
+    author:"Admin#1233!"
   });
 });
 router.get("/login", adminAuth, adminController.getLogin);

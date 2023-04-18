@@ -64,6 +64,9 @@ const productSchema = new Schema(
         type: Number,
       },
     },
+    moreinfo: {
+      type: String,
+    },
     images: {
       type: Array,
     },
