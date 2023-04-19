@@ -1,0 +1,85 @@
+<div class="ml-5" style="width: 50%">
+  Add Category
+  <div class="main-div">
+    <form id="category-form" action="/admin/addcategory" method="post">
+      <div class="category">
+        <div class="form-group">
+          <label>select type</label>
+          <select
+            name="categorytype"
+            id="categorytype"
+            class="js-example-basic-single w-100"
+          >
+            <option value="Category" selected>Category</option>
+            <option value="Colour">Colour</option>
+            <option value="Pattern">Pattern</option>
+            <option value="GenderType">Gender Type</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Value</label>
+          <input
+            type="text"
+            class="form-control"
+            name="categoryvalue"
+            id="categoryvalue"
+            placeholder="check spelling correctly"
+            aria-label="categoryvalue"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-rounded btn-primary">Add</button>
+      </div>
+      <% if(locals.categoryout) { %>
+      <div class="alert alert-danger mt-2" role="alert" style="width: '87%'">
+        <%=categoryout %>
+      </div>
+      <% } %>
+    </form>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $.validator.addMethod(
+      "noSpecialChars",
+      function (value, element) {
+        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+      },
+      "Special characters and spaces are not allowed"
+    );
+    $("#category-form").validate({
+      rules: {
+        categoryvalue: {
+          required: true,
+          minlength: 2,
+          noSpecialChars: true,
+        },
+      },
+      messages: {
+        categoryvalue: {
+          required: "Please enter the Category",
+          minlength: "Your name must be at least 2 characters long",
+          noSpecialChars: "Special characters and spaces are not allowed",
+        },
+      },
+      highlight: function (element) {
+        $(element).closest(".form-control").addClass("is-invalid");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-control").removeClass("is-invalid");
+      },
+      errorElement: "div",
+      errorClass: "invalid-feedback",
+      errorPlacement: function (error, element) {
+        if (element.parent(".input-group").length) {
+          error.insertAfter(element.parent());
+        } else {
+          error.insertAfter(element);
+        }
+      },
+    });
+  });
+</script>

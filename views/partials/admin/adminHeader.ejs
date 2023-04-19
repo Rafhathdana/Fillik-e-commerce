@@ -9,17 +9,25 @@
     />
     <title>PolluxUI Admin</title>
     <!-- base:css -->
-    <link rel="stylesheet" href="/admin/vendors/typicons/typicons.css" />
-    <link rel="stylesheet" href="/admin/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="vendors/typicons/typicons.css" />
+    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="vendors/select2/select2.min.css" />
+    <link
+      rel="stylesheet"
+      href="vendors/select2-bootstrap-theme/select2-bootstrap.min.css"
+    />
     <!-- endinject -->
     <!-- plugin css for this page -->
     <!-- End plugin css for this page -->
     <!-- inject:css -->
-    <link rel="stylesheet" href="/admin/css/vertical-layout-light/style.css" />
+    <link rel="stylesheet" href="css/vertical-layout-light/style.css" />
     <!-- endinject -->
-    <link rel="shortcut icon" href="/admin/images/favicon.png" />
+    <link rel="shortcut icon" href="images/favicon.png" />
   </head>
   <body>
+    <div class="row d-none" id="proBanner">
+      <i class="typcn typcn-delete-outline" id="bannerClose"></i>
+    </div>
     <div class="container-scroller">
       <!-- partial:partials/_navbar.html -->
       <%-include('navbar')-%>
@@ -52,7 +60,7 @@
               <div class="d-flex align-items-baseline">
                 <p class="mb-0">Home</p>
                 <i class="typcn typcn-chevron-right"></i>
-                <p class="mb-0">Main Dahboard</p>
+                <p class="mb-0">Main Dashboard</p>
               </div>
             </li>
           </ul>

@@ -2,7 +2,8 @@ var Admin = require("../models/adminSchema");
 const mongoose = require("mongoose");
 var users = require("../models/userSchema");
 var merchants = require("../models/merchantSchema");
-var filterproduct = require("../models/filterSchema");
+const otp = require("../controllers/otp");
+
 const {
   Types: { ObjectId },
 } = require("mongoose");
@@ -15,6 +16,7 @@ module.exports = {
       title: "users",
       fullName: req.session.admin.fullName,
       adminLoggedin: req.session.adminLoggedIn,
+      author: "Admin#1233!",
       userslist,
     });
   },
@@ -28,18 +30,17 @@ module.exports = {
         .limit(count)
         .lean();
 
-      const totalPages = Math.ceil((await users.countDocuments()) / count);
-      const startIndex = (page - 1) * count;
+      const totalUsers = await users.countDocuments();
+      const totalPages = Math.ceil(totalUsers / count);
+      const startIndex = 0;
 
-      const endIndex = Math.min(
-        startIndex + count,
-        await users.countDocuments()
-      );
+      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
 
       res.render("admin/users", {
         title: "Users List",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
         usersList,
         count,
         page,
@@ -61,10 +62,12 @@ module.exports = {
     });
   },
   getLogin: (req, res, next) => {
-    res.render("admin/login", {
+    res.render("admin/signin2", {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,
+      author: "Admin#1233!",
+      noShow: true,
     });
     req.session.adminerrmsg = null;
   },
@@ -73,72 +76,12 @@ module.exports = {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,
+      author: "Admin#1233!",
+      noShow: true,
     });
     req.session.adminerrmsg = null;
   },
-  getAddCategory: (req, res, next) => {
-    res.render("admin/addCategory", {
-      title: "addCategory",
-      fullName: req.session.admin.fullName,
-      adminLoggedin: req.session.adminLoggedIn,
-      categoryout: req.session.categoryout,
-    });
-    req.session.categoryout = null;
-  },
-  getViewCategory: async (req, res, next) => {
-    try {
-      const category = await filterproduct.find({ categoryname: "Category" });
-      const colour = await filterproduct.find({ categoryname: "Colour" });
-      const pattern = await filterproduct.find({ categoryname: "Pattern" });
-      const genderType = await filterproduct.find({
-        categoryname: "GenderType",
-      });
-
-      res.render("admin/viewCategory", {
-        title: "addCategory",
-        fullName: req.session.admin.fullName,
-        adminLoggedin: req.session.adminLoggedIn,
-        category,
-        colour,
-        pattern,
-        genderType,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  },
-
-  postAddCategory: async (req, res, next) => {
-    try {
-      let categoryValuein = req.body.categoryvalue;
-      categoryValuein = categoryValuein
-        .toLowerCase()
-        .split(" ")
-        .map((word) => {
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(" ");
-      const newCategory = await filterproduct.findOne({
-        categoryname: req.body.categorytype,
-        values: categoryValuein,
-      });
-      if (!newCategory) {
-        const newData = new filterproduct({
-          categoryname: req.body.categorytype,
-          values: categoryValuein,
-        });
-        filterproduct.create(newData);
-        req.session.categoryout = "Added";
-        res.status(204).redirect("/admin/addcategory");
-      } else {
-        req.session.categoryout = "already value found";
-        res.status(400).redirect("/admin/addcategory");
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(400);
-    }
-  },
+  
   postSignin: async (req, res) => {
     try {
       const newAdmin = await Admin.findOne({ email: req.body.email });
@@ -206,7 +149,120 @@ module.exports = {
       res.redirect("/admin/signup");
     }
   },
+  emailMobileVerify: async (req, res, next) => {
+    const response = {};
+    try {
+      const vAdmin = await Admin.findOne({
+        $or: [{ email: req.body.email }, { mobile: req.body.mobile }],
+      }).exec();
 
+      if (vAdmin) {
+        response.success = false;
+        res.status(200).send({
+          response,
+          success: false,
+          message: "Admin found",
+        });
+      } else {
+        res.status(500).send({ success: true, message: "No Admin found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .send({ success: false, message: "Error verifying Admin" });
+    }
+  },
+  emailPasswordVerify: async (req, res, next) => {
+    const response = {};
+    try {
+      const vAdmin = await Admin.findOne({ email: req.body.email });
+      if (vAdmin) {
+        if (vAdmin.isActive === true) {
+          bcrypt.compare(req.body.password, vAdmin.password).then((status) => {
+            console.log("hai");
+            if (status) {
+              console.log("user exist");
+              response.success = true;
+              res.status(200).send({
+                response,
+                success: true,
+                mobile: vAdmin.mobile,
+                message: "User found",
+              });
+            } else {
+              console.log("password is not matching");
+              req.session.adminerrmsg = "Invalid Username or Password";
+              res.status(401).send({
+                response,
+                success: false,
+                message: req.session.adminerrmsg,
+              });
+            }
+          });
+        } else {
+          req.session.adminerrmsg = "Account was Blocked Contact US";
+          res.status(402).send({
+            response,
+            success: false,
+            message: req.session.adminerrmsg,
+          });
+        }
+      } else {
+        req.session.adminerrmsg = "Invalid Username or Password";
+        res.status(401).send({
+          response,
+          success: false,
+          message: req.session.adminerrmsg,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .send({ success: false, message: "Error verifying Admin" });
+    }
+  },
+
+  sendOtp: async (req, res, next) => {
+    try {
+      const Otp = Math.floor(100000 + Math.random() * 909997);
+      req.session.otP = Otp;
+      otp
+        .OTP(req.body.mobile, req.session.otP)
+        .then((response) => {
+          response.success = true;
+          res.status(200).send({
+            response,
+            success: true,
+            message: "OTP Sent successfully",
+          });
+        })
+        .catch((error) => {
+          res
+            .status(500)
+            .send({ success: false, message: "Error sending OTP" });
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  verifyOtp: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        res.status(200).send({
+          success: true,
+          response,
+          message: "OTP verified successfully",
+        });
+      } else {
+        req.session.errmsg = "Invalid Otp";
+        res.status(500).send({ success: false, message: "Invalid Otp" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   statusUserUpdate: async (req, res, next) => {
     try {
       const datainuser = await users.findById(req.params.userId);
@@ -234,25 +290,7 @@ module.exports = {
       console.error(err);
     }
   },
-  deleteCategory: async (req, res, next) => {
-    try {
-      filterproduct
-        .deleteOne({ _id: req.params.Id })
-        .then((response) => {
-          if (response) {
-            console.log("hai");
-            res.sendStatus(204);
-          } else {
-            res.status(400).json({ message: "unable to delete Category" });
-          }
-        })
-        .catch((err) => {
-          res.status(500).json({ message: "Internal server error" });
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  },
+ 
   statusMerchantUpdate: async (req, res, next) => {
     try {
       const datainuser = await merchants.findById(req.params.userId);
@@ -287,6 +325,7 @@ module.exports = {
         title: "profile",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
         userData: datainuser,
       });
     } catch (err) {
@@ -300,6 +339,7 @@ module.exports = {
         title: "profile",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
         merchantData: datainuser,
       });
     } catch (err) {

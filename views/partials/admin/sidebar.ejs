@@ -8,97 +8,98 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+            <a class="nav-link" data-toggle="collapse" href="#merchants" aria-expanded="false" aria-controls="merchants">
               <i class="typcn typcn-document-text menu-icon"></i>
               <span class="menu-title">Merchants</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="ui-basic">
+            <div class="collapse" id="merchants">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Dropdowns</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/merchantList">All Merchants</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/merchantBlockedList">blocked Merchant</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/merchantActiveList">Active Merchant</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/search/:merchantId">Search Merchants</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+            <a class="nav-link" data-toggle="collapse" href="#users" aria-expanded="false" aria-controls="users">
               <i class="typcn typcn-film menu-icon"></i>
               <span class="menu-title">Users</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="form-elements">
+            <div class="collapse" id="users">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Basic Elements</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/userList">All Users</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/userBlockList">blocked Users</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/userActiveList">Active Users</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/search/:userId">Search User</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+            <a class="nav-link" data-toggle="collapse" href="#products" aria-expanded="false" aria-controls="products">
               <i class="typcn typcn-chart-pie-outline menu-icon"></i>
               <span class="menu-title">Products</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="charts">
+            <div class="collapse" id="products">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">Orders</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/productList">All Products</a></li>
+                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">Search Products</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/productActiveList">Active Products</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/productBlockList">Active Products</a></li>
+              </ul>
+            </div>
+          </li>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#orders" aria-expanded="false" aria-controls="orders">
+              <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+              <span class="menu-title">Orders</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="orders">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="/admin/orderList">All Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/searchOrder">Search Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/pendingOrderList">Pending Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/successOrderList">Success Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/returnedOrderList">Returned Orders</a></li> 
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+            <a class="nav-link" data-toggle="collapse" href="#coupons" aria-expanded="false" aria-controls="coupons">
               <i class="typcn typcn-th-small-outline menu-icon"></i>
               <span class="menu-title">Coupons</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="tables">
+            <div class="collapse" id="coupons">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/tables/basic-table.html">Basic table</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/addcoupon">Add Coupons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/viewcoupon">View Coupons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/searcoupon">Search Coupons</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+            <a class="nav-link" data-toggle="collapse" href="#category" aria-expanded="false" aria-controls="category">
               <i class="typcn typcn-compass menu-icon"></i>
-              <span class="menu-title">Icons</span>
+              <span class="menu-title">Category</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="icons">
+            <div class="collapse" id="category">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/icons/mdi.html">Mdi icons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/addCategory">Add Category</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/viewCategory">View Category</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <i class="typcn typcn-user-add-outline menu-icon"></i>
-              <span class="menu-title">User Pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="auth">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#error" aria-expanded="false" aria-controls="error">
-              <i class="typcn typcn-globe-outline menu-icon"></i>
-              <span class="menu-title">Error pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="error">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="https://bootstrapdash.com/demo/polluxui-free/docs/documentation.html">
+            <a class="nav-link" href="/admin/viewBanner">
               <i class="typcn typcn-mortar-board menu-icon"></i>
-              <span class="menu-title">Documentation</span>
+              <span class="menu-title">Banners</span>
             </a>
           </li>
         </ul>

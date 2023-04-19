@@ -2,10 +2,7 @@
   'use strict';
   $(function() {
     // Remove pro banner on close
-    document.querySelector('#bannerClose').addEventListener('click',function() {
-      document.querySelector('#proBanner').classList.add('d-none');
-    });
-    if ($("#transactions-chart").length) {
+  if ($("#transactions-chart").length) {
       var transactionsChartCanvas = $("#transactions-chart").get(0).getContext("2d");
 
       var gradientFill = transactionsChartCanvas.createLinearGradient(0, 0, 0, 110);

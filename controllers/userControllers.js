@@ -486,24 +486,24 @@ module.exports = {
           console.log(item.quantity);
           const product = await Products.findOne(
             {
-              _id: new mongoose.Types.ObjectId(item.productId),
+              productcode: item.productId,
             },
             {
               images: 1,
               name: 1,
               ourPrice: 1,
               orginalPrice: 1,
-              _id: 0,
+              _id: 1,
             }
           );
           console.log(product);
           if (product) {
             items.push({
-              productId: item.productId,
+              productId: product._id,
               images: product.images,
               name: product.name,
               ourPrice: product.ourPrice,
-              originalPrice: product.orginalPrice, // corrected spelling mistake
+              originalPrice: product.orginalPrice,
               size: item.size,
               quantity: item.quantity,
             });
@@ -578,9 +578,10 @@ module.exports = {
       const cartItem = { productId, size };
       const cart = await Cart.findOneAndUpdate(
         { userId, ...cartItem },
-        { $inc: { quantity } },
+        { $set: { quantity:quantity } }, // Add $set operator to update quantity property
         { upsert: true, new: true }
       );
+      
       res.status(200).json({ status: "success", data: cart });
     } catch (error) {
       console.log(error);

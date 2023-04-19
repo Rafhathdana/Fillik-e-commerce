@@ -1,0 +1,139 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="http://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"
+  />
+  <script src="http://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+  <link href="/stylesheets/adminStyle.css" rel="stylesheet" />
+</head>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="heading">Users Details</div>
+    <div class="flex" style="margin-bottom: 30px; margin-left: 80%">
+      <div class="dropdown me-auto">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          count
+        </button>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="?count=10&page=1">10</a></li>
+          <li><a class="dropdown-item" href="?count=25&page=1">25</a></li>
+          <li><a class="dropdown-item" href="?count=50&page=1">50</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table" id="usersTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>No. of Orders</th>
+            <th>Complaints</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (let i = locals.startIndex; i < locals.endIndex; i++) { %>
+          <tr>
+            <td><%= usersList[i].email %></td>
+            <td><%= usersList[i].fullName %></td>
+            <td>0</td>
+            <td>
+              <div class="complaint-box">
+                <span class="complaint-number">2</span>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex">
+                <% if(usersList[i].isActive){%>
+                <div
+                  class="action-box mx-3"
+                  onclick="confirmStatus('<%= usersList[i]._id %>')"
+                >
+                  <span class="action-text">Block </span>
+                </div>
+                <% } else { %>
+                <div
+                  class="action-box red mx-3"
+                  onclick="confirmStatus('<%= usersList[i]._id %>')"
+                >
+                  <span class="action-text">Unblock </span>
+                </div>
+                <% } %>
+                <div class="action-box">
+                  <a
+                    href="/admin/userprofile/<%= usersList[i]._id %>"
+                    class="details-link"
+                    >Details</a
+                  >
+                </div>
+              </div>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagenumbers">
+      <% for (let i = 1; i <= locals.totalPages; i++) { %>
+      <a
+        href="?count=<%= count %>&page=<%= i %>"
+        class="page<%= i === parseInt(page) ? ' active' : '' %>"
+        ><%= i %></a
+      >
+      <% } %>
+    </div>
+    <div class="nextprev">
+      <% if (locals.page > 1) { %>
+      <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
+        >Prev</a
+      >
+      <% } %> <% if (locals.page < locals.totalPages) { %>
+      <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
+        >Next</a
+      >
+      <% } %>
+    </div>
+  </div>
+</div>
+<script>
+  function confirmStatus(userId) {
+    if (confirm("Are you sure you want to Block this user?")) {
+      fetch(`statusUserUpdate/${userId}`, { method: "POST" })
+        .then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            alert("unable to update user");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("Internal server error");
+        });
+    } else {
+      // User cancelled, do nothing
+      console.log("User cancelled Blocking of user ID", userId);
+    }
+  }
+</script>
+
+<!-- Include the Bootstrap CSS -->
+<script>
+  $(document).ready(function () {
+    $("#usersTable").DataTable({
+      bInfo: false,
+      bFilter: false,
+      bPaginate: false,
+    });
+  });
+</script>

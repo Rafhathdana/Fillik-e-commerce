@@ -1,0 +1,158 @@
+<div class="ml-5" style="width: 50%">
+  Add Coupons
+  <div class="main-div">
+    <form id="category-form" action="/admin/addcategory" method="post">
+      <div class="category">
+        <div class="form-group">
+          <label>select type</label>
+          <select
+            name="offertype"
+            id="offertype"
+            class="js-example-basic-single w-100"
+          >
+            <option value="Discount" selected>Discount</option>
+            <option value="Sale" selected>Sale</option>
+            <option value="Offer" selected>Offer</option>
+            <option value="SpecialCase">Special Case</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Category Applicable on</label>
+          <select class="js-example-basic-multiple w-100" multiple="multiple">
+            <option value="all">All</option>
+            <% for (let i = 0; i < category.length; i++) { %>
+            <option value="<%= category[i]._id %>">
+              <%= category[i].values %>
+            </option>
+            <%}%>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pattern Applicable on</label>
+          <select class="js-example-basic-multiple w-100" multiple="multiple">
+            <option value="all">All</option>
+            <% for (let i = 0; i < pattern.length; i++) { %>
+            <option value="<%= pattern[i]._id %>">
+              <%= pattern[i].values %>
+            </option>
+            <%}%>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Colour Applicable on</label>
+          <select class="js-example-basic-multiple w-100" multiple="multiple">
+            <option value="all">All</option>
+            <% for (let i = 0; i < colour.length; i++) { %>
+            <option value="<%= colour[i]._id %>">
+              <%= colour[i].values %>
+            </option>
+            <%}%>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gender Type Applicable on</label>
+          <select class="js-example-basic-multiple w-100" multiple="multiple">
+            <option value="all">All</option>
+            <% for (let i = 0; i < genderType.length; i++) { %>
+            <option value="<%= genderType[i]._id %>">
+              <%= genderType[i].values %>
+            </option>
+            <%}%>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Code</label>
+          <input
+            type="text"
+            class="form-control"
+            name="categoryvalue"
+            id="categoryvalue"
+            placeholder="check spelling correctly"
+            aria-label="categoryvalue"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-rounded btn-primary">Add</button>
+      </div>
+      <% if(locals.categoryout) { %>
+      <div class="alert alert-danger mt-2" role="alert" style="width: '87%'">
+        <%=categoryout %>
+      </div>
+      <% } %>
+    </form>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $.validator.addMethod(
+      "noSpecialChars",
+      function (value, element) {
+        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+      },
+      "Special characters and spaces are not allowed"
+    );
+    $("#category-form").validate({
+      rules: {
+        categoryvalue: {
+          required: true,
+          minlength: 2,
+          noSpecialChars: true,
+        },
+      },
+      messages: {
+        categoryvalue: {
+          required: "Please enter the Category",
+          minlength: "Your name must be at least 2 characters long",
+          noSpecialChars: "Special characters and spaces are not allowed",
+        },
+      },
+      highlight: function (element) {
+        $(element).closest(".form-control").addClass("is-invalid");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-control").removeClass("is-invalid");
+      },
+      errorElement: "div",
+      errorClass: "invalid-feedback",
+      errorPlacement: function (error, element) {
+        if (element.parent(".input-group").length) {
+          error.insertAfter(element.parent());
+        } else {
+          error.insertAfter(element);
+        }
+      },
+    });
+  });
+</script>
+<!-- <script>
+  $(function () {
+    $(".js-example-basic-multiple").on("change", function () {
+      var values = $(this).val();
+      if (values.indexOf("all") !== -1) {
+        $(this).val(["all"]);
+        $(this).find("option").not(":selected").prop("selected", true);
+      } else {
+        $(this).find('option[value="all"]').prop("selected", false);
+      }
+    });
+  });
+</script> -->
+<script>
+  $("#category-select").on("change", function () {
+    var values = $(this).val();
+    if (values !== null && values.includes("All")) {
+      $(this).val(["All"]);
+      $(this).find("option").not(":selected").prop("selected", true);
+      values = $(this)
+        .find("option")
+        .map(function () {
+          return this.value;
+        })
+        .get();
+    }
+    console.log(values);
+  });
+</script>

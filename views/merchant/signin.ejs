@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <meta name="generator" content="Hugo 0.111.3" />
-    <title>Fillik Merchant</title>
+    <title>Fillik Admin</title>
     <link
       href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
       rel="stylesheet"
@@ -82,7 +82,7 @@
             class="signin-heading mb-4"
             style="color: rgb(255, 255, 255); font-family: 'Abel', sans-serif"
           >
-            Merchant Sign In
+            Admin Sign In
           </h1>
           <form id="signin-form">
             <div class="form-floating mb-3">
@@ -312,7 +312,7 @@
 
   async function checkEmailExists(email, password) {
     console.log(email);
-    fetch("/merchant/emailpassexists", {
+    fetch("/admin/emailpassexists", {
       method: "POST",
       body: JSON.stringify({
         email: email,
@@ -347,7 +347,7 @@
   }
 
   function sendOTP(mobile) {
-    fetch("/merchant/sendotp", {
+    fetch("/admin/sendotp", {
       method: "POST",
       body: JSON.stringify({
         mobile: mobile,
@@ -417,7 +417,7 @@
       .css("cursor", "none");
     console.log(otp);
     try {
-      const response = await fetch("/merchant/verifyotp", {
+      const response = await fetch("/admin/verifyotp", {
         method: "POST",
         body: JSON.stringify({
           userOtp: otp,
@@ -457,7 +457,7 @@
   function signinUser() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    fetch("/merchant/login", {
+    fetch("/admin/login", {
       method: "POST",
       body: JSON.stringify({
         email: email,
@@ -469,7 +469,7 @@
     })
       .then((response) => {
         if (response.ok) {
-          window.location.href = "/merchant/";
+          window.location.href = "/admin/";
         } else {
           alert("An error occurred. Please try again later.");
         }

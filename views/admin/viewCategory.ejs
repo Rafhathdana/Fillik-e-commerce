@@ -1,0 +1,175 @@
+<div class="categoryHeading ml-5">
+  <table class="table" id="categoryTable">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <h5>Category</h5>
+      <% for (let i = 0; i < category.length; i++) { %>
+      <tr>
+        <td><%= category[i].values %></td>
+        <td>
+          <div class="d-flex align-items-center">
+            <button
+              type="button"
+              class="btn btn-success btn-sm btn-icon-text mr-3"
+              onclick="window.location='/admin/editCategory/<%=category[i]._id %>'"
+            >
+              Edit
+              <i class="typcn typcn-edit btn-icon-append"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm btn-icon-text"
+              onclick="confirmDelete('<%= category[i]._id %>')"
+            >
+              Delete
+              <i class="typcn typcn-delete-outline btn-icon-append"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+  <table class="table" id="colourTable">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <h5>Colour</h5>
+      <% for (let i = 0; i < colour.length; i++) { %>
+      <tr>
+        <td><%= colour[i].values %></td>
+        <td>
+          <div class="d-flex align-items-center">
+            <button
+              type="button"
+              class="btn btn-success btn-sm btn-icon-text mr-3"
+              onclick="window.location='/admin/editCategory/<%=colour[i]._id %>'"
+            >
+              Edit
+              <i class="typcn typcn-edit btn-icon-append"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm btn-icon-text"
+              onclick="confirmDelete('<%= colour[i]._id %>')"
+            >
+              Delete
+              <i class="typcn typcn-delete-outline btn-icon-append"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <table class="table" id="patternTable">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <h5>Cattern</h5>
+      <% for (let i = 0; i < pattern.length; i++) { %>
+      <tr>
+        <td><%= pattern[i].values %></td>
+        <td>
+          <div class="d-flex align-items-center">
+            <button
+              type="button"
+              class="btn btn-success btn-sm btn-icon-text mr-3"
+              onclick="window.location='/admin/editCategory/<%=pattern[i]._id %>'"
+            >
+              Edit
+              <i class="typcn typcn-edit btn-icon-append"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm btn-icon-text"
+              onclick="confirmDelete('<%= pattern[i]._id %>')"
+            >
+              Delete
+              <i class="typcn typcn-delete-outline btn-icon-append"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <table class="table" id="genderTypeTable">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <h5>Cender Type</h5>
+      <% for (let i = 0; i < genderType.length; i++) { %>
+      <tr>
+        <td><%= genderType[i].values %></td>
+        <td>
+          <div class="d-flex align-items-center">
+            <button
+              type="button"
+              class="btn btn-success btn-sm btn-icon-text mr-3"
+              onclick="window.location='/admin/editCategory/<%=genderType[i]._id %>'"
+            >
+              Edit
+              <i class="typcn typcn-edit btn-icon-append"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm btn-icon-text"
+              onclick="confirmDelete('<%= genderType[i]._id %>')"
+            >
+              Delete
+              <i class="typcn typcn-delete-outline btn-icon-append"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  <br />
+  <br />
+  <br />
+  <br />
+</div>
+<script>
+  function confirmDelete(Id) {
+    if (confirm("Are you sure you want to delete this user?")) {
+      // User confirmed, redirect to the delete user URL with the user's _id
+      fetch(`/admin/deleteCategory/${Id}`, { method: "DELETE" })
+        .then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            alert("unable to delete Category");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("Internal server error");
+        });
+    } else {
+      // User cancelled, do nothing
+      console.log("cancelled deletion ");
+    }
+  }
+</script>

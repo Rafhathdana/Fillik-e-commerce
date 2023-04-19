@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const adminController = require("../controllers/adminControllers");
+const filterController = require("../controllers/filterController");
+const couponController = require("../controllers/couponController");
 
 function adminAuth(req, res, next) {
   if (req.session && req.session.admin && req.session.adminLoggedIn) {
@@ -21,21 +23,37 @@ function adminVerify(req, res, next) {
 router.get("/", function (req, res, next) {
   res.render("admin/index", {
     title: "product",
-    author:"Admin#1233!"
+    author: "Admin#1233!",
   });
 });
-router.get("/login", adminAuth, adminController.getLogin);
+router.get("/login", adminAuth, adminController.getLogin); //almost
 router.get("/home", adminVerify, adminController.getHome);
-router.get("/userList", adminVerify, adminController.getUser);
-router.get("/merchantList", adminVerify, adminController.getMerchant);
-router.get("/addcategory", adminVerify, adminController.getAddCategory);
-router.get("/viewcategory", adminVerify, adminController.getViewCategory);
-router.post("/addcategory", adminVerify, adminController.postAddCategory);
+router.get("/userList", adminVerify, adminController.getUser); //almost
+router.get("/merchantList", adminVerify, adminController.getMerchant); //almost
+router.get("/addcategory", adminVerify, filterController.getAddCategory); //almost
+router.get(
+  "/viewcategory",
+  adminVerify,
+  filterController.getAllCategory,
+  filterController.getViewCategory
+); //almost
+router.post("/addcategory", adminVerify, filterController.postAddCategory); //almost
+router.post("/addcoupon", adminVerify, couponController.postAddCoupon);
+router.get(
+  "/addcoupon",
+  adminVerify,
+  filterController.getAllCategory,
+  couponController.getAddCoupon
+);
 
-router.post("/login", adminAuth, adminController.postSignin);
-router.get("/signup", adminAuth, adminController.getSignUp);
-router.post("/signup", adminAuth, adminController.postSignup);
+router.post("/login", adminAuth, adminController.postSignin); //almost
+router.get("/0124", adminAuth, adminController.getSignUp); //almost
+router.post("/0124", adminAuth, adminController.postSignup); //almost
 
+router.post("/emailpassexists", adminController.emailPasswordVerify); //almost
+router.post("/emailmobileexists", adminController.emailMobileVerify); //almost
+router.post("/sendotp", adminController.sendOtp); //almost
+router.post("/verifyotp", adminController.verifyOtp); //almost
 router.post(
   "/statusUserUpdate/:userId",
   adminVerify,
@@ -44,7 +62,7 @@ router.post(
 router.delete(
   "/deleteCategory/:Id",
   adminVerify,
-  adminController.deleteCategory
+  filterController.deleteCategory
 );
 router.post(
   "/statusMerchantUpdate/:userId",

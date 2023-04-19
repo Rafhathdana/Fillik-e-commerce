@@ -1,0 +1,50 @@
+<div class="mainheading">
+  <%= merchantData.brandName %> Profile
+  <div class="main-div">
+    <!-- CATEGORY -->
+    <div class="category">
+      <div class="flex">
+        <h1 class="categoryname">
+          Email :
+          <h3 class="categoryname"><%= merchantData.email %></h3>
+        </h1>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">
+          Mobile Number :
+          <h3 class="categoryname"><%= merchantData.mobile %></h3>
+        </h1>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">Brand Name :</h1>
+        <h3 class="categoryname"><%= merchantData.brandName %></h3>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">Outlet Name :</h1>
+        <h3 class="categoryname"><%= merchantData.outletName %></h3>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">Reg Number :</h1>
+        <h3 class="categoryname"><%= merchantData.regNumber %></h3>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">Gps Co-ordinates :</h1>
+        <h3 class="categoryname"><%= merchantData.gpsCoordinates %></h3>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="flex">
+        <h1 class="categoryname">Pin :</h1>
+        <h3 class="categoryname"><%= merchantData.pin %></h3>
+        <!-- HTML code using EJS syntax -->
+      </div>
+      <div class="action-box1">
+        <a class="action-text" href="/merchant/editprofile">Edit</a>
+      </div>
+    </div>
+  </div>
+</div>

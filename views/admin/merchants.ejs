@@ -1,0 +1,96 @@
+<div class="heading">Merchants Details</div>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Full Name</th>
+        <th>No. of Orders</th>
+        <th>Complaints</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < merchantslist.length; i++) { %>
+      <tr>
+        <td><%= merchantslist[i].email %></td>
+        <td><%= merchantslist[i].fullName %></td>
+        <td>0</td>
+        <td>
+          <div class="complaint-box">
+            <span class="complaint-number">2</span>
+          </div>
+        </td>
+        <td>
+          <div class="d-flex">
+            <% if(merchantslist[i].isActive){%>
+            <div
+              class="action-box mx-3"
+              onclick="confirmStatus('<%= merchantslist[i]._id %>')"
+            >
+              <span class="action-text">Block </span>
+            </div>
+            <% } else { %>
+            <div
+              class="action-box red mx-3"
+              onclick="confirmStatus('<%= merchantslist[i]._id %>')"
+            >
+              <span class="action-text">Unblock </span>
+            </div>
+            <% } %>
+
+            <div class="action-box">
+              <a
+                href="/admin/merchantprofile/<%= merchantslist[i]._id %>"
+                class="details-link"
+                >Details</a
+              >
+            </div>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<div class="pagenumbers">
+  <% for (let i = 1; i <= locals.totalPages; i++) { %>
+  <a
+    href="?count=<%= count %>&page=<%= i %>"
+    class="page<%= i === parseInt(page) ? ' active' : '' %>"
+    ><%= i %></a
+  >
+  <% } %>
+</div>
+<div class="nextprev">
+  <% if (locals.page > 1) { %>
+  <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
+    >Prev</a
+  >
+  <% } %> <% if (locals.page < locals.totalPages) { %>
+  <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
+    >Next</a
+  >
+  <% } %>
+</div>
+<script>
+  function confirmStatus(userId) {
+    if (confirm("Are you sure you want to Block this user?")) {
+      fetch(`statusMerchantUpdate/${userId}`, { method: "POST" })
+        .then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            alert("unable to update user");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("Internal server error");
+        });
+    } else {
+      // User cancelled, do nothing
+      console.log("User cancelled Blocking of user ID", userId);
+    }
+  }
+</script>

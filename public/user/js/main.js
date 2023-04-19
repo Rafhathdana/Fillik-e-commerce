@@ -275,8 +275,58 @@
     $(".js-modal1 .productOrginalPrice").text(productData.orginalPrice);
     $(".js-modal1 .productDescription").text(productData.description);
     $(".js-modal1 .discoutPercentage").text(discount);
+    var imagesHtml =
+      '<div class="wrap-slick3 flex-sb flex-w"><div class="wrap-slick3-dots"></div><div class="wrap-slick3-arrows flex-sb-m flex-w"></div><div class="slick3 gallery-lb productImages">';
+    for (var i = 0; i < productData.images.length; i++) {
+      imagesHtml +=
+        '<div class="item-slick3" data-thumb="/images/productImages/' +
+        productData.images[i] +
+        '" >';
+      imagesHtml += '<div class="wrap-pic-w pos-relative">';
+      imagesHtml +=
+        '<img src="/images/productImages/' +
+        productData.images[i] +
+        '" alt="IMG-PRODUCT" id="pImage"/>';
+      imagesHtml +=
+        '<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="/images/productImages/' +
+        productData.images[i] +
+        '" class="MagicZoom" data-options="zoomPosition: inner">';
+      imagesHtml += '<i class="fa fa-expand"></i></a></div></div>';
+    }
+    imagesHtml += " </div></div>";
+    // Set the HTML content of the .productImages element to the generated HTML code
+    $(".js-modal1 .productImages").html(imagesHtml);
 
     $(".js-modal1").addClass("show-modal1").data("product", productData);
+    $(".wrap-slick3").each(function () {
+      $(this)
+        .find(".slick3")
+        .slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          fade: true,
+          infinite: true,
+          autoplay: false,
+          autoplaySpeed: 6000,
+          arrows: true,
+          appendArrows: $(this).find(".wrap-slick3-arrows"),
+          prevArrow:
+            '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
+          nextArrow:
+            '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
+          dots: true,
+          appendDots: $(this).find(".wrap-slick3-dots"),
+          dotsClass: "slick3-dots",
+          customPaging: function (slick, index) {
+            var portrait = $(slick.$slides[index]).data("thumb");
+            return (
+              '<img src=" ' +
+              portrait +
+              ' "/><div class="slick3-dot-overlay"></div>'
+            );
+          },
+        });
+    });
   });
 
   $(".js-hide-modal1").on("click", function () {

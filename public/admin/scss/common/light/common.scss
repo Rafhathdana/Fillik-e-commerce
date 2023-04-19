@@ -1,11 +1,9 @@
 /*------------------------------------------------------------------
  [Master Stylesheet]
 
-  Project:	PolluxUI Admin
+  Project:	Fillik Admin
   Version:	1.0.0
 -------------------------------------------------------------------*/
-
-
 
 /*-------------------------------------------------------------------
   ===== Table of Contents =====
@@ -114,7 +112,6 @@
     + Horizontal
 -------------------------------------------------------------------*/
 
-
 /*-------------------------------------------------------------------*/
 /* === Import Bootstrap functions and variables === */
 @import "../../../node_modules/bootstrap/scss/functions";
@@ -178,7 +175,6 @@
 @import "components/preview";
 @import "components/tables";
 @import "components/toggle-switch";
-
 
 /*-------------------------------------------------------------------*/
 /* === Plugin overrides === */
