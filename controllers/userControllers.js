@@ -25,6 +25,7 @@ module.exports = {
       title: "user",
       err_msg: req.session.errmsg,
       loggedin: false,
+      noShow: true,
       cartItems: req.cartItems,
     });
     req.session.errmsg = null;
@@ -47,10 +48,11 @@ module.exports = {
       );
       const productItem = await Products.findById(req.params.productId);
       if (req.session.userLoggedIn) {
-        res.render("user/productView", {
+        res.render("user/productDetailView", {
           title: "Users List",
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
+          cartItems: req.cartItems,
           productItem,
           productsList,
           count,
@@ -60,7 +62,7 @@ module.exports = {
           endIndex,
         });
       } else {
-        res.render("user/productView", {
+        res.render("user/productDetailView", {
           title: "Users List",
           loggedin: false,
           cartItems: req.cartItems,
@@ -179,7 +181,7 @@ module.exports = {
               req.session.userLoggedIn = true;
               console.log(newUser);
 
-              res.redirect("/home");
+              res.redirect("/");
             } else {
               console.log("password is not matching");
               req.session.errmsg = "Invalid Username or Password";
@@ -475,59 +477,77 @@ module.exports = {
       cache.set(place, cartItem);
       console.log("Cart updated in cache");
 
-      const cartKeys = cache.keys();
-      const cart = cache.mget(cartKeys) || {};
-      const items = [];
-
-      for (const key of cartKeys) {
-        const item = cart[key];
-        try {
-          console.log(item.productId);
-          console.log(item.quantity);
-          const product = await Products.findOne(
-            {
-              productcode: item.productId,
-            },
-            {
-              images: 1,
-              name: 1,
-              ourPrice: 1,
-              orginalPrice: 1,
-              _id: 1,
-            }
-          );
-          console.log(product);
-          if (product) {
-            items.push({
-              productId: product._id,
-              images: product.images,
-              name: product.name,
-              ourPrice: product.ourPrice,
-              originalPrice: product.orginalPrice,
-              size: item.size,
-              quantity: item.quantity,
-            });
-          }
-        } catch (error) {
-          console.log("Error finding product:", error);
-        }
+      res.status(200).send({
+        success: true,
+        message: " successfull",
+      });
+    } catch (error) {
+      console.error("Error updating cart in cache:", error);
+      res.sendStatus(500);
+      next(error);
+    }
+  },
+  postAddCart: async (req, res, next) => {
+    try {
+      const userId = req.session.user._id;
+      const { productId, size, quantity = 1 } = req.body;
+      if (!productId || !size) {
+        throw new Error("Missing required parameters");
       }
-
-      if (items.length > 0) {
-        res.status(200).send({
-          items,
+      const cartItem = { productId, size };
+      const cart = await Cart.findOneAndUpdate(
+        { userId, ...cartItem },
+        { $set: { quantity: quantity } }, // Add $set operator to update quantity property
+        { upsert: true, new: true }
+      );
+      if (cart) {
+        res.status(200).json({
           success: true,
           message: " successfull",
         });
       } else {
-        res.status(404).json({ error: "Product not found" });
+        return res.sendStatus(500);
       }
     } catch (error) {
-      console.error("Error updating cart in cache:", error);
+      console.log(error);
+      return res.sendStatus(500);
+    }
+  },
+  getUserCart: async (req, res, next) => {
+    try {
+      let items = await Cart.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(req.session.user._id),
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "productId",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $project: {
+            productId: "$productId",
+            images: "$product.images[0]",
+            name: "$product.name",
+            ourPrice: "$product.ourPrice/100",
+            orginalPrice: "$product.orginalPrice",
+            size: "$size",
+            quantity: "$quantity",
+          },
+        },
+      ]);
+      console.log(items[0].images[0]);
+      req.cartItems = items;
+      next();
+    } catch (error) {
       next(error);
     }
   },
-
   getCartLocal: async (req, res, next) => {
     const cart = cache.mget(cache.keys()) || {};
     const items = [];
@@ -568,24 +588,99 @@ module.exports = {
     req.cartItems = items;
     next();
   },
-  postAddCart: async (req, res, next) => {
-    try {
-      const userId = req.session.user._id;
-      const { productId, size, quantity = 1 } = req.body;
-      if (!productId || !size) {
-        throw new Error("Missing required parameters");
+  getCartVariableLocal: async (req, res, next) => {
+    const cart = cache.mget(cache.keys()) || {};
+    const items = [];
+
+    for (const key in cart) {
+      const item = cart[key];
+      try {
+        const product = await Products.findOne(
+          {
+            _id: new mongoose.Types.ObjectId(item.productId),
+          },
+          {
+            images: 1,
+            name: 1,
+            ourPrice: 1,
+            orginalPrice: 1,
+            _id: 0,
+          }
+        );
+        console.log(product);
+        if (product) {
+          items.push({
+            productId: item.productId,
+            images: product.images,
+            name: product.name,
+            ourPrice: product.ourPrice,
+            orginalPrice: product.orginalPrice,
+            size: item.size,
+            quantity: item.quantity,
+          });
+        }
+      } catch (error) {
+        console.log("error in finding product: ", error);
       }
-      const cartItem = { productId, size };
-      const cart = await Cart.findOneAndUpdate(
-        { userId, ...cartItem },
-        { $set: { quantity:quantity } }, // Add $set operator to update quantity property
-        { upsert: true, new: true }
-      );
-      
-      res.status(200).json({ status: "success", data: cart });
-    } catch (error) {
-      console.log(error);
-      return res.sendStatus(500);
+    }
+    req.cartItems = items;
+    console.log(req.cartItems);
+    if (req.cartItems) {
+      res.status(200).send({
+        items,
+        success: true,
+        message: " successfull",
+      });
+    } else {
+      res.status(500).send({
+        items: [],
+        success: false,
+        message: " errror",
+      });
+    }
+  },
+  getVariableCart: async (req, res, next) => {
+    let items = await Cart.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(req.session.user._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $project: {
+          productId: "$productId",
+          images: "$product.images",
+          name: "$product.name",
+          ourPrice: "$product.ourPrice/100",
+          orginalPrice: "$product.orginalPrice",
+          size: "$size",
+          quantity: "$quantity",
+        },
+      },
+    ]);
+
+    req.cartItems = items;
+    console.log(req.cartItems);
+    if (req.cartItems) {
+      res.status(200).send({
+        items,
+        success: true,
+        message: " successfull",
+      });
+    } else {
+      res.status(500).send({
+        items: [],
+        success: false,
+        message: " errror",
+      });
     }
   },
   forgetPassword: async (req, res, next) => {

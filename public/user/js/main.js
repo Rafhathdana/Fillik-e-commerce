@@ -296,7 +296,7 @@
     imagesHtml += " </div></div>";
     // Set the HTML content of the .productImages element to the generated HTML code
     $(".js-modal1 .productImages").html(imagesHtml);
-
+    $(".js-modal1 .productId").text(productData._id);
     $(".js-modal1").addClass("show-modal1").data("product", productData);
     $(".wrap-slick3").each(function () {
       $(this)

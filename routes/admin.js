@@ -20,12 +20,7 @@ function adminVerify(req, res, next) {
   }
 }
 
-router.get("/", function (req, res, next) {
-  res.render("admin/index", {
-    title: "product",
-    author: "Admin#1233!",
-  });
-});
+router.get("/", adminVerify, adminVerify, adminController.getHome);
 router.get("/login", adminAuth, adminController.getLogin); //almost
 router.get("/home", adminVerify, adminController.getHome);
 router.get("/userList", adminVerify, adminController.getUser); //almost

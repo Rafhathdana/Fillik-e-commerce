@@ -1,5 +1,4 @@
 <!-- Slider -->
-<%- include('sidecart') -%>
 <section class="section-slide">
   <div class="wrap-slick1">
     <div class="slick1">
@@ -189,6 +188,7 @@
             <img
               src="/images/productImages/<%=productsList[i].images[0]%>"
               alt="IMG-PRODUCT"
+              style="height: 300px"
             />
             <% let productData=productsList[i] %>
             <a
@@ -203,7 +203,7 @@
           <div class="block2-txt flex-w flex-t p-t-14">
             <div class="block2-txt-child1 flex-col-l">
               <a
-                href="product-detail.html"
+                href="/productview/<%= locals.productsList[i]._id %>"
                 class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
               >
                 <%= locals.productsList[i].name %>
@@ -302,7 +302,7 @@
                 <div class="block2">
                   <div class="block2-pic hov-img0">
                     <img
-                      src="/images/<%=productsList[i].images[0]%>"
+                      src="/images/productImages/<%=productsList[i].images[0]%>"
                       alt="IMG-PRODUCT"
                     />
 
@@ -514,4 +514,4 @@
     </div>
   </div>
 </section>
-<%- include('productview') -%>
+<%- include('productview') -%> <%- include('sidecart') -%>

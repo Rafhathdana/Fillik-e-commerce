@@ -1,40 +1,52 @@
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="http://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"
+  />
+  <script src="http://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+</head>
+
 <div class="categoryHeading ml-5">
-  <table class="table" id="categoryTable">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <h5>Category</h5>
-      <% for (let i = 0; i < category.length; i++) { %>
-      <tr>
-        <td><%= category[i].values %></td>
-        <td>
-          <div class="d-flex align-items-center">
-            <button
-              type="button"
-              class="btn btn-success btn-sm btn-icon-text mr-3"
-              onclick="window.location='/admin/editCategory/<%=category[i]._id %>'"
-            >
-              Edit
-              <i class="typcn typcn-edit btn-icon-append"></i>
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger btn-sm btn-icon-text"
-              onclick="confirmDelete('<%= category[i]._id %>')"
-            >
-              Delete
-              <i class="typcn typcn-delete-outline btn-icon-append"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-      <% } %>
-    </tbody>
-  </table>
+  <h5>Category</h5>
+  <div class="table-responsive">
+    <table class="table" id="categoryTable">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < category.length; i++) { %>
+        <tr>
+          <td><%= category[i].values %></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <button
+                type="button"
+                class="btn btn-success btn-sm btn-icon-text mr-3"
+                onclick="window.location='/admin/editCategory/<%=category[i]._id %>'"
+              >
+                Edit
+                <i class="typcn typcn-edit btn-icon-append"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm btn-icon-text"
+                onclick="confirmDelete('<%= category[i]._id %>')"
+              >
+                Delete
+                <i class="typcn typcn-delete-outline btn-icon-append"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
   <table class="table" id="colourTable">
     <thead>
       <tr>
@@ -172,4 +184,9 @@
       console.log("cancelled deletion ");
     }
   }
+</script>
+<script>
+  $(document).ready(function () {
+    $("#categoryTable").DataTable();
+  });
 </script>

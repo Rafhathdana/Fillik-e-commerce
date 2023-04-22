@@ -12,7 +12,7 @@ const { response } = require("../app");
 module.exports = {
   getHome: async (req, res, next) => {
     const userslist = await users.find().limit(10);
-    res.render("admin/users", {
+    res.render("admin/index", {
       title: "users",
       fullName: req.session.admin.fullName,
       adminLoggedin: req.session.adminLoggedIn,
@@ -59,6 +59,7 @@ module.exports = {
       fullName: req.session.admin.fullName,
       adminLoggedin: req.session.adminLoggedIn,
       merchantslist,
+      author: "Admin#1233!",
     });
   },
   getLogin: (req, res, next) => {
@@ -81,7 +82,7 @@ module.exports = {
     });
     req.session.adminerrmsg = null;
   },
-  
+
   postSignin: async (req, res) => {
     try {
       const newAdmin = await Admin.findOne({ email: req.body.email });
@@ -290,7 +291,7 @@ module.exports = {
       console.error(err);
     }
   },
- 
+
   statusMerchantUpdate: async (req, res, next) => {
     try {
       const datainuser = await merchants.findById(req.params.userId);

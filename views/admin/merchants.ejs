@@ -1,77 +1,112 @@
-<div class="heading">Merchants Details</div>
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Full Name</th>
-        <th>No. of Orders</th>
-        <th>Complaints</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (let i = 0; i < merchantslist.length; i++) { %>
-      <tr>
-        <td><%= merchantslist[i].email %></td>
-        <td><%= merchantslist[i].fullName %></td>
-        <td>0</td>
-        <td>
-          <div class="complaint-box">
-            <span class="complaint-number">2</span>
-          </div>
-        </td>
-        <td>
-          <div class="d-flex">
-            <% if(merchantslist[i].isActive){%>
-            <div
-              class="action-box mx-3"
-              onclick="confirmStatus('<%= merchantslist[i]._id %>')"
-            >
-              <span class="action-text">Block </span>
-            </div>
-            <% } else { %>
-            <div
-              class="action-box red mx-3"
-              onclick="confirmStatus('<%= merchantslist[i]._id %>')"
-            >
-              <span class="action-text">Unblock </span>
-            </div>
-            <% } %>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+ 
+  <link href="/stylesheets/adminStyle.css" rel="stylesheet" />
+</head>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="heading">
+      Merchants Details
+      <div class="flex" style="margin-bottom: 30px; margin-left: 80%">
+        <div class="dropdown me-auto">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            count
+          </button>
 
-            <div class="action-box">
-              <a
-                href="/admin/merchantprofile/<%= merchantslist[i]._id %>"
-                class="details-link"
-                >Details</a
-              >
-            </div>
-          </div>
-        </td>
-      </tr>
-      <% } %>
-    </tbody>
-  </table>
-</div>
-<div class="pagenumbers">
-  <% for (let i = 1; i <= locals.totalPages; i++) { %>
-  <a
-    href="?count=<%= count %>&page=<%= i %>"
-    class="page<%= i === parseInt(page) ? ' active' : '' %>"
-    ><%= i %></a
-  >
-  <% } %>
-</div>
-<div class="nextprev">
-  <% if (locals.page > 1) { %>
-  <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
-    >Prev</a
-  >
-  <% } %> <% if (locals.page < locals.totalPages) { %>
-  <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
-    >Next</a
-  >
-  <% } %>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="?count=10&page=1">10</a></li>
+            <li><a class="dropdown-item" href="?count=25&page=1">25</a></li>
+            <li><a class="dropdown-item" href="?count=50&page=1">50</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table" id="merchantTable">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Full Name</th>
+              <th>No. of Orders</th>
+              <th>Complaints</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < merchantslist.length; i++) { %>
+            <tr>
+              <td><%= merchantslist[i].email %></td>
+              <td><%= merchantslist[i].brandName %></td>
+              <td>0</td>
+              <td>
+                <div class="complaint-box">
+                  <span class="complaint-number">2</span>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex">
+                  <% if(merchantslist[i].isActive){%>
+                  <div
+                    class="action-box mx-3"
+                    onclick="confirmStatus('<%= merchantslist[i]._id %>')"
+                  >
+                    <span class="action-text">Block </span>
+                  </div>
+                  <% } else { %>
+                  <div
+                    class="action-box red mx-3"
+                    onclick="confirmStatus('<%= merchantslist[i]._id %>')"
+                  >
+                    <span class="action-text">Unblock </span>
+                  </div>
+                  <% } %>
+
+                  <div class="action-box">
+                    <a
+                      href="/admin/merchantprofile/<%= merchantslist[i]._id %>"
+                      class="details-link"
+                      >Details</a
+                    >
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagenumbers">
+        <% for (let i = 1; i <= locals.totalPages; i++) { %>
+        <a
+          href="?count=<%= count %>&page=<%= i %>"
+          class="page<%= i === parseInt(page) ? ' active' : '' %>"
+          ><%= i %></a
+        >
+        <% } %>
+      </div>
+      <div class="nextprev">
+        <% if (locals.page > 1) { %>
+        <a
+          href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>"
+          class="prev"
+          >Prev</a
+        >
+        <% } %> <% if (locals.page < locals.totalPages) { %>
+        <a
+          href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>"
+          class="next"
+          >Next</a
+        >
+        <% } %>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   function confirmStatus(userId) {
@@ -93,4 +128,15 @@
       console.log("User cancelled Blocking of user ID", userId);
     }
   }
+</script>
+
+<!-- Include the Bootstrap CSS -->
+<script>
+  $(document).ready(function () {
+    $("#merchantTable").DataTable({
+      bInfo: false,
+      bFilter: false,
+      bPaginate: false,
+    });
+  });
 </script>
