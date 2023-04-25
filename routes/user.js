@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const userController = require("../controllers/userControllers");
 const otp = require("../controllers/otp");
+const addressControllers = require("../controllers/addressControllers");
 
 /* GET home page. */
 function userauth(req, res, next) {
@@ -49,7 +50,7 @@ router.get(
   cart,
   userController.productFilterList
 );
-router.get("/cart", verify, userController.getCart);
+router.get("/cart", verify, addressControllers.getAddress, userController.getCart);
 router.get("/productview/:productId", cart, userController.getProductView);
 router.get("/profile", verify, userController.getProfile);
 router.get("/editprofile", verify, userController.getEditProfile);
@@ -63,6 +64,7 @@ router.post("/addToCart", (req, res, next) => {
     ? userController.postAddCart(req, res, next)
     : userController.cachePostCart(req, res, next);
 }); //need to test after login
+router.post("/addAddress",verify, addressControllers.postAddress); //need to test after login
 
 router.post("/postFromCart", (req, res, next) => {
   req.session.userLoggedIn

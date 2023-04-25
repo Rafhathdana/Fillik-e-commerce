@@ -1,6 +1,6 @@
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
- 
+
   <link href="/stylesheets/adminStyle.css" rel="stylesheet" />
 </head>
 <div class="main-panel">
@@ -116,12 +116,12 @@
           if (res.ok) {
             window.location.reload();
           } else {
-            alert("unable to update user");
+            swal("unable to update user");
           }
         })
         .catch((err) => {
           console.error(err);
-          alert("Internal server error");
+          swal("Internal server error");
         });
     } else {
       // User cancelled, do nothing

@@ -1,0 +1,478 @@
+<head>
+  <style>
+    .payment-options {
+      margin: 30px auto;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      max-width: 500px;
+    }
+
+    .payment-options h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .payment-options form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      max-width: 500px;
+      border-radius: 5px;
+    }
+
+    .payment-options .form-group {
+      margin-bottom: 10px;
+    }
+
+    .payment-options input[type="radio"] {
+      display: none;
+    }
+
+    .payment-options label {
+      display: inline-block;
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 300px;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .payment-options label:hover {
+      background-color: #f2f2f2;
+    }
+
+    .payment-options input[type="radio"]:checked + label {
+      background-color: #007bff;
+      color: #fff;
+      border-color: #007bff;
+    }
+
+    .payment-options button {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<div class="wrap-modal4 js-modal4 p-t-60 p-b-20">
+  <div class="overlay-modal4 js-hide-modal4"></div>
+
+  <div class="container">
+    <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent">
+      <button class="how-pos3 hov3 trans-04 js-hide-modal4">
+        <img src="/images/icons/icon-close.png" alt="CLOSE" />
+      </button>
+
+      <div class="row">
+        <div class="col-12 grid-margin">
+          <div class="card">
+            <div class="card-body">
+              <div class="payment-options">
+                <h2>Select a Payment Option</h2>
+                <form>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="cash-on-delivery"
+                      name="payment-option"
+                      value="cash-on-delivery"
+                      checked
+                    />
+                    <label for="cash-on-delivery"
+                      ><img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/cashapp.svg"
+                        alt="Cash on Delivery"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />
+                      Cash on Delivery</label
+                    >
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="paytm"
+                      name="payment-option"
+                      value="paytm"
+                    />
+                    <label for="paytm">
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paytm.svg"
+                        alt="Paytm"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />
+                      Paytm</label
+                    >
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="paytm"
+                      name="payment-option"
+                      value="paytm"
+                    />
+                    <label for="paytm">
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paypal.svg"
+                        alt="PayPal"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />
+
+                      Paypal</label
+                    >
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="razorpay"
+                      name="payment-option"
+                      value="razorpay"
+                    />
+                    <label for="razorpay"
+                      ><img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/razorpay.svg"
+                        alt="Razorpay"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />Razorpay</label
+                    >
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="amazon-pay"
+                      name="payment-option"
+                      value="amazon-pay"
+                    />
+                    <label for="amazon-pay"
+                      ><img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/amazonpay.svg"
+                        alt="Amazon Pay"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />Amazon Pay</label
+                    >
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="radio"
+                      id="google-pay"
+                      name="payment-option"
+                      value="google-pay"
+                    />
+                    <label for="google-pay">
+                      <img
+                        src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlepay.svg"
+                        alt="Google Pay"
+                        height="30"
+                        width="30"
+                        class="mr-5"
+                      />Google Pay</label
+                    >
+                  </div>
+                  <button type="submit" class="btn btn-primary">Proceed</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
+<script>
+  function addAddress() {
+    var name = document.querySelector("#name").value;
+    var mobile = document.querySelector("#mobile").value;
+    var houseName = document.querySelector("#houseName").value;
+    var place = document.querySelector("#place").value;
+    var landMark = document.querySelector("#landMark").value;
+    var postOffice = document.querySelector("#postOffice").value;
+    var city = document.querySelector("#city").value;
+    var district = document.querySelector("#district").value;
+    var state = document.querySelector("#state").value;
+    var country = document.querySelector("#country").value;
+    var pinCode = document.querySelector("#pinCode").value;
+    var confirmPinCode = document.querySelector("#confirmPinCode").value;
+    var termsCheckbox = document.querySelector("#termsCheckbox");
+
+    // Check that all required fields are filled out
+    if (
+      !name ||
+      !mobile ||
+      !houseName ||
+      !place ||
+      !postOffice ||
+      !city ||
+      !district ||
+      !state ||
+      !country ||
+      !pinCode ||
+      !confirmPinCode
+    ) {
+      swal("Please fill out all required fields.");
+      return;
+    }
+
+    // Check that the mobile number is valid
+    if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+      swal("Please enter a valid mobile number.");
+      return;
+    }
+
+    // Check that the pin code is valid and matches the confirmed pin code
+    if (!/^\d{6}$/.test(pinCode)) {
+      swal("Please enter a valid 6-digit pin code.");
+      return;
+    }
+
+    if (pinCode !== confirmPinCode) {
+      swal("The pin codes you entered do not match.");
+      return;
+    }
+
+    // Check that the terms checkbox is checked
+    if (!termsCheckbox.checked) {
+      swal("Please accept the terms and conditions.");
+      return;
+    }
+
+    fetch("/addAddress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        mobile: mobile,
+        houseName: houseName,
+        place: place,
+        landMark: landMark,
+        postOffice: postOffice,
+        city: city,
+        district: district,
+        state: state,
+        country: country,
+        pinCode: pinCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          swal("done");
+        } else {
+          console.log("error");
+        }
+      })
+      .catch((error) => {
+        swal("Error adding product to cart: " + error);
+      });
+  }
+
+  function viewCart() {
+    fetch("/postFromCart", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          var cartList = addCarted(data.items);
+          var cartcount = data.items.length;
+          var notifyEl = $("#cartvalue");
+
+          console.log(cartcount);
+          $("#cartItemsList").replaceWith(cartList);
+          notifyEl.attr("data-notify", cartcount);
+          swal("Item  added to cart !", "success");
+        }
+      })
+      .catch((error) => {
+        swal("Error adding product to cart: " + error);
+      });
+  }
+  function addCarted(cartItems) {
+    var cartList = $("<ul>")
+      .addClass("header-cart-wrapitem w-full")
+      .attr("id", "cartItemsList");
+
+    for (let i = 0; i < cartItems.length; i++) {
+      var cartItem = $("<li>")
+        .addClass("header-cart-item flex flex-t mb-2")
+        .appendTo(cartList);
+
+      var itemImg = $("<div>")
+        .addClass("header-cart-item-img")
+        .appendTo(cartItem);
+
+      $("<img>")
+        .attr("src", "/images/productImages/" + cartItems[i].images[0])
+        .attr("alt", "IMG")
+        .appendTo(itemImg);
+
+      var itemTxt = $("<div>")
+        .addClass("header-cart-item-txt p-t-8")
+        .appendTo(cartItem);
+
+      $("<a>")
+        .attr("href", "#")
+        .addClass("header-cart-item-name m-b-18 hov-cl1 trans-04")
+        .text(cartItems[i].name)
+        .appendTo(itemTxt);
+
+      $("<span>")
+        .addClass("header-cart-item-info")
+        .text("size: " + cartItems[i].size)
+        .appendTo(itemTxt);
+
+      $("<span>")
+        .addClass("header-cart-item-info")
+        .text(cartItems[i].quantity + " x RS." + cartItems[i].ourPrice)
+        .appendTo(itemTxt);
+
+      $("<span>")
+        .addClass("slinecross")
+        .text(cartItems[i].quantity + " x Rs" + cartItems[i].originalPrice)
+        .appendTo(itemTxt);
+    }
+
+    return cartList;
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    $.validator.addMethod(
+      "noSpecialChars",
+      function (value, element) {
+        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+      },
+      "Special characters and spaces are not allowed"
+    );
+    $.validator.addMethod(
+      "number",
+      function (value, element) {
+        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
+      },
+      "numbers only allowed"
+    );
+    $("#address-form").validate({
+      rules: {
+        name: {
+          required: true,
+          minlength: 3,
+          noSpecialChars: true,
+        },
+        mobile: {
+          required: true,
+          maxlength: 10,
+          minlength: 10,
+          number: true,
+        },
+        houseName: {
+          required: true,
+        },
+        place: {
+          required: true,
+        },
+        city: {
+          required: true,
+        },
+        district: {
+          required: true,
+        },
+        state: {
+          required: true,
+        },
+        country: {
+          required: true,
+        },
+        pinCode: {
+          required: true,
+          maxlength: 6,
+          minlength: 6,
+          number: true,
+        },
+        confirmPinCode: {
+          required: true,
+          equalTo: "#pin_code",
+        },
+        termsCheckbox: {
+          required: true,
+        },
+      },
+      messages: {
+        name: {
+          required: "Please enter your full name",
+          minlength: "Your name must be at least 3 characters long",
+          noSpecialChars: "Special characters and spaces are not allowed",
+        },
+        mobile: {
+          required: "Please enter Mobile Number",
+          minlength: "10 digit indian number should be there",
+          maxlength: "maximum 10 digit allowed in indian number",
+          number: "only numbers allowed",
+        },
+        houseName: {
+          required: "Please enter your house name",
+        },
+        place: {
+          required: "Please enter your place",
+        },
+        city: {
+          required: "Please enter your city",
+        },
+        district: {
+          required: "Please enter your district",
+        },
+        state: {
+          required: "Please enter your state",
+        },
+        country: {
+          required: "Please enter your country",
+        },
+        pinCode: {
+          minlength: "6 digit indian pin number should be there",
+          maxlength: "maximum 6 digit in  indian pin number ",
+          number: "only numbers allowed",
+        },
+        ConfirmPInCode: {
+          required: "Please confirm your pin code",
+          equalTo: "Pin code does not match",
+        },
+        termsCheckbox: {
+          required: "Please agree to the Terms & Conditions",
+        },
+      },
+      highlight: function (element) {
+        $(element).closest(".form-floating").addClass("is-invalid");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-floating").removeClass("is-invalid");
+      },
+      errorElement: "div",
+      errorClass: "invalid-feedback",
+      errorPlacement: function (error, element) {
+        if (element.parent(".input-group").length) {
+          error.insertAfter(element.parent());
+        } else {
+          error.insertAfter(element);
+        }
+      },
+    });
+  });
+</script>

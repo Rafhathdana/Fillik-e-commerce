@@ -341,7 +341,7 @@
       })
       .catch((error) => {
         console.error(error);
-        alert("Error verifying email");
+        swal("Error verifying email");
       });
   }
 
@@ -367,7 +367,7 @@
         } else {
           console.log(data);
           normalSection();
-          alert("OTP Not sended. Please try again.");
+          swal("OTP Not sended. Please try again.");
         }
       })
       .catch((error) => {
@@ -405,7 +405,7 @@
     if (verifyOTP(otp)) {
       console.log("hai");
     } else {
-      alert("Invalid OTP!");
+      swal("Invalid OTP!");
     }
   });
   async function verifyOTP(otp) {
@@ -438,7 +438,7 @@
       } else {
         console.log(data);
         // OTP verification failed, display an error message
-        alert("Invalid OTP!");
+        swal("Invalid OTP!");
         var processing = "Verify OTP";
         $("#verifyOtp")
           .prop("disabled", false)
@@ -449,7 +449,7 @@
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred while verifying OTP. Please try again later.");
+      swal("An error occurred while verifying OTP. Please try again later.");
     }
   }
 
@@ -470,12 +470,12 @@
         if (response.ok) {
           window.location.href = "/admin/";
         } else {
-          alert("An error occurred. Please try again later.");
+          swal("An error occurred. Please try again later.");
         }
       })
       .catch((error) => {
         console.error(error);
-        alert("An error occurred. Please try again later.");
+        swal("An error occurred. Please try again later.");
       });
   }
 </script>

@@ -428,6 +428,22 @@ module.exports = {
   },
   getCart: async (req, res, next) => {
     try {
+      const count = 10;
+      const page = 1;
+      const productsList = await Products.find()
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+
+      const totalPages = Math.ceil((await Products.countDocuments()) / count);
+      const startIndex = (page - 1) * count;
+
+      const endIndex = Math.min(
+        startIndex + count,
+        await Products.countDocuments()
+      );
+      const productItem = await Products.findById(req.params.productId);
+
       let cartList = await Cart.aggregate([
         {
           $match: {
@@ -448,6 +464,12 @@ module.exports = {
         fullName: req.session.user.fullName,
         loggedin: req.session.userLoggedIn,
         cartList,
+        productsList,
+        userAddresses: req.userAddressess,
+        startIndex,
+        endIndex,
+        totalPages,
+        productItem,
       });
     } catch (error) {
       next(error);

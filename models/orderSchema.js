@@ -3,50 +3,117 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const orderSchema = new Schema(
   {
-    productid: {
-      type: ObjectId,
-      ref: "products",
-    },
-    merchantid: {
-      type: ObjectId,
-      ref: "merchants",
-    },
     userid: {
-      type: ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "users",
     },
-    Quantity: {
-      type: String,
-      required: true,
+    merchantid: {
+      type: Schema.Types.ObjectId,
+      ref: "merchants",
     },
-    size: {
-      type: String,
-      required: true,
+    products: [
+      {
+        productid: {
+          type: Schema.Types.ObjectId,
+          ref: "products",
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+        quantity: {
+          type: String,
+          required: true,
+        },
+        sellRate: {
+          type: String,
+          required: true,
+        },
+        actualRate: {
+          type: String,
+          required: true,
+        },
+        mrp: {
+          type: String,
+          required: true,
+        },
+        payableAmount: {
+          type: String,
+          required: true,
+        },
+        status: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    address: {
+      AddressId: {
+        type: Schema.Types.ObjectId,
+        ref: "addresses",
+      },
+      houseName: {
+        type: String,
+        required: true,
+      },
+      mobile: {
+        type: Number,
+        required: true,
+      },
+      place: {
+        type: String,
+        required: true,
+      },
+      landMark: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      pinCode: {
+        type: String,
+        required: true,
+      },
     },
-    orginalPrice: {
+    totalAmount: {
       type: Number,
       required: true,
-    },
-    selledPrice: {
-      type: Number,
       get: (v) => (v / 100).toFixed(2),
       set: (v) => Math.round(v * 100),
     },
-    discountRate: {
+    gst: {
       type: Number,
       required: true,
-    },
-    couponUsed: {
-      type: String,
-      required: true,
+      get: (v) => (v / 100).toFixed(2),
+      set: (v) => Math.round(v * 100),
     },
     deliveryCharge: {
+      type: Number,
+      required: true,
+      get: (v) => (v / 100).toFixed(2),
+      set: (v) => Math.round(v * 100),
+    },
+    coupons: {
+      couponsId: {
+        type: Schema.Types.ObjectId,
+        ref: "coupons",
+      },
+      discountAmount: {
+        type: Number,
+        required: true,
+        get: (v) => (v / 100).toFixed(2),
+        set: (v) => Math.round(v * 100),
+      },
+    },
+    paymentMethod: {
       type: String,
       required: true,
     },
-    address: {
-      type: ObjectId,
-      ref: "address",
+    paymentStatus: {
+      type: String,
+      required: true,
     },
     status: {
       type: Boolean,
@@ -57,5 +124,4 @@ const orderSchema = new Schema(
     timestamps: true,
   }
 );
-
 module.exports = mongoose.model("Order", orderSchema);

@@ -198,7 +198,7 @@
           }
         })
         .catch((error) => {
-          alert("Error adding product to cart: " + error);
+          swal("Error adding product to cart: " + error);
         });
     }
   }
@@ -223,7 +223,7 @@
         }
       })
       .catch((error) => {
-        alert("Error adding product to cart: " + error);
+        swal("Error adding product to cart: " + error);
       });
   }
   function addCarted(cartItems) {
