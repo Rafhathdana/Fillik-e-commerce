@@ -1,0 +1,71 @@
+<style>
+  /* body {
+    background: linear-gradient(to right, #c04848, #480048);
+    min-height: 100vh;
+  } */
+  .text-gray {
+    color: #242020;
+    font-size: 30px;
+  }
+  img {
+    height: 170px;
+    width: 140px;
+  }
+</style>
+<div class="container py-5">
+  <div class="row text-center text-white mb-5">
+    <div class="col-lg-7 mx-auto">
+      <h1 class="display- text-gray">Orders List</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <!-- List group-->
+      <ul class="list-group shadow">
+        <!-- list group item-->
+        <% for(let i=0;i < ordersList.length;i++){ %>
+        <a
+          href="/ordersView/<%= ordersList[i]._id %>"
+          style="text-decoration: none; cursor: pointer"
+        >
+          <li class="list-group-item">
+            <!-- Custom content-->
+            <div
+              class="media align-items-lg-center flex-column flex-lg-row p-3"
+            >
+              <div class="media-body order-2 order-lg-1">
+                <h5 class="mt-0 font-weight-bold mb-2">
+                  ID: <%= ordersList[i]._id %>
+                </h5>
+                <p class="font-italic text-muted mb-0 small">
+                  <%for(let j=0;j< ordersList[i].products.length;j++){%> <%=
+                  ordersList[i].products[i].name %> ,<% } %>
+                </p>
+                <div
+                  class="d-flex align-items-center justify-content-between mt-1"
+                >
+                  <h6 class="font-weight-bold my-2">
+                    Total: <%= ordersList[i].totalAmount/100 %>
+                  </h6>
+                  <ul class="list-inline small">
+                    <li class="list-inline-item m-0">
+                      Payment: <%= ordersList[i].paymentStatus%>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- End -->
+          </li>
+        </a>
+
+        <% } %>
+
+        <!-- End -->
+        <!-- list group item-->
+        <!-- End -->
+      </ul>
+      <!-- End -->
+    </div>
+  </div>
+</div>

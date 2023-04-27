@@ -169,7 +169,7 @@ module.exports = {
       res.redirect("/signup");
     }
   },
-  postSignin: async (req, res) => {
+  postSignin: async (req, res, next) => {
     try {
       const newUser = await User.findOne({ email: req.body.email });
       if (newUser) {
@@ -181,7 +181,7 @@ module.exports = {
               req.session.userLoggedIn = true;
               console.log(newUser);
 
-              res.redirect("/");
+              next();
             } else {
               console.log("password is not matching");
               req.session.errmsg = "Invalid Username or Password";
@@ -225,12 +225,8 @@ module.exports = {
 
   sendOtp: async (req, res, next) => {
     try {
-      console.log(req.body.mobile);
-      if (!req.session.otP) {
-        req.session.otP = Math.floor(100000 + Math.random() * 900000);
-      } else {
-      }
-      console.log(req.session.otP);
+      const Otp = Math.floor(100000 + Math.random() * 909997);
+      req.session.otP = Otp;
       otp
         .OTP(req.body.mobile, req.session.otP)
         .then((response) => {
@@ -484,14 +480,14 @@ module.exports = {
       if (!placeData.productId) {
         cartItem = {
           productId: req.body.productId,
-          quantity: 1,
+          quantity: req.body.quantity || 1,
           size: req.body.size,
         };
         console.log(cartItem);
         console.log(req.body.productId + " added to cart");
       } else {
         cartItem = placeData;
-        cartItem.quantity += 1;
+        cartItem.quantity = req.body.quantity || cartItem.quantity + 1;
         console.log(cartItem);
         console.log(req.body.productId + " quantity increased in cart");
       }
@@ -554,16 +550,16 @@ module.exports = {
         {
           $project: {
             productId: "$productId",
-            images: "$product.images[0]",
+            images: "$product.images",
             name: "$product.name",
-            ourPrice: "$product.ourPrice/100",
+            ourPrice: "$product.ourPrice",
             orginalPrice: "$product.orginalPrice",
             size: "$size",
             quantity: "$quantity",
+            id: "$_id",
           },
         },
       ]);
-      console.log(items[0].images[0]);
       req.cartItems = items;
       next();
     } catch (error) {
@@ -804,6 +800,104 @@ module.exports = {
       }
     } catch (error) {
       next(error);
+    }
+  },
+  userOrdersList: async (req, res, next) => {
+    try {
+      console.log(req.ordersList);
+      res.render("user/ordersList", {
+        title: "Users List",
+        fullName: req.session.user.fullName,
+        loggedin: req.session.userLoggedIn,
+        ordersList: req.ordersList,
+        pagination: req.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  OrdersList: async (req, res, next) => {
+    try {
+      console.log(req.ordersList[0]);
+      res.render("user/ordersView", {
+        title: "Users List",
+        fullName: req.session.user.fullName,
+        loggedin: req.session.userLoggedIn,
+        ordersList: req.ordersList[0],
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteItemCrt: async (req, res, next) => {
+    try {
+      if (req.session.user) {
+        console.log(req.body.id);
+        const result = await Cart.deleteOne({
+          _id: new mongoose.Types.ObjectId(req.body.id),
+        });
+        console.log(`${result.deletedCount} item(s) deleted from cart`);
+        res.status(200).send({
+          success: true,
+        });
+      } else {
+        const place = req.body.id[0] + req.body.id[1];
+        console.log(place);
+        cache.del(place);
+        console.log(`Item at place ${place} deleted from cache`);
+        res.status(200).send({
+          success: true,
+        });
+      }
+    } catch (error) {
+      next(error);
+      res.status(201).send({ success: false });
+    }
+  },
+  signinconvert: async (req, res, next) => {
+    try {
+      const userId = req.session.user._id;
+      const cacheKeys = cache.keys();
+      const cartItems = [];
+
+      // Get all cart items from cache
+      for (const key of cacheKeys) {
+        const cacheItem = cache.get(key);
+        if (cacheItem && cacheItem.productId && cacheItem.size) {
+          cartItems.push({
+            productId: cacheItem.productId,
+            size: cacheItem.size,
+            quantity: cacheItem.quantity || 1,
+          });
+        }
+      }
+
+      // Add cart items to user's cart in the database
+      for (const cartItem of cartItems) {
+        const dbCartItem = await Cart.findOneAndUpdate(
+          { userId, ...cartItem },
+          { $inc: { quantity: cartItem.quantity } },
+          { upsert: true, new: true }
+        );
+        if (!dbCartItem) {
+          console.log("Error adding cart item to database:", cartItem);
+        } else {
+          console.log("Cart item added to database:", dbCartItem);
+        }
+      }
+
+      // Clear cache after adding to user's cart in the database
+      if (cache.clear && typeof cache.clear === "function") {
+        cache.clear();
+      }
+
+      res.redirect("/");
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        success: false,
+        message: "Error adding cart items to database",
+      });
     }
   },
 };

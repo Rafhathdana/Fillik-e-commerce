@@ -24,8 +24,14 @@
                 <th class="column-4">Quantity</th>
                 <th class="column-5">Total</th>
               </tr>
-              <% if (cartList.length > 0) { var total=0;%> <%
-              cartList.forEach(function(item) { %>
+              <% if (cartList.length < 1 ) {%>
+
+              <tr class="table_row">
+                <td class="column-1">Empty Cart</td>
+              </tr>
+            </table>
+          </div>
+              <%} else{ var total=0;%> <% cartList.forEach(function(item) { %>
 
               <tr class="table_row">
                 <td class="column-1">
@@ -72,12 +78,7 @@
                 </td>
               </tr>
 
-              <% }) }else{ %>
-              <tr class="table_row">
-                <td class="column-1">Empty Cart</td>
-              </tr>
-
-              <% } %>
+              <% } )%>
             </table>
           </div>
 
@@ -128,11 +129,6 @@
             </div>
 
             <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-              <p class="stext-111 cl6 p-t-2">
-                There are no shipping methods available. Please double check
-                your address, or contact us if you need any help.
-              </p>
-
               <div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
                 <!-- Block2 -->
 
@@ -145,9 +141,8 @@
                 </a>
               </div>
             </div>
-
             <div class="p-t-15">
-              <span class="stext-112 cl8"> Calculate Shipping </span>
+              <span class="stext-112 cl8"> Select Shipping </span>
 
               <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
                 <select
@@ -198,8 +193,9 @@
               <div class="flex-w">
                 <div
                   class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer"
+                  onClick="checkpinAvailability()"
                 >
-                  Update Totals
+                  check Availability
                 </div>
               </div>
             </div>
@@ -233,18 +229,30 @@
               <span class="mtext-110 cl2"> <%= mtotal %></span>
             </div>
           </div>
-          <div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+          <div
+            class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"
+            onclick="checkAddress()"
+          >
             <!-- Block2 -->
-
             <a
               href="#"
-              class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 js-show-modal4"
+              class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 js-show-modal4 d-none"
+              id="checkout-btn"
+              data-product-data=""
+            >
+              Proceed to Checkout
+            </a>
+            <a
+              href="#"
+              class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04"
+              id="checkout-btn"
               data-product-data=""
             >
               Proceed to Checkout
             </a>
           </div>
         </div>
+        <% }%>
       </div>
     </div>
   </div>
@@ -252,24 +260,35 @@
 
 <!-- Product Detail -->
 <!-- Related Products -->
+<script>
+  function checkAddress() {
+    var addressSelect = document.getElementById("address");
+    var selectedAddress =
+      addressSelect.options[addressSelect.selectedIndex].value;
 
+    console.log(selectedAddress);
+    if (selectedAddress === "Select a Address ...") {
+      swal("Please select an address");
+    } else {
+      document.querySelector(".js-show-modal4").click();
+    }
+  }
+</script>
 <script>
   // Define the userAddresses object before the script is called
-  var userAddresses = JSON.parse("<%= JSON.stringify(userAddresses) %>");
-  console.log(userAddresses);
+  var userAddressesr = `<%- JSON.stringify(userAddresses) %>`;
+  var userAddressest = JSON.parse(userAddressesr);
+  console.log("hdsfbdhsz");
+  console.log(userAddressest[0].id);
 
   function updateInputFields() {
-    console.log("hello");
-
     // Get the selected option
     const selectElement = document.querySelector("#address");
     const selectedOption =
       selectElement.options[selectElement.selectedIndex].value;
     console.log(selectedOption);
-    console.log(userAddresses);
-
     // Get the data for the selected option from the userAddresses object
-    const selectedAddress = userAddresses.find(
+    const selectedAddress = userAddressest.find(
       (address) => address._id === selectedOption
     );
     console.log("llo");
@@ -287,4 +306,4 @@
   // Call the function initially to set the default values
   updateInputFields();
 </script>
-<%- include('address') -%> <%- include('checkOut1') -%>
+<%- include('address') -%> <%- include('checkOut') -%>

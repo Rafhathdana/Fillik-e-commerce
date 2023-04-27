@@ -9,7 +9,9 @@
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "bootstrap": "^5.3.0-alpha2",
+    "bson": "^5.2.0",
     "cookie-parser": "~1.4.4",
+    "crypto": "^1.0.1",
     "custom-env": "^2.0.1",
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
@@ -24,6 +26,8 @@
     "multer": "^1.4.5-lts.1",
     "node-cache": "^5.1.2",
     "nodemon": "^2.0.21",
+    "paypal-rest-sdk": "^1.8.1",
+    "razorpay": "^2.8.6",
     "unirest": "^0.6.0"
   }
 }

@@ -44,7 +44,6 @@ module.exports = {
       req.userAddressess = await Address.find({
         userId: new mongoose.Types.ObjectId(req.session.user._id),
       });
-      console.log(req.userAddressess);
       next();
     } catch (error) {
       console.log(error);

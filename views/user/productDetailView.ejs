@@ -24,14 +24,17 @@
                   <% } %>
                 </div>
               </div>
-              <div class="productImgWrapper" style="height: 450px">
+              <div
+                class="productImgWrapper"
+                style="height: 450px; width: 300px"
+              >
                 <a
                   href="/images/productImages/<%=productItem.images[0]%>"
                   class="MagicZoom"
                   data-options="zoomPosition: inner"
                 >
                   <img
-                    style="height: 450px"
+                    style="height: 450px; width: 300px"
                     class="productImg"
                     src="/images/productImages/<%=productItem.images[0]%>"
                     alt=""
@@ -80,7 +83,11 @@
               <div class="sizeDBox mx-2">L</div>
               <div class="sizeDBox mx-2">XL</div>
             </div>
-            <div id="productDId" class="productDId d-none">
+            <div
+              id="productDId"
+              class="productDId d-none"
+              value="<%=productItem._id%>"
+            >
               <%=productItem._id%>
             </div>
             <div class="notify"></div>
@@ -495,7 +502,7 @@
     } else {
       // Get the product ID
 
-      var productId = document.querySelector("#productDId").textContent;
+      var productId = document.querySelector("#productDId").textContent.trim();
 
       // Get the selected size
 
@@ -531,76 +538,6 @@
         });
     }
   }
-  function viewCart() {
-    fetch("/postFromCart", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          var cartList = addCarted(data.items);
-          var cartcount = data.items.length;
-          var notifyEl = $("#cartvalue");
-
-          console.log(cartcount);
-          $("#cartItemsList").replaceWith(cartList);
-          notifyEl.attr("data-notify", cartcount);
-          swal("Item  added to cart !", "success");
-        }
-      })
-      .catch((error) => {
-        swal("Error adding product to cart: " + error);
-      });
-  }
-  function addCarted(cartItems) {
-    var cartList = $("<ul>")
-      .addClass("header-cart-wrapitem w-full")
-      .attr("id", "cartItemsList");
-
-    for (let i = 0; i < cartItems.length; i++) {
-      var cartItem = $("<li>")
-        .addClass("header-cart-item flex flex-t mb-2")
-        .appendTo(cartList);
-
-      var itemImg = $("<div>")
-        .addClass("header-cart-item-img")
-        .appendTo(cartItem);
-
-      $("<img>")
-        .attr("src", "/images/productImages/" + cartItems[i].images[0])
-        .attr("alt", "IMG")
-        .appendTo(itemImg);
-
-      var itemTxt = $("<div>")
-        .addClass("header-cart-item-txt p-t-8")
-        .appendTo(cartItem);
-
-      $("<a>")
-        .attr("href", "#")
-        .addClass("header-cart-item-name m-b-18 hov-cl1 trans-04")
-        .text(cartItems[i].name)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("header-cart-item-info")
-        .text("size: " + cartItems[i].size)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("header-cart-item-info")
-        .text(cartItems[i].quantity + " x RS." + cartItems[i].ourPrice)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("slinecross")
-        .text(cartItems[i].quantity + " x Rs" + cartItems[i].originalPrice)
-        .appendTo(itemTxt);
-    }
-
-    return cartList;
-  }
 </script>
+
 <%- include('productview') -%> <%- include('sidecart') -%>

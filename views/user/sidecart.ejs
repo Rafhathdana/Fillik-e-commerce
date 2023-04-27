@@ -15,34 +15,47 @@
         <% let sum=0; for (let i = 0; i < cartItems.length; i++) { %>
         <li class="header-cart-item flex-w flex-t m-b-12">
           <div class="header-cart-item-img">
-            <img
-              src="/images/productImages/<%= cartItems[i].images[0] %>"
-              alt="IMG"
-            />
+            <% let link=loggedin?(cartItems[i].images[0][0]
+            ):(cartItems[i].images[0]) ;console.log(link)%>
+            <img src="/images/productImages/<%=link%>" alt="IMG" />
           </div>
 
           <div class="header-cart-item-txt p-t-8">
             <a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
               <%= cartItems[i].name %>
             </a>
-            <span class="header-cart-item-info">
-              size :<%= cartItems[i].size %>
-            </span>
-            <span class="header-cart-item-info">
-              <%=cartItems[i].quantity%> x RS.<%=cartItems[i].ourPrice%>
-            </span>
-            <span class="slinecross"
-              ><%=cartItems[i].quantity%> x Rs<%= cartItems[i].orginalPrice
-              %></span
-            >
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="div">
+                <span class="header-cart-item-info">
+                  size :<%= cartItems[i].size %>
+                </span>
+                <span class="header-cart-item-info">
+                  <%=cartItems[i].quantity%> x RS <%=
+                  loggedin?cartItems[i].ourPrice/100:cartItems[i].ourPrice%>
+                </span>
+                <span class="slinecross"
+                  ><%=cartItems[i].quantity%> x Rs<%= cartItems[i].orginalPrice
+                  %></span
+                >
+              </div>
+              <div
+                class="btn btn-danger mb-3 mr-3"
+                height="30px"
+                onclick="deleteItem(`<%= loggedin?(cartItems[i].id):(cartItems[i].productId,cartItems[i].size)%>`)"
+              >
+                X
+              </div>
+            </div>
           </div>
         </li>
-        <% sum += cartItems[i].quantity* cartItems[i].ourPrice %> <% } %>
+        <% loggedin?(sum += cartItems[i].quantity*
+        cartItems[i].ourPrice/100):(sum += cartItems[i].quantity*
+        cartItems[i].ourPrice) %> <% } %>
       </ul>
 
       <div class="w-full">
         <div class="header-cart-total w-full p-tb-40">
-          Total: Rs. <%= sum %>
+          Total: Rs. <%= sum.toFixed(2) %>
         </div>
 
         <div class="header-cart-buttons flex-w w-full">
@@ -57,3 +70,173 @@
     </div>
   </div>
 </div>
+<script>
+  function deleteItem(id) {
+    console.log(id);
+    fetch("/deleteFromCart", {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          swal("Item deleted from cart !");
+          window.location.reload(); // fixed the typo here
+        }
+      })
+      .catch((error) => {
+        swal("Error deleting product from cart: " + error); // updated error message to reflect the action being performed
+      });
+  }
+  function deleteItem(id, size) {
+    console.log(id, size);
+    fetch("/deleteFromCart", {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+        size: size,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          swal({
+            title: "Item deleted from cart !",
+            icon: "success",
+          }).then(() => {
+            window.location.reload();
+          }); // fixed the typo here
+        }
+      })
+      .catch((error) => {
+        swal("Error deleting product from cart: " + error); // updated error message to reflect the action being performed
+      });
+  }
+</script>
+
+<script>
+  function viewCart() {
+    fetch("/postFromCart", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          var cartList = addCarted(data.items);
+          var cartcount = data.items.length;
+          var notifyEl = $("#cartvalue");
+
+          console.log(cartcount);
+          $("#cartItemsList").replaceWith(cartList);
+          notifyEl.attr("data-notify", cartcount);
+          swal("Item  added to cart !", "success");
+        }
+      })
+      .catch((error) => {
+        swal("Error adding product to cart: " + error);
+      });
+  }
+  function addCarted(cartItems) {
+    var loggedinr = `<%- JSON.stringify(loggedin) %>`;
+    var loggedint = JSON.parse(loggedinr);
+    console.log("hdsfbdhsz");
+    console.log(loggedint);
+    if (loggedint === true) {
+      var loggedin = true;
+    }
+    let sum = 0;
+    const cartList = $("<ul>")
+      .addClass("header-cart-wrapitem w-full")
+      .attr("id", "cartItemsList");
+
+    for (let i = 0; i < cartItems.length; i++) {
+      const cartItem = $("<li>")
+        .addClass("header-cart-item flex-w flex-t m-b-12")
+        .appendTo(cartList);
+
+      const itemImg = $("<div>")
+        .addClass("header-cart-item-img")
+        .appendTo(cartItem);
+      console.log(cartItems[i].images[0][0]);
+      const link = loggedin
+        ? cartItems[i].images[0][0]
+        : cartItems[i].images[0];
+      console.log(link);
+
+      $("<img>")
+        .attr("src", `/images/productImages/${link}`)
+        .attr("alt", "IMG")
+        .appendTo(itemImg);
+
+      const itemTxt = $("<div>")
+        .addClass("header-cart-item-txt p-t-8")
+        .appendTo(cartItem);
+
+      $("<a>")
+        .attr("href", "#")
+        .addClass("header-cart-item-name m-b-18 hov-cl1 trans-04")
+        .text(cartItems[i].name)
+        .appendTo(itemTxt);
+
+      $("<div>")
+        .addClass("d-flex justify-content-between align-items-center mb-4")
+        .appendTo(itemTxt);
+
+      $("<div>").addClass("div").appendTo(itemTxt.children().last());
+
+      $("<span>")
+        .addClass("header-cart-item-info")
+        .text("size: " + cartItems[i].size)
+        .appendTo(itemTxt.children().last().children().first());
+
+      $("<span>")
+        .addClass("header-cart-item-info")
+        .text(
+          cartItems[i].quantity +
+            " x Rs." +
+            (loggedin ? cartItems[i].ourPrice / 100 : cartItems[i].ourPrice)
+        )
+        .appendTo(itemTxt.children().last().children().first());
+
+      $("<span>")
+        .addClass("slinecross")
+        .text(cartItems[i].quantity + " x Rs" + cartItems[i].orginalPrice)
+        .appendTo(itemTxt.children().last().children().first());
+
+      $("<div>")
+        .addClass("btn btn-danger mb-3 mr-3")
+        .height("30px")
+        .click(() =>
+          deleteItem(
+            loggedin
+              ? cartItems[i]._id
+              : [cartItems[i].productId, cartItems[i].size]
+          )
+        )
+        .text("X")
+        .appendTo(itemTxt.children().last().children().last());
+
+      loggedin
+        ? (sum += (cartItems[i].quantity * cartItems[i].ourPrice) / 100)
+        : (sum += cartItems[i].quantity * cartItems[i].ourPrice);
+    }
+
+    $("<div>")
+      .addClass("header-cart-total w-full p-tb-40")
+      .text("Total: Rs. " + sum.toFixed(2))
+      .appendTo(cartList);
+
+    return cartList;
+  }
+</script>

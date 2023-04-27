@@ -3,28 +3,34 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const orderSchema = new Schema(
   {
-    userid: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "users",
-    },
-    merchantid: {
-      type: Schema.Types.ObjectId,
-      ref: "merchants",
+      required: true,
     },
     products: [
       {
-        productid: {
+        productId: {
           type: Schema.Types.ObjectId,
           ref: "products",
+          required: true,
         },
         name: {
           type: String,
           required: true,
         },
-        quantity: {
-          type: String,
-          required: true,
-        },
+        items: [
+          {
+            quantity: {
+              type: Number,
+              required: true,
+            },
+            size: {
+              type: String,
+              required: true,
+            },
+          },
+        ],
         sellRate: {
           type: String,
           required: true,
@@ -48,9 +54,10 @@ const orderSchema = new Schema(
       },
     ],
     address: {
-      AddressId: {
+      addressId: {
         type: Schema.Types.ObjectId,
         ref: "addresses",
+        required: true,
       },
       houseName: {
         type: String,

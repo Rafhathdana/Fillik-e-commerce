@@ -10,12 +10,9 @@ module.exports = {
         authorization: process.env.AUTH,
         "Content-Type": "application/json",
       });
-      var message = `${otp} By https://Fellik.com`;
       req.form({
-        sender_id: "FTWSMS",
         variables_values: otp,
-        message: message,
-        route: "v3",
+        route: "otp",
         numbers: mobile,
       });
 
