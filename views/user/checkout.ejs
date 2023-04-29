@@ -283,7 +283,7 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.status) {
+        if (data.success) {
           swal("Order Success");
           location.href = "/orderlist";
         } else if (data.paypal) {

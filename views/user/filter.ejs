@@ -63,16 +63,22 @@
 
         <ul>
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04"> Default </a>
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="sortProducts('default')"
+            >
+              Default
+            </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04"> Popularity </a>
-          </li>
-
-          <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
-              Average rating
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="sortProducts('popularity')"
+            >
+              Popularity
             </a>
           </li>
 
@@ -80,19 +86,28 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04 filter-link-active"
+              onClick="sortProducts('newness')"
             >
               Newness
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="sortProducts('lth')"
+            >
               Price: Low to High
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="sortProducts('htl')"
+            >
               Price: High to Low
             </a>
           </li>
@@ -100,44 +115,66 @@
       </div>
 
       <div class="filter-col2 p-r-15 p-b-27">
-        <div class="mtext-102 cl2 p-b-15">Price</div>
-
+        <div class="mtext-102 cl2 p-b-15" id="price">Price</div>
         <ul>
           <li class="p-b-6">
             <a
               href="#"
               class="filter-link stext-106 trans-04 filter-link-active"
+              onClick="filterByPrice(-1, -1)"
             >
               All
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
-              $0.00 - $50.00
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="filterByPrice(0, 500)"
+            >
+              Rs.0.00 - Rs.500.00
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
-              $50.00 - $100.00
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="filterByPrice(500, 1000)"
+            >
+              Rs.500.00 - Rs.1000.00
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
-              $100.00 - $150.00
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="filterByPrice(1000, 3000)"
+            >
+              Rs.1000.00 - Rs.3000.00
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04">
-              $150.00 - $200.00
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="filterByPrice(3000, 10000)"
+            >
+              Rs.3000.00 - Rs.10000.00
             </a>
           </li>
 
           <li class="p-b-6">
-            <a href="#" class="filter-link stext-106 trans-04"> $200.00+ </a>
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="filterByPrice(10000, -1)"
+            >
+              Rs.10000.00+
+            </a>
           </li>
         </ul>
       </div>
@@ -146,101 +183,151 @@
         <div class="mtext-102 cl2 p-b-15">Color</div>
 
         <ul>
+          <% for (let i = 0; i < colour.length; i++) { %>
           <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #222">
-              <i class="zmdi zmdi-circle"></i>
-            </span>
-
-            <a href="#" class="filter-link stext-106 trans-04"> Black </a>
-          </li>
-
-          <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #4272d7">
+            <span
+              class="fs-15 lh-12 m-r-6"
+              style="color: <%=colour[i].values%>"
+            >
               <i class="zmdi zmdi-circle"></i>
             </span>
 
             <a
               href="#"
-              class="filter-link stext-106 trans-04 filter-link-active"
+              class="filter-link stext-106 trans-04"
+              onClick="colourChange('<%=colour[i]._id%>')"
             >
-              Blue
+              <%=colour[i].values%>
             </a>
           </li>
+          <% } %>
+        </ul>
+      </div>
+      <div class="filter-col4 p-r-15 p-b-27">
+        <div class="mtext-102 cl2 p-b-15">Category</div>
 
+        <ul>
+          <% for (let i = 0; i < category.length; i++) { %>
           <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #b3b3b3">
-              <i class="zmdi zmdi-circle"></i>
-            </span>
-
-            <a href="#" class="filter-link stext-106 trans-04"> Grey </a>
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="categoryChange('<%=category[i]._id%>')"
+            >
+              <%=category[i].values%>
+            </a>
           </li>
+          <% } %>
+        </ul>
+      </div>
+      <div class="filter-col5 p-r-15 p-b-27">
+        <div class="mtext-102 cl2 p-b-15">Pattern</div>
 
+        <ul>
+          <% for (let i = 0; i < pattern.length; i++) { %>
           <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #00ad5f">
-              <i class="zmdi zmdi-circle"></i>
-            </span>
-
-            <a href="#" class="filter-link stext-106 trans-04"> Green </a>
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="patternChange('<%=pattern[i]._id%>')"
+            >
+              <%=pattern[i].values%>
+            </a>
           </li>
-
-          <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #fa4251">
-              <i class="zmdi zmdi-circle"></i>
-            </span>
-
-            <a href="#" class="filter-link stext-106 trans-04"> Red </a>
-          </li>
-
-          <li class="p-b-6">
-            <span class="fs-15 lh-12 m-r-6" style="color: #aaa">
-              <i class="zmdi zmdi-circle-o"></i>
-            </span>
-
-            <a href="#" class="filter-link stext-106 trans-04"> White </a>
-          </li>
+          <% } %>
         </ul>
       </div>
 
-      <div class="filter-col4 p-b-27">
-        <div class="mtext-102 cl2 p-b-15">Tags</div>
+      <!-- <div class="filter-col4 p-b-27">
+        <div class="mtext-102 cl2 p-b-15">Category</div>
+        <% for (let i = 0; i < category.length; i++) { %>
 
         <div class="flex-w p-t-4 m-r--5">
           <a
             href="#"
             class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
           >
-            Fashion
-          </a>
+          <%=category[i].values%>
 
-          <a
-            href="#"
-            class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
-          >
-            Lifestyle
-          </a>
-
-          <a
-            href="#"
-            class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
-          >
-            Denim
-          </a>
-
-          <a
-            href="#"
-            class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
-          >
-            Streetstyle
-          </a>
-
-          <a
-            href="#"
-            class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
-          >
-            Crafts
           </a>
         </div>
+        <% } %>
       </div>
+      <div class="filter-col5 p-b-27">
+        <div class="mtext-102 cl2 p-b-15">Pattern</div>
+        <% for (let i = 0; i < category.length; i++) { %>
+        <div class="flex-w p-t-4 m-r--5">
+          <a
+            href="#"
+            class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5"
+          >
+          <%=category[i].values%>
+          </a>
+        </div>
+        <% } %>
+      </div> -->
     </div>
   </div>
 </div>
+<script>
+  // Define variables to hold values
+  var params = new URLSearchParams(window.location.search);
+  var sorted = params.get("sorted") || "";
+  var minPrice = params.get("minPrice") || "";
+  var maxPrice = params.get("maxPrice") || "";
+  var pattern = params.get("pattern") || "";
+  var colour = params.get("colour") || "";
+  var category = params.get("category") || "";
+  var size = params.get("size") || "";
+  var genderType = params.get("genderType") || "";
+
+  function sortProducts(option) {
+    sorted = option;
+    toChangeFilter();
+  }
+
+  function filterByPrice(min, max) {
+    minPrice = min;
+    maxPrice = max;
+    if (min == -1) {
+      minPrice = "";
+    }
+    if (max == -1) {
+      maxPrice = "";
+    }
+    toChangeFilter();
+  }
+
+  function patternChange(option) {
+    pattern = option;
+    toChangeFilter();
+  }
+
+  function colourChange(option) {
+    colour = option;
+    toChangeFilter();
+  }
+
+  function categoryChange(option) {
+    category = option;
+    toChangeFilter();
+  }
+
+  function sizeChange(option) {
+    size = option;
+    toChangeFilter();
+  }
+
+  function genderTypeChange(option) {
+    genderType = option;
+    toChangeFilter();
+  }
+
+  function toChangeFilter() {
+    // Build query string with updated filter values
+    const queryString = `?sorted=${sorted}&pattern=${pattern}&minPrice=${minPrice}&maxPrice=${maxPrice}&colour=${colour}&category=${category}&size=${size}&genderType=${genderType}&count=&page=`;
+
+    // Redirect to filtered product list page
+    window.location.href = `/productlist${queryString}`;
+  }
+</script>

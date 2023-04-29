@@ -15,6 +15,11 @@ const orderSchema = new Schema(
           ref: "products",
           required: true,
         },
+        merchantId: {
+          type: Schema.Types.ObjectId,
+          ref: "merchants",
+          required: true,
+        },
         name: {
           type: String,
           required: true,
@@ -122,10 +127,18 @@ const orderSchema = new Schema(
       type: String,
       required: true,
     },
-    status: {
-      type: Boolean,
-      required: true,
-    },
+    status: [
+      {
+        currentStatus: {
+          type: String,
+          required: true,
+        },
+        dateTimeOn: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

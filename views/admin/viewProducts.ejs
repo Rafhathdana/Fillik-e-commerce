@@ -1,3 +1,6 @@
+<head>
+  <link rel="stylesheet" href="/stylesheets/adminusingcss.css" />
+</head>
 <div class="mainheading">
   Product Details
   <div class="flex" style="margin-left: auto">
@@ -19,8 +22,8 @@
       </ul>
     </div>
   </div>
-  <%if(locals.endIndex>0){%> <% for (let i = locals.startIndex; i <
-  locals.endIndex; i++) { %>
+  <%if(locals.pagination.endIndex>0){%> <% for (let i =
+  locals.pagination.startIndex; i < locals.pagination.endIndex; i++) { %>
 
   <div class="outer-box">
     <img
@@ -46,21 +49,19 @@
     <div class="text-block">
       <div class="plain-pattern">
         Color:
-        <span class="pink-color"><%= productList[i].colour[0].values %> </span>
+        <span class="pink-color"><%= productList[i].colour[0] %> </span>
       </div>
       <div class="plain-pattern">
         Pattern:
-        <span class="pink-color"><%= productList[i].pattern[0].values %></span>
+        <span class="pink-color"><%= productList[i].pattern[0] %></span>
       </div>
       <div class="plain-pattern">
         Gender Type:
-        <span class="pink-color"
-          ><%= productList[i].genderType[0].values %></span
-        >
+        <span class="pink-color"><%= productList[i].genderType[0] %></span>
       </div>
       <div class="plain-pattern">
         Category:
-        <span class="pink-color"><%= productList[i].category[0].values %></span>
+        <span class="pink-color"><%= productList[i].category[0] %></span>
       </div>
     </div>
     <div class="sizes-box">
@@ -87,23 +88,23 @@
       <span class="shorttext"> (After deducting 5% cut to us)</span>
     </div>
     <div class="flex-column">
-      <div class="action-box1">
-        <a
-          class="action-text"
-          href="/merchant/editproduct/<%= productList[i]._id %>"
-          >Edit</a
-        >
-      </div>
-      <div class="action-box1">
-        <a
-          class="action-text"
-          href="/merchant/editproduct/<%= productList[i]._id %>"
-          >Details</a
-        >
-      </div>
+      <button
+        onclick="window.location.href='/merchant/editproduct/<%= productList[i]._id %>'"
+        type="button"
+        class="btn btn-warning btn-rounded btn-fw"
+      >
+        Edit
+      </button>
+      <br /><br />
+      <button
+        onclick="window.location.href='/merchant/details/<%= productList[i]._id %>'"
+        type="button"
+        class="btn btn-info btn-rounded btn-fw"
+      >
+        Details
+      </button>
     </div>
   </div>
-
   <% } %> <% } else{%>
   <div class="mx-auto justify-content-center d-flex">
     <a class="mx-auto" href="/merchant/addproduct">
@@ -113,21 +114,25 @@
   </div>
   <% } %>
   <div class="pagenumbers">
-    <% for (let i = 1; i <= locals.totalPages; i++) { %>
+    <% for (let i = 1; i <= locals.pagination.totalPages; i++) { %>
     <a
-      href="?count=<%= count %>&page=<%= i %>"
-      class="page<%= i === parseInt(page) ? ' active' : '' %>"
+      href="?count=<%= pagination.count %>&page=<%= i %>"
+      class="page<%= i === parseInt(pagination.page) ? ' active' : '' %>"
       ><%= i %></a
     >
     <% } %>
   </div>
   <div class="nextprev">
     <% if (locals.page > 1) { %>
-    <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
+    <a
+      href="?count=<%= pagination.count %>&page=<%= parseInt(pagination.page) - 1 %>"
+      class="prev"
       >Prev</a
     >
-    <% } %> <% if (locals.page < locals.totalPages) { %>
-    <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
+    <% } %> <% if (locals.page < locals.pagination.totalPages) { %>
+    <a
+      href="?count=<%= pagination.count %>&page=<%= parseInt(pagination.page) + 1 %>"
+      class="next"
       >Next</a
     >
     <% } %>

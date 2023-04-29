@@ -9,7 +9,7 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 module.exports = {
   getLogin: (req, res, next) => {
-    res.render("merchant/signin", {
+    res.render("merchant/signin2", {
       title: "merchant",
       merchantLoggedin: null,
       noShow: true,
@@ -27,7 +27,8 @@ module.exports = {
   getDashBoard: (req, res, next) => {
     res.render("merchant/index", {
       title: "merchant",
-      merchantLoggedin: null,
+      brandName: req.session.merchant.brandName,
+      merchantLoggedin: req.session.merchantLoggedIn,
       author: "Merchant#123!",
     });
   },
@@ -291,7 +292,7 @@ module.exports = {
 
   sendOtp: async (req, res, next) => {
     try {
-      const Otp = Math.floor(100000 + Math.random() * 909997);
+      const Otp = Math.floor(100000 + Math.random() * 871037);
       req.session.otP = Otp;
       otp
         .OTP(req.body.mobile, req.session.otP)
@@ -327,5 +328,15 @@ module.exports = {
     } catch (error) {
       console.log(error);
     }
+  },
+  orderList: async (req, res, next) => {
+    res.render("merchant/orderList", {
+      title: "merchant",
+      brandName: req.session.merchant.brandName,
+      merchantLoggedin: req.session.merchantLoggedIn,
+      author: "Merchant#123!",
+      merchantData: req.session.merchant,
+      orderList: req.orderList,
+    });
   },
 };

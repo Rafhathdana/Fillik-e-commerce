@@ -89,26 +89,28 @@ module.exports = {
         .lean();
       const totalPages = Math.ceil((await Products.countDocuments()) / count);
       const startIndex = (page - 1) * count;
+      const totalCount = await Products.countDocuments();
 
-      const endIndex = Math.min(
-        startIndex + count,
-        await Products.countDocuments()
-      );
+      const endIndex = Math.min(startIndex + count, totalCount);
       let category = await filterproduct.find({ categoryname: "Category" });
       let colour = await filterproduct.find({ categoryname: "Colour" });
       let pattern = await filterproduct.find({ categoryname: "Pattern" });
       let genderType = await filterproduct.find({ categoryname: "GenderType" });
+      const pagination = {
+        totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       if (req.session.userLoggedIn) {
         res.render("user/productlist", {
           title: "Users List",
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
           productsList,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination, // add pagination to the render parameters
           category,
           colour,
           pattern,
@@ -119,12 +121,8 @@ module.exports = {
           title: "Product List",
           loggedin: false,
           productsList,
-          count,
           cartItems: req.cartItems,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination, // add pagination to the render parameters
           category,
           colour,
           pattern,
@@ -225,7 +223,7 @@ module.exports = {
 
   sendOtp: async (req, res, next) => {
     try {
-      const Otp = Math.floor(100000 + Math.random() * 909997);
+      const Otp = Math.floor(100000 + Math.random() * 871037);
       req.session.otP = Otp;
       otp
         .OTP(req.body.mobile, req.session.otP)
@@ -300,25 +298,28 @@ module.exports = {
 
       const endIndex = Math.min(
         startIndex + count,
-        await Products.countDocuments(filter)
+        totalCount // change this to `totalCount` instead of `await Products.countDocuments(filter)`
       );
       let category = await filterproduct.find({ categoryname: "Category" });
       let colour = await filterproduct.find({ categoryname: "Colour" });
       let pattern = await filterproduct.find({ categoryname: "Pattern" });
       let genderType = await filterproduct.find({ categoryname: "GenderType" });
-
+      const pagination = {
+        totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       if (req.session.userLoggedIn) {
-        res.render("user/productlist", {
+        res.render("user/productList", {
           title: "Users List",
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
           productsList,
           cartItems: req.cartItems,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination, // add pagination to the render parameters
           category,
           colour,
           pattern,
@@ -330,11 +331,7 @@ module.exports = {
           loggedin: false,
           productsList,
           cartItems: req.cartItems,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination, // add pagination to the render parameters
           category,
           colour,
           pattern,
@@ -345,6 +342,7 @@ module.exports = {
       next(error);
     }
   },
+
   getFilter: async (req, res, next) => {
     try {
       let { minPrice, maxPrice, category, genderType, colour, sizes } =

@@ -46,6 +46,12 @@ router.post(
   userController.productFilterList
 );
 router.get(
+  "/postfilter",
+  userController.getFilter,
+  cart,
+  userController.productFilterList
+);
+router.get(
   "/productlist",
   userController.getFilter,
   cart,
@@ -110,5 +116,5 @@ router.get("/DUMY", function (req, res, next) {
 });
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.patch("/updateOrder/:id/:orderstatus", orderControllers.updateOrder);
-
+router.post("/verifyPayment", orderControllers.verifyPaymentPost);
 module.exports = router;

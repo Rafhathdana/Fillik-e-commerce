@@ -227,7 +227,7 @@ module.exports = {
 
   sendOtp: async (req, res, next) => {
     try {
-      const Otp = Math.floor(100000 + Math.random() * 909997);
+      const Otp = Math.floor(100000 + Math.random() * 871037);
       req.session.otP = Otp;
       otp
         .OTP(req.body.mobile, req.session.otP)
@@ -354,6 +354,15 @@ module.exports = {
       } else {
         res.redirect("/");
       }
+    });
+  },
+  orderList: async (req, res, next) => {
+    res.render("admin/orderList", {
+      title: "admin",
+      fullName: req.session.admin.fullName,
+      adminLoggedin: req.session.adminLoggedIn,
+      author: "Admin#1233!",
+      orderList: req.orderList,
     });
   },
 };

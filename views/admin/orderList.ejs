@@ -1,0 +1,120 @@
+<head>
+  <style>
+    @media (max-width: 825px) {
+      .table-responsive table thead {
+        display: none;
+      }
+
+      .table-responsive table tbody tr {
+        display: block;
+        margin-bottom: 20px;
+        border: none;
+      }
+
+      .table-responsive table tbody td {
+        display: block;
+        text-align: right;
+        font-size: 13px;
+        border-bottom: 1px solid #e6e6e6;
+        position: relative;
+        padding-left: 50%;
+        width: 100%;
+      }
+
+      .table-responsive table tbody td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding-left: 15px;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<div class="col-lg-12 grid-margin stretch-card" style="width: 80%">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Order List</h4>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Item Count</th>
+              <th>Amount</th>
+              <th>Payment Status</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < orderList.length; i++) { %>
+            <tr></tr>
+            <tr>
+              <td data-label="Order ID"><%= orderList[i]._id %></td>
+              <td data-label="Product Count" class="md-none">
+                <%= orderList[i].totalProduct %>
+              </td>
+              <td data-label="Amount" class="text-danger">
+                <%= orderList[i].totalAmount %>
+              </td>
+              <td data-label="paymentStatus" class="text-danger">
+                <%= orderList[i].paymentStatus %><br /><br />
+                <%= orderList[i].paymentMethod %>
+              </td>
+
+              <td data-label="Status">
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                >
+                  <%=
+                  orderList[i].status[orderList[i].status.length-1].currentStatus
+                  %></button
+                ><br />
+                <% } %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- At the bottom of the HTML body -->
+<script>
+  function orderUpdate(data, oid, pid) {
+    swal({
+      text: "Are you sure you want to update this to " + data + "?",
+      buttons: ["Cancel", "Yes"],
+    }).then(async function (confirmed) {
+      if (confirmed) {
+        try {
+          const response = await fetch("/merchant/updateOrderStatus", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              orderId: oid,
+              productId: pid,
+              status: data,
+            }),
+          });
+          const responseData = await response.json();
+          if (responseData.success) {
+            window.location.reload();
+          } else {
+            console.log(responseData);
+            swal("Status not updated!");
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  }
+</script>

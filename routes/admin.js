@@ -3,6 +3,8 @@ var router = express.Router();
 const adminController = require("../controllers/adminControllers");
 const filterController = require("../controllers/filterController");
 const couponController = require("../controllers/couponController");
+const orderControllers = require("../controllers/orderControllers");
+const productController = require("../controllers/productController");
 
 function adminAuth(req, res, next) {
   if (req.session && req.session.admin && req.session.adminLoggedIn) {
@@ -70,6 +72,13 @@ router.get(
   adminVerify,
   adminController.getMerchantProfile
 );
+router.get(
+  "/orderList",
+  adminVerify,
+  orderControllers.adminOrderList,
+  adminController.orderList
+);
+router.get("/productList", adminVerify, productController.getAdminProductList);
 router.get("/logout", adminController.logout);
 
 module.exports = router;

@@ -278,4 +278,87 @@ module.exports = {
       res.redirect("/merchant/editproduct/id");
     }
   },
+  //admin
+  getAdminProductList: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+      const orderBy = { $sort: { createdAt: -1 } };
+      const match = {}; // add match object to filter products
+
+      const productList = await Product.aggregate([
+        { $match: match }, // add match stage
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "category",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "colour",
+            foreignField: "_id",
+            as: "colour",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "pattern",
+            foreignField: "_id",
+            as: "pattern",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "genderType",
+            foreignField: "_id",
+            as: "genderType",
+          },
+        },
+        { $sort: { createdAt: -1 } },
+        { $skip: startIndex },
+        { $limit: count },
+      ]);
+      console.log(productList);
+      const totalProductsCount = await Product.countDocuments(match); // add match object to countDocuments method
+      const totalPages = Math.ceil(totalProductsCount / count);
+
+      let category = await filterproduct.find({ categoryname: "Category" });
+      let colour = await filterproduct.find({ categoryname: "Colour" });
+      let pattern = await filterproduct.find({ categoryname: "Pattern" });
+      let genderType = await filterproduct.find({ categoryname: "GenderType" });
+
+      const endIndex = Math.min(startIndex + count - 1, totalProductsCount - 1);
+
+      const pagination = {
+        totalCount: totalProductsCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      console.log(pagination);
+      res.render("admin/viewProducts", {
+        title: "admin",
+        fullName: req.session.admin.fullName,
+        adminLoggedIn: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        productList,
+        category,
+        colour,
+        pattern,
+        genderType,
+        pagination, // pass pagination object to the view
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

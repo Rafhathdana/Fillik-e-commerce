@@ -18,7 +18,7 @@
                   <% for (let i = 0; i < productItem.images.length; i++) { %>
                   <img
                     class="MagicZoom productsideImg"
-                    src="/images/productImages/<%=productItem.images[i]%>"
+                    src="/images/productImages/<%= productItem.images[i] %>"
                     id="imgView"
                   />
                   <% } %>
@@ -29,14 +29,14 @@
                 style="height: 450px; width: 300px"
               >
                 <a
-                  href="/images/productImages/<%=productItem.images[0]%>"
+                  href="/images/productImages/<%= productItem.images[0] %>"
                   class="MagicZoom"
                   data-options="zoomPosition: inner"
                 >
                   <img
                     style="height: 450px; width: 300px"
                     class="productImg"
-                    src="/images/productImages/<%=productItem.images[0]%>"
+                    src="/images/productImages/<%= productItem.images[0] %>"
                     alt=""
                 /></a>
               </div>
@@ -48,18 +48,18 @@
       <div class="col-md-6 col-lg-5 p-b-30">
         <div class="p-r-50 p-t-5 p-lr-0-lg">
           <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-            <%=productItem.name%>
+            <%= productItem.name %>
           </h4>
 
           <span class="mtext-106 cl2"> RS:</span>
           <span class="mtext-106 cl2 productOurPrice">
             <span class="productOrginalPrice">
-              <%=productItem.ourPrice%></span
+              <%= productItem.ourPrice %></span
             ></span
           ><br />
           <span class="mtext-106 cl2"> MRP:</span>
           <span class="mtext-106 cl2 productOrginalPrice">
-            <%=productItem.orginalPrice%></span
+            <%= productItem.orginalPrice %></span
           >
           <br />
           <% let value = parseInt(productItem.orginalPrice) -
@@ -67,11 +67,11 @@
           parseInt(productItem.orginalPrice)) * 100; %>
           <span class="mtext-106 cl3"> Discount:</span>
           <span class="mtext-106 cl3 discoutPercentage">
-            <%=discount.toFixed(0)%></span
+            <%= discount.toFixed(0) %></span
           >
           <span class="mtext-106 cl3">%</span>
           <p class="stext-102 cl3 p-t-23 productDescription">
-            <%=productItem.description%>
+            <%= productItem.description %>
           </p>
 
           <!--  -->
@@ -86,9 +86,9 @@
             <div
               id="productDId"
               class="productDId d-none"
-              value="<%=productItem._id%>"
+              value="<%= productItem._id %>"
             >
-              <%=productItem._id%>
+              <%= productItem._id %>
             </div>
             <div class="notify"></div>
             <div class="flex-w flex-r-m p-b-10">
@@ -198,7 +198,7 @@
           <!-- - -->
           <div class="tab-pane fade show active" id="MoreInfo" role="tabpanel">
             <div class="how-pos2 p-lr-15-md">
-              <p class="stext-102 cl6"><%=productItem.moreinfo%></p>
+              <p class="stext-102 cl6"><%= productItem.moreinfo %></p>
             </div>
           </div>
 
@@ -383,14 +383,14 @@
           <div class="block2">
             <div class="block2-pic hov-img0">
               <img
-                src="/images/productImages/<%=productsList[i].images[0]%>"
+                src="/images/productImages/<%= productsList[i].images[0] %>"
                 alt="IMG-PRODUCT"
               />
               <% let productData=productsList[i] %>
               <a
                 href="#"
                 class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1"
-                data-product-data="<%=JSON.stringify(productData)%>"
+                data-product-data="<%= JSON.stringify(productData) %>"
               >
                 Quick View
               </a>
@@ -405,9 +405,8 @@
                   <%= locals.productsList[i].name %>
                 </a>
 
-                <
                 <span class="stext-105 cl3">
-                  RS.<%=((productsList[i].ourPrice)/100)%>
+                  RS.<%=((productsList[i].ourPrice)/100) %>
                   <span>Rs<%= productsList[i].orginalPrice %></span></span
                 >
               </div>

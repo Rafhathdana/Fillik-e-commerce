@@ -3,6 +3,7 @@ var router = express.Router();
 const merchantController = require("../controllers/merchantControllers");
 const productController = require("../controllers/productController");
 const multer = require("multer");
+const orderControllers = require("../controllers/orderControllers");
 function merchantauth(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
     res.redirect("/merchant/");
@@ -55,4 +56,16 @@ router.post("/emailpassexists", merchantController.emailPasswordVerify);
 router.post("/emailmobileexists", merchantController.emailMobileVerify);
 router.post("/sendotp", merchantController.sendOtp);
 router.post("/verifyotp", merchantController.verifyOtp);
+
+router.get(
+  "/orderList",
+  merchantverify,
+  orderControllers.merchantOrderList,
+  merchantController.orderList
+);
+router.put(
+  "/updateOrderStatus",
+  merchantverify,
+  orderControllers.OrderStatusUpdate 
+);
 module.exports = router;
