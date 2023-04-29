@@ -325,7 +325,7 @@
 
   function toChangeFilter() {
     // Build query string with updated filter values
-    const queryString = `?sorted=${sorted}&pattern=${pattern}&minPrice=${minPrice}&maxPrice=${maxPrice}&colour=${colour}&category=${category}&size=${size}&genderType=${genderType}&count=&page=`;
+    const queryString = `?sorted=${sorted}&pattern=${pattern}&minPrice=${minPrice}&maxPrice=${maxPrice}&colour=${colour}&category=${category}&sizes=${size}&genderType=${genderType}&count=&page=`;
 
     // Redirect to filtered product list page
     window.location.href = `/productlist${queryString}`;

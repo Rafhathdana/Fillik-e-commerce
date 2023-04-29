@@ -341,9 +341,9 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.status) {
-          location.href = "/payment-success";
+          location.href = "/orderList";
         } else {
-          alert("payment failed");
+          swal("payment failed");
         }
       })
       .catch((error) => {

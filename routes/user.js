@@ -115,6 +115,6 @@ router.get("/DUMY", function (req, res, next) {
   res.render("user/orderProductView", {});
 });
 router.delete("/deleteFromCart", userController.deleteItemCrt);
-router.patch("/updateOrder/:id/:orderstatus", orderControllers.updateOrder);
+router.patch("updateOrderStatus", orderControllers.updateOrder);
 router.post("/verifyPayment", orderControllers.verifyPaymentPost);
 module.exports = router;

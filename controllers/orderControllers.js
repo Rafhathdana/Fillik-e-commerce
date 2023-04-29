@@ -240,12 +240,20 @@ module.exports = {
   },
   updateOrder: async (req, res, next) => {
     try {
-      const updatedOrder = await Order.findByIdAndUpdate(
-        req.body.id,
-        { $set: { status: req.body.orderStatus } },
+      const { allleid, pid, size } = req.body;
+      const updatedOrder = await Order.findOneAndUpdate(
+        {
+          _id: allleid,
+          "products.productId": pid,
+          "products.items.size": size,
+        },
+        {
+          $set: { "products.$.status.currentStatus": req.body.orderStatus },
+        },
         { new: true }
       );
-      res.status(200).json(updatedOrder);
+      console.log("Successfully updated order status");
+      res.json({ status: true });
     } catch (error) {
       next(error);
     }

@@ -200,7 +200,7 @@
                 />
                 <div class="d-flex justify-content-between align-items-center mb-4 mr-4 ml-4">
                   <p class="lead fw-normal mb-0 ml-5" style="color: #a8729a"></p>
-                  <a href="#" onclick="updateStatus(`<%= ordersList.products[i]._id %>`,'usercancel')" class="btn btn-primary">Cancel</a>
+                  <a href="#" onclick="updateStatus(`<%= ordersList._id %>,<%= ordersList.products[i]._id %>`,'usercancel')" class="btn btn-primary">Cancel</a>
                 </div>
                 </div>
               </div>
@@ -210,7 +210,7 @@
     </div>
   </div>
 </div>
-<script>function updateStatus(id, orderUpdate) {
+<script>function updateStatus(oid,pid, orderUpdate) {
   swal("Are you sure to cancel?", {
     buttons: {
       yes: {
@@ -224,9 +224,17 @@
     },
   }).then((value) => {
     if (value) {
-      fetch(`/updateOrder/${id}/${orderUpdate}`, {
-        method: "PATCH",
-      })
+      fetch("/updateOrderStatus", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        oid:oid,
+        pid:pid,
+        orderUpdate:orderUpdate,
+      }),
+    })
         .then((response) => {
           swal("Order cancelled successfully.").then(() => {
             window.location.reload();
