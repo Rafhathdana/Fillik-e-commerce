@@ -130,7 +130,17 @@ module.exports = {
       res.json({ codStatus: true });
     } else if (req.body.paymentMethod === "paypal") {
       payementController.genaretePaypal(orderId, total).then((link) => {
-        payementController.changePaymentStatus(orderId).then(() => {
+        Order.findOneAndUpdate(
+          { _id: orderId },
+          {
+            $push: {
+              status: {
+                currentStatus: "placed",
+              },
+            },
+            paymentStatus: "success",
+          }
+        ).then(() => {
           res.json({ link, paypal: true });
         });
       });

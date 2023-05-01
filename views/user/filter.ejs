@@ -85,16 +85,6 @@
           <li class="p-b-6">
             <a
               href="#"
-              class="filter-link stext-106 trans-04 filter-link-active"
-              onClick="sortProducts('newness')"
-            >
-              Newness
-            </a>
-          </li>
-
-          <li class="p-b-6">
-            <a
-              href="#"
               class="filter-link stext-106 trans-04"
               onClick="sortProducts('lth')"
             >
@@ -183,6 +173,29 @@
         <div class="mtext-102 cl2 p-b-15">Color</div>
 
         <ul>
+          <li class="p-b-6">
+            <span
+              class="fs-15 lh-12 m-r-6"
+              style="
+                color: radial-gradient(
+                  closest-side at 50% 50%,
+                  red,
+                  green,
+                  blue
+                );
+              "
+            >
+              <i class="zmdi zmdi-circle"></i>
+            </span>
+
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="colourChange('')"
+            >
+              All
+            </a>
+          </li>
           <% for (let i = 0; i < colour.length; i++) { %>
           <li class="p-b-6">
             <span
@@ -207,6 +220,15 @@
         <div class="mtext-102 cl2 p-b-15">Category</div>
 
         <ul>
+          <li class="p-b-6">
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="categoryChange('')"
+            >
+              All
+            </a>
+          </li>
           <% for (let i = 0; i < category.length; i++) { %>
           <li class="p-b-6">
             <a
@@ -224,6 +246,15 @@
         <div class="mtext-102 cl2 p-b-15">Pattern</div>
 
         <ul>
+          <li class="p-b-6">
+            <a
+              href="#"
+              class="filter-link stext-106 trans-04"
+              onClick="patternChange('')"
+            >
+              All
+            </a>
+          </li>
           <% for (let i = 0; i < pattern.length; i++) { %>
           <li class="p-b-6">
             <a

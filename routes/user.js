@@ -116,5 +116,6 @@ router.get("/DUMY", function (req, res, next) {
 });
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.patch("updateOrderStatus", orderControllers.updateOrder);
-router.post("/verifyPayment", orderControllers.verifyPaymentPost);
+router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
+router.get("/paymentSuccess", verify, userController.getPaymentSucces);
 module.exports = router;

@@ -1,4 +1,4 @@
-<div class="wrap-header-cart js-panel-cart">
+<div class="wrap-header-cart js-panel-cart" id="sideCart ">
   <div class="s-full js-hide-cart"></div>
 
   <div class="header-cart flex-col-l p-l-65 p-r-25">
@@ -133,6 +133,7 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          
           var cartList = addCarted(data.items);
           var cartcount = data.items.length;
           var notifyEl = $("#cartvalue");

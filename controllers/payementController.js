@@ -11,8 +11,8 @@ var instance = new Razorpay({
 
 paypal.configure({
   mode: "sandbox", //sandbox or live
-  client_id: process.env.client_id,
-  client_secret: process.env.client_secret,
+  client_id: process.env.PAYPALKEYID,
+  client_secret: process.env.PAYPALKEYSECRET,
 });
 
 module.exports = {
@@ -25,7 +25,7 @@ module.exports = {
         },
         redirect_urls: {
           return_url: "/payment-success",
-          cancel_url: "/place-order",
+          cancel_url: "/cart",
         },
         transactions: [
           {
@@ -41,7 +41,7 @@ module.exports = {
               ],
             },
             amount: {
-              currency: "INR",
+              currency: "USD",
               total: total,
             },
             description: "This is the payment description.",

@@ -26,7 +26,11 @@ router.get("/", adminVerify, adminVerify, adminController.getHome);
 router.get("/login", adminAuth, adminController.getLogin); //almost
 router.get("/home", adminVerify, adminController.getHome);
 router.get("/userList", adminVerify, adminController.getUser); //almost
+router.get("/userBlockList", adminVerify, adminController.getBlockUser); //almost
+router.get("/userActiveList", adminVerify, adminController.getActiveUser); //almost
 router.get("/merchantList", adminVerify, adminController.getMerchant); //almost
+router.get("/merchantBlockedList", adminVerify, adminController.getMerchant); //almost
+router.get("/merchantActiveList", adminVerify, adminController.getMerchant); //almost
 router.get("/addcategory", adminVerify, filterController.getAddCategory); //almost
 router.get(
   "/viewcategory",

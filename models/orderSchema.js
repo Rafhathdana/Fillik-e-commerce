@@ -52,10 +52,18 @@ const orderSchema = new Schema(
           type: String,
           required: true,
         },
-        status: {
-          type: String,
-          required: true,
-        },
+        status: [
+          {
+            currentStatus: {
+              type: String,
+              required: true,
+            },
+            dateTimeOn: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
       },
     ],
     address: {

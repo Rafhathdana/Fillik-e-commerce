@@ -9,7 +9,7 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 module.exports = {
   getLogin: (req, res, next) => {
-    res.render("merchant/signin2", {
+    res.render("merchant/signin", {
       title: "merchant",
       merchantLoggedin: null,
       noShow: true,

@@ -928,4 +928,7 @@ module.exports = {
       });
     }
   },
+  getPaymentSucces: (req, res) => {
+    res.render("user/paymentSuccess");
+  },
 };

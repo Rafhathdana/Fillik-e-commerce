@@ -52,6 +52,69 @@ module.exports = {
       next(error);
     }
   },
+  getBlockUser: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const usersList = await users
+        .find({ isActive: false })
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+
+      const totalUsers = await users.countDocuments();
+      const totalPages = Math.ceil(totalUsers / count);
+      const startIndex = 0;
+      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
+
+      res.render("admin/users", {
+        title: "Users List",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        usersList,
+        count,
+        page,
+        totalPages,
+        startIndex,
+        endIndex,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getActiveUser: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const usersList = await users
+        .find({ isActive: true })
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+
+      const totalUsers = await users.countDocuments();
+      const totalPages = Math.ceil(totalUsers / count);
+      const startIndex = 0;
+      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
+
+      res.render("admin/users", {
+        title: "Users List",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        usersList,
+        count,
+        page,
+        totalPages,
+        startIndex,
+        endIndex,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   getMerchant: async (req, res, next) => {
     const merchantslist = await merchants.find().limit(10);
     res.render("admin/merchants", {
@@ -63,7 +126,7 @@ module.exports = {
     });
   },
   getLogin: (req, res, next) => {
-    res.render("admin/signin2", {
+    res.render("admin/signin", {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,
