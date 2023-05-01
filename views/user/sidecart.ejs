@@ -133,7 +133,6 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          
           var cartList = addCarted(data.items);
           var cartcount = data.items.length;
           var notifyEl = $("#cartvalue");
@@ -226,7 +225,7 @@
           )
         )
         .text("X")
-        .appendTo(itemTxt.children().last().children().last());
+        .appendTo(itemTxt.children().last());
 
       loggedin
         ? (sum += (cartItems[i].quantity * cartItems[i].ourPrice) / 100)
