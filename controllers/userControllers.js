@@ -422,7 +422,7 @@ module.exports = {
       if (minPrice && maxPrice) {
         filter.ourPrice = { $gte: minPrice, $lte: maxPrice };
       } else if (minPrice) {
-        filter.ourPrice = { $gte: minPrice };
+        filter.ourPrice = { $gte: minPrice }; 
       } else if (maxPrice) {
         filter.ourPrice = { $lte: maxPrice };
       }
