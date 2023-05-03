@@ -79,12 +79,11 @@
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
   }
 </style>
-
 <div class="flex-w flex-sb-m p-b-52">
   <div class="flex-w flex-l-m filter-tope-group m-tb-10">
     <button
       class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
-      data-filter="*"
+      onClick="singleChange('all','genderType')"
     >
       All Products
     </button>
@@ -92,7 +91,7 @@
 
     <button
       class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5"
-      data-filter=".<%= genderType[i].values %>"
+      onClick="singleChange('<%= genderType[i]._id %>','genderType')"
     >
       <%= genderType[i].values %>
     </button>
@@ -148,7 +147,7 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04"
-              onClick="sortProducts('default')"
+              onClick="singleChange('default','sorted')"
             >
               Default
             </a>
@@ -158,7 +157,7 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04"
-              onClick="sortProducts('popularity')"
+              onClick="singleChange('popularity','sorted')"
             >
               Popularity
             </a>
@@ -168,7 +167,7 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04"
-              onClick="sortProducts('lth')"
+              onClick="singleChange('lth','sorted')"
             >
               Price: Low to High
             </a>
@@ -178,7 +177,7 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04"
-              onClick="sortProducts('htl')"
+              onClick="singleChange('htl','sorted')"
             >
               Price: High to Low
             </a>
@@ -196,8 +195,10 @@
                 <input
                   type="checkbox"
                   class="form-check-input"
+                  id="colour_all"
                   checked=""
-                  onClick="colourChange('')"
+                  value="all"
+                  onClick="change('all','colour')"
                 />
                 All
                 <span
@@ -223,10 +224,11 @@
                 <input
                   type="checkbox"
                   class="form-check-input"
-                  checked=""
-                  onClick="colourChange('<%=colour[i]._id%>')"
+                  id="colour_<%=colour[i]._id%>"
+                  value="<%=colour[i]._id%>"
+                  onClick="change('<%=colour[i]._id%>','colour')"
                 />
-                <%=colour[i].values%>
+                <%= colour[i].values%>
                 <span
                   class="fs-15 lh-12 m-r-6"
                   style="color: <%=colour[i].values%>"
@@ -250,7 +252,9 @@
                   type="checkbox"
                   class="form-check-input"
                   checked=""
-                  onClick="categoryChange('')" />
+                  id="category_all"
+                  value="all"
+                  onClick="change('all','category')" />
                 All
                 <i class="input-helper"></i
               ></label>
@@ -263,8 +267,9 @@
                 <input
                   type="checkbox"
                   class="form-check-input"
-                  checked=""
-                  onClick="categoryChange('<%=category[i]._id%>')" />
+                  id="category_<%=category[i]._id%>"
+                  value="<%=category[i]._id%>"
+                  onClick="change('<%=category[i]._id%>','category')" />
                 <%=category[i].values%>
                 <i class="input-helper"></i
               ></label>
@@ -283,9 +288,9 @@
                   type="checkbox"
                   class="form-check-input"
                   checked=""
-                  id="pattern"
-                  value=""
-                  onClick="patternChange('')"
+                  id="pattern_all"
+                  value="all"
+                  onClick="change('all','pattern')"
                 />
                 All
                 <i class="input-helper"></i>
@@ -299,10 +304,9 @@
                 <input
                   type="checkbox"
                   class="form-check-input"
-                  checked=""
-                  id="pattern"
+                  id="pattern_<%=pattern[i]._id%>"
                   value="<%=pattern[i]._id%>"
-                  onClick="patternChange('<%=pattern[i]._id%>')"
+                  onClick="change('<%=pattern[i]._id%>','pattern')"
                 />
                 <%=pattern[i].values%>
                 <i class="input-helper"></i>
@@ -356,20 +360,15 @@
 </div>
 <script>
   // Define variables to hold values
+  var selectedpatterns = [];
+  var selectedcategorys = [];
+  var selectedcolours = [];
+  var selectedgenderTypes;
+  var selectedsortedTypes;
   var params = new URLSearchParams(window.location.search);
-  var sorted = params.get("sorted") || "";
   var minPrice = params.get("minPrice") || "";
   var maxPrice = params.get("maxPrice") || "";
-  var pattern = params.get("pattern") || "";
-  var colour = params.get("colour") || "";
-  var category = params.get("category") || "";
   var size = params.get("size") || "";
-  var genderType = params.get("genderType") || "";
-
-  function sortProducts(option) {
-    sorted = option;
-    toChangeFilter();
-  }
 
   function filterByPrice(min, max) {
     minPrice = min;
@@ -383,37 +382,50 @@
     toChangeFilter();
   }
 
-  function patternChange(option) {
-    pattern = option;
+  function change(value, optionName) {
+    if (value === "all") {
+      window[`selected${optionName}s`] = [];
+    } else {
+      const checkbox = document.getElementById(`${optionName}_${value}`);
+      if (checkbox.checked) {
+        window[`selected${optionName}s`].push(value);
+      } else {
+        const index = window[`selected${optionName}s`].indexOf(value);
+        if (index !== -1) {
+          window[`selected${optionName}s`].splice(index, 1);
+        }
+      }
+    }
     toChangeFilter();
+    console.log(window[`selected${optionName}s`]); // log the selected options array
   }
 
-  function colourChange(option) {
-    colour = option;
+  function singleChange(value, optionName) {
+    console.log(value);
+    console.log(optionName);
+    window[`selected${optionName}s`] = value;
     toChangeFilter();
   }
-
-  function categoryChange(option) {
-    category = option;
-    toChangeFilter();
-  }
-
-  function sizeChange(option) {
-    size = option;
-    toChangeFilter();
-  }
-
-  function genderTypeChange(option) {
-    genderType = option;
-    toChangeFilter();
-  }
-
   function toChangeFilter() {
     // Build query string with updated filter values
-    var queryString = `?sorted=${sorted}&pattern=${pattern}&minPrice=${minPrice}&maxPrice=${maxPrice}&colour=${colour}&category=${category}&sizes=${size}&genderType=${genderType}&count=&page=`;
-
-    // Redirect to filtered product list page
-    window.location.href = `/productlist${queryString}`;
+    $.ajax({
+      url: "/postfilter",
+      method: "POST",
+      data: {
+        pattern: window.selectedpatterns,
+        category: window.selectedcategorys,
+        colour: window.selectedcolours,
+        genderType: window.selectedgenderTypes,
+        sorted: window.selectedsorteds,
+      },
+      success: function (response) {
+        console.log(response);
+        $("#product").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      },
+    });
   }
 </script>
 <script>

@@ -42,20 +42,19 @@ router.get(
 router.post(
   "/postfilter",
   userController.postFilter,
-  cart,
   userController.productFilterList
 );
 router.get(
   "/postfilter",
   userController.getFilter,
   cart,
-  userController.productFilterList
+  userController.productList
 );
 router.get(
   "/productlist",
   userController.getFilter,
   cart,
-  userController.productFilterList
+  userController.productList
 );
 router.get(
   "/cart",

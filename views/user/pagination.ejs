@@ -1,0 +1,125 @@
+<div class="pagination p1 mx-auto">
+  <ul>
+    <% if (pagination.page > 2) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= pagination.page-1 %>"
+      ><li><</li></a
+    >
+    <% } %> <% if (pagination.page > 1) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= pagination.page-1 %>"
+      ><li><%= pagination.page-1 %></li></a
+    >
+    <% } %>
+    <a class="is-active" href="#"><li><%= pagination.page %></li></a>
+    <% for (let i = pagination.page+1; i <=
+    Math.min(pagination.totalPages,pagination.page+6); i++) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= i %>"><li><%= i %></li></a>
+    <% } %> <% if (pagination.page < pagination.totalPages-1) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= pagination.page+1 %>"
+      ><li>></li></a
+    >
+    <% } %>
+  </ul>
+</div>
+<div class="pagination p11">
+  <ul>
+    <% if (pagination.page > 1) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= pagination.page-1 %>"
+      ><li>Previous</li></a
+    >
+    <% } %> <% if (pagination.page < pagination.totalPages) { %>
+    <a href="?count=<%= pagination.count %>&page=<%= pagination.page+1 %>"
+      ><li>Next</li></a
+    >
+    <% } %>
+  </ul>
+</div>
+
+<style>
+  p,
+  li,
+  a {
+    font-size: 14px;
+  }
+
+  /* GRID */
+  .eleven {
+    width: 91.53%;
+  }
+  .one {
+    width: 6.866%;
+  }
+  .pagination {
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .pagination ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .p1 a:hover {
+    background-color: #0e532b;
+    border-radius: 40%;
+    color: #fff;
+  }
+  .pagination a {
+    display: inline-block;
+    padding: 10px 18px;
+    color: #222;
+  }
+
+  /* ONE */
+
+  .p1 a {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+    text-align: center;
+  }
+
+  .p1 a.is-active {
+    background-color: #2ecc71;
+    border-radius: 100%;
+    color: #fff;
+  }
+
+  .p11 a {
+    background-color: #2ecc71;
+    margin: auto 5px;
+    color: #fff;
+    border: 3px solid #2ecc71;
+    position: relative;
+  }
+  .p11 a:hover {
+    background-color: #051a0d;
+    color: #fff;
+    border: 3px solid #cef8df;
+  }
+  .p11 a:first-of-type:before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -25px;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
+    border-right: 22px solid #2ecc71;
+  }
+
+  .p11 a:last-of-type:after {
+    content: "";
+    position: absolute;
+    top: -3px;
+    right: -25px;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
+    border-left: 22px solid #2ecc71;
+  }
+
+  .p11 .is-active {
+    font-weight: bold;
+  }
+
+  /* TWELVE */
+</style>

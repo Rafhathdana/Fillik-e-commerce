@@ -276,6 +276,74 @@ module.exports = {
       const page = parseInt(req.query.page) || 1;
       const filter = req.filterData;
       const sort = req.sort;
+      console.log(filter + "gfgf");
+      let productsList;
+
+      if (filter) {
+        productsList = await Products.find(filter)
+          .sort(sort)
+          .skip((page - 1) * count)
+          .limit(count)
+          .lean();
+        console.log("hel");
+      } else {
+        productsList = await Products.find()
+          .sort(sort)
+          .skip((page - 1) * count)
+          .limit(count)
+          .lean();
+        console.log("gad");
+      }
+
+      const totalCount = await Products.countDocuments(filter);
+      const totalPages = Math.ceil(totalCount / count);
+      console.log(totalCount);
+      const startIndex = (page - 1) * count;
+      const endIndex = Math.min(startIndex + count, totalCount);
+
+      let category = await filterproduct.find({ categoryname: "Category" });
+      let colour = await filterproduct.find({ categoryname: "Colour" });
+      let pattern = await filterproduct.find({ categoryname: "Pattern" });
+      let genderType = await filterproduct.find({ categoryname: "GenderType" });
+
+      const pagination = {
+        totalCount: totalCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+
+      if (req.session.userLoggedIn) {
+        res.render("user/product", {
+          title: "Users List",
+          noShow: true,
+          fullName: req.session.user.fullName,
+          loggedin: req.session.userLoggedIn,
+          productsList,
+          pagination,
+        });
+      } else {
+        res.render("user/product", {
+          title: "Product List",
+          loggedin: false,
+          productsList,
+          noShow: true,
+
+          pagination,
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+  productList: async (req, res, next) => {
+    try {
+      const count = 20;
+      const page = parseInt(req.query.page) || 1;
+      const filter = req.filterData;
+      const sort = req.sort;
       console.log(filter);
       let productsList;
 
@@ -323,7 +391,6 @@ module.exports = {
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
           productsList,
-          cartItems: req.cartItems,
           pagination,
           category,
           colour,
@@ -402,7 +469,6 @@ module.exports = {
         sort = { [sortField]: sortOrder };
       }
 
-      req.sort = sort;
       req.filterData = filter;
       console.log(req.filterData);
       next();
@@ -413,22 +479,45 @@ module.exports = {
   },
 
   postFilter: async (req, res, next) => {
+    console.log(req.body);
     try {
-      const { minPrice, maxPrice, category, genderType, colour, sizes } =
-        req.body;
-      // Construct the filter object
-      const filter = {};
+      const { minPrice, maxPrice, sizes } = req.body;
+      const category = req.body["category[]"];
+      const colour = req.body["colour[]"];
+      const pattern = req.body["pattern[]"];
+      const genderType = req.body.genderType;
+      const sorted = req.body.sorted;
 
+      let sort = {};
+
+      if (sorted) {
+        let sortField = "ourPrice";
+        let sortOrder = 1;
+
+        if (sorted == "htl") {
+          sortOrder = -1;
+        } else if (sorted == "lth") {
+          sortOrder = 1;
+        } else if (sorted == "popularity") {
+          sortOrder = 1;
+        }
+        sort = { [sortField]: sortOrder };
+      }
+      // Construct the filter object
+      req.sort = sort;
+      const filter = {};
+      console.log(genderType);
       if (minPrice && maxPrice) {
         filter.ourPrice = { $gte: minPrice, $lte: maxPrice };
       } else if (minPrice) {
-        filter.ourPrice = { $gte: minPrice }; 
+        filter.ourPrice = { $gte: minPrice };
       } else if (maxPrice) {
         filter.ourPrice = { $lte: maxPrice };
       }
 
       if (category) {
-        filter.category = category;
+        filter.category = { $in: category };
+        console.log(filter.category);
       }
 
       if (genderType) {
@@ -436,7 +525,10 @@ module.exports = {
       }
 
       if (colour) {
-        filter.colour = colour;
+        filter.colour = { $in: colour };
+      }
+      if (pattern) {
+        filter.colour = { $in: pattern };
       }
 
       if (sizes) {
@@ -761,10 +853,12 @@ module.exports = {
       const count = 20;
       const page = parseInt(req.query.page) || 1;
       const filter = req.filterData;
+      const sort = req.sort;
       console.log(filter);
       let productsList;
       if (filter) {
         productsList = await Products.find(filter)
+          .sort(sort)
           .skip((page - 1) * count)
           .limit(count)
           .lean();
@@ -772,6 +866,7 @@ module.exports = {
         console.log(productsList);
       } else {
         productsList = await Products.find()
+          .sort(sort)
           .skip((page - 1) * count)
           .limit(count)
           .lean();
@@ -782,16 +877,21 @@ module.exports = {
       const totalPages = Math.ceil(totalCount / count);
       console.log(totalCount);
       const startIndex = (page - 1) * count;
+      const endIndex = Math.min(startIndex + count, totalCount);
 
-      const endIndex = Math.min(
-        startIndex + count,
-        await Products.countDocuments(filter)
-      );
       let category = await filterproduct.find({ categoryname: "Category" });
       let colour = await filterproduct.find({ categoryname: "Colour" });
       let pattern = await filterproduct.find({ categoryname: "Pattern" });
       let genderType = await filterproduct.find({ categoryname: "GenderType" });
 
+      const pagination = {
+        totalCount: totalCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       if (req.session.userLoggedIn) {
         res.render("user/index", {
           title: "Users List",
@@ -799,11 +899,7 @@ module.exports = {
           loggedin: req.session.userLoggedIn,
           productsList,
           cartItems: req.cartItems,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination,
           category,
           colour,
           pattern,
@@ -815,11 +911,7 @@ module.exports = {
           loggedin: false,
           productsList,
           cartItems: req.cartItems,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
+          pagination,
           category,
           colour,
           pattern,
