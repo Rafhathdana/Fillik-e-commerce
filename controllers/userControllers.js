@@ -761,21 +761,16 @@ module.exports = {
         console.log("error in finding product: ", error);
       }
     }
+
     req.cartItems = items;
     console.log(req.cartItems);
-    if (req.cartItems) {
-      res.status(200).send({
-        items,
-        success: true,
-        message: " successfull",
-      });
-    } else {
-      res.status(500).send({
-        items: [],
-        success: false,
-        message: " errror",
-      });
-    }
+
+    res.render("user/sidecart", {
+      title: "cart List",
+      loggedin: false,
+      cartItems: req.cartItems,
+      noShow: true,
+    });
   },
   getVariableCart: async (req, res, next) => {
     let items = await Cart.aggregate([
@@ -807,19 +802,12 @@ module.exports = {
 
     req.cartItems = items;
     console.log(req.cartItems);
-    if (req.cartItems) {
-      res.status(200).send({
-        items,
-        success: true,
-        message: " successfull",
-      });
-    } else {
-      res.status(500).send({
-        items: [],
-        success: false,
-        message: " errror",
-      });
-    }
+    res.render("user/sidecart", {
+      title: "cart List",
+      loggedin: false,
+      cartItems: req.cartItems,
+      noShow: true,
+    });
   },
   forgetPassword: async (req, res, next) => {
     res.render("user/forgetPassword", {
