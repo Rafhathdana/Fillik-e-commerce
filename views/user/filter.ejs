@@ -40,7 +40,7 @@
   }
   .slider .progress {
     height: 100%;
-    left: 25%;
+    left: 5%;
     right: 25%;
     position: absolute;
     border-radius: 5px;
@@ -83,7 +83,7 @@
   <div class="flex-w flex-l-m filter-tope-group m-tb-10">
     <button
       class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
-      onClick="singleChange('all','genderType')"
+      onClick="singleChange('','genderType')"
     >
       All Products
     </button>
@@ -147,7 +147,7 @@
             <a
               href="#"
               class="filter-link stext-106 trans-04"
-              onClick="singleChange('default','sorted')"
+              onClick="singleChange('','sorted')"
             >
               Default
             </a>
@@ -188,7 +188,7 @@
       <div class="filter-col3 p-r-15 p-b-27">
         <div class="mtext-102 cl2 p-b-15">Color</div>
 
-        <ul>
+        <ul id="colour">
           <li class="p-b-6">
             <div class="filter-link stext-106 trans-04">
               <label class="form-check-label">
@@ -244,7 +244,7 @@
       <div class="filter-col4 p-r-15 p-b-27">
         <div class="mtext-102 cl2 p-b-15">Category</div>
 
-        <ul>
+        <ul id="category">
           <li class="p-b-6">
             <div class="filter-link stext-106 trans-04">
               <label class="form-check-label">
@@ -280,7 +280,7 @@
       </div>
       <div class="filter-col5 p-r-15 p-b-27">
         <div class="mtext-102 cl2 p-b-15">Pattern</div>
-        <ul id="patternList">
+        <ul id="pattern">
           <li class="p-b-6">
             <div class="filter-link stext-106 trans-04">
               <label class="form-check-label">
@@ -323,7 +323,7 @@
             <div class="price-input">
               <div class="field">
                 <span>Min</span>
-                <input type="number" class="input-min" value="2500" />
+                <input type="number" id="" class="input-min" value="50" />
               </div>
               <div class="separator">-</div>
               <div class="field">
@@ -340,7 +340,7 @@
                 class="range-min"
                 min="0"
                 max="10000"
-                value="2500"
+                value="100"
                 step="100"
               />
               <input
@@ -366,25 +366,38 @@
   var selectedgenderTypes;
   var selectedsortedTypes;
   var params = new URLSearchParams(window.location.search);
-  var minPrice = params.get("minPrice") || "";
-  var maxPrice = params.get("maxPrice") || "";
+  const rangeInput = document.querySelectorAll(".range-input input"),
+    priceInput = document.querySelectorAll(".price-input input"),
+    range = document.querySelector(".slider .progress");
+  let priceGap = 500;
+  let minPrice = parseInt(priceInput[0].value);
+  let maxPrice = parseInt(priceInput[1].value);
   var size = params.get("size") || "";
-
-  function filterByPrice(min, max) {
-    minPrice = min;
-    maxPrice = max;
-    if (min == -1) {
-      minPrice = "";
-    }
-    if (max == -1) {
-      maxPrice = "";
-    }
-    toChangeFilter();
-  }
-
   function change(value, optionName) {
+    const allCheckbox = document.getElementById(`${optionName}_all`);
+    const checkboxes = document.querySelectorAll(
+      `#${optionName} input[type="checkbox"]:not(#${optionName}_all)`
+    );
+
     if (value === "all") {
-      window[`selected${optionName}s`] = [];
+      if (allCheckbox.checked) {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = true;
+          if (!window[`selected${optionName}s`].includes(checkbox.value)) {
+            window[`selected${optionName}s`].push(checkbox.value);
+          }
+        });
+      } else {
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+          const index = window[`selected${optionName}s`].indexOf(
+            checkbox.value
+          );
+          if (index !== -1) {
+            window[`selected${optionName}s`].splice(index, 1);
+          }
+        });
+      }
     } else {
       const checkbox = document.getElementById(`${optionName}_${value}`);
       if (checkbox.checked) {
@@ -395,14 +408,22 @@
           window[`selected${optionName}s`].splice(index, 1);
         }
       }
+      const allChecked =
+        checkboxes.length === window[`selected${optionName}s`].length;
+      allCheckbox.checked = allChecked;
     }
+
+    if (checkboxes.length === window[`selected${optionName}s`].length) {
+      allCheckbox.checked = true;
+    } else {
+      allCheckbox.checked = false;
+    }
+
     toChangeFilter();
     console.log(window[`selected${optionName}s`]); // log the selected options array
   }
 
   function singleChange(value, optionName) {
-    console.log(value);
-    console.log(optionName);
     window[`selected${optionName}s`] = value;
     toChangeFilter();
   }
@@ -417,6 +438,8 @@
         colour: window.selectedcolours,
         genderType: window.selectedgenderTypes,
         sorted: window.selectedsorteds,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
       },
       success: function (response) {
         console.log(response);
@@ -427,17 +450,10 @@
       },
     });
   }
-</script>
-<script>
-  const rangeInput = document.querySelectorAll(".range-input input"),
-    priceInput = document.querySelectorAll(".price-input input"),
-    range = document.querySelector(".slider .progress");
-  let priceGap = 1000;
-
   priceInput.forEach((input) => {
     input.addEventListener("input", (e) => {
-      let minPrice = parseInt(priceInput[0].value),
-        maxPrice = parseInt(priceInput[1].value);
+      minPrice = parseInt(priceInput[0].value);
+      maxPrice = parseInt(priceInput[1].value);
 
       if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
         if (e.target.className === "input-min") {
@@ -468,6 +484,9 @@
         range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
         range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
       }
+      minPrice = priceInput[0].value;
+      maxPrice = priceInput[1].value;
+      toChangeFilter();
     });
   });
 </script>

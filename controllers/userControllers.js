@@ -277,70 +277,58 @@ module.exports = {
     try {
       const count = 20;
       const page = parseInt(req.query.page) || 1;
-      const filter = req.filterData;
-      const sort = req.sort;
-      console.log(filter + "gfgf");
-      let productsList;
-
-      if (filter) {
-        productsList = await Products.find(filter)
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("hel");
-      } else {
-        productsList = await Products.find()
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("gad");
-      }
-
+      const filter = req.filterData || {};
+      const sort = req.sort || { createdAt: -1 };
+      console.log(count, page, filter, sort);
+      productsList = await Products.find(filter)
+        .sort(sort)
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+      console.log(productsList);
       const totalCount = await Products.countDocuments(filter);
       const totalPages = Math.ceil(totalCount / count);
-      console.log(totalCount);
       const startIndex = (page - 1) * count;
       const endIndex = Math.min(startIndex + count, totalCount);
 
-      let category = await filterproduct.find({ categoryname: "Category" });
-      let colour = await filterproduct.find({ categoryname: "Colour" });
-      let pattern = await filterproduct.find({ categoryname: "Pattern" });
-      let genderType = await filterproduct.find({ categoryname: "GenderType" });
+      const categories = await filterproduct.aggregate([
+        {
+          $match: {
+            categoryname: {
+              $in: ["Category", "Colour", "Pattern", "GenderType"],
+            },
+          },
+        },
+        { $group: { _id: "$categoryname", values: { $addToSet: "$value" } } },
+      ]);
 
       const pagination = {
-        totalCount: totalCount,
-        totalPages: totalPages,
-        page: page,
-        count: count,
-        startIndex: startIndex,
-        endIndex: endIndex,
+        totalCount,
+        totalPages,
+        page,
+        count,
+        startIndex,
+        endIndex,
       };
 
-      if (req.session.userLoggedIn) {
-        res.render("user/product", {
-          title: "Users List",
-          noShow: true,
-          fullName: req.session.user.fullName,
-          loggedin: req.session.userLoggedIn,
-          productsList,
-          pagination,
-        });
-      } else {
-        res.render("user/product", {
-          title: "Product List",
-          loggedin: false,
-          productsList,
-          noShow: true,
+      const loggedIn = req.session.userLoggedIn || false;
+      const fullName = req.session.user?.fullName || "";
 
-          pagination,
-        });
-      }
+      res.render("user/product", {
+        title: "Product List",
+        noShow: true,
+        loggedIn,
+        fullName,
+        productsList,
+        categories,
+        pagination,
+      });
     } catch (error) {
-      next(error);
+      console.error(error);
+      res.status(500).send("Internal server error");
     }
   },
+
   productList: async (req, res, next) => {
     try {
       const count = 20;
@@ -483,7 +471,7 @@ module.exports = {
   },
 
   postFilter: async (req, res, next) => {
-    console.log(req.body);
+    console.log(req.body, "body");
     try {
       const { minPrice, maxPrice, sizes } = req.body;
       const category = req.body["category[]"];
@@ -492,7 +480,7 @@ module.exports = {
       const genderType = req.body.genderType;
       const sorted = req.body.sorted;
 
-      let sort = {};
+      let sort = { createdAt: -1 };
 
       if (sorted) {
         let sortField = "ourPrice";
@@ -504,24 +492,28 @@ module.exports = {
           sortOrder = 1;
         } else if (sorted == "popularity") {
           sortOrder = 1;
+        } else {
+          sortField = "createdAt";
+          sortOrder = -1;
         }
         sort = { [sortField]: sortOrder };
       }
       // Construct the filter object
       req.sort = sort;
       const filter = {};
-      console.log(genderType);
       if (minPrice && maxPrice) {
-        filter.ourPrice = { $gte: minPrice, $lte: maxPrice };
+        filter.ourPrice = {
+          $gte: parseInt(minPrice) * 100,
+          $lte: parseInt(maxPrice) * 100,
+        };
       } else if (minPrice) {
-        filter.ourPrice = { $gte: minPrice };
+        filter.ourPrice = { $gte: parseInt(minPrice) };
       } else if (maxPrice) {
-        filter.ourPrice = { $lte: maxPrice };
+        filter.ourPrice = { $lte: parseInt(maxPrice) };
       }
 
       if (category) {
         filter.category = { $in: category };
-        console.log(filter.category);
       }
 
       if (genderType) {
@@ -540,6 +532,7 @@ module.exports = {
       }
 
       req.filterData = filter;
+      console.log(filter, "filter");
       next();
     } catch (err) {
       console.error(err);
