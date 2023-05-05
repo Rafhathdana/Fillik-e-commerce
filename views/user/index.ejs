@@ -4,7 +4,7 @@
     <div class="slick1">
       <div
         class="item-slick1"
-        style="background-image: url(images/slide-01.jpg)"
+        style="background-image: url(/images/bannerImages/<%=banner[0].image%>)"
       >
         <div class="container h-full">
           <div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
@@ -13,7 +13,9 @@
               data-appear="fadeInDown"
               data-delay="0"
             >
-              <span class="ltext-101 cl2 respon2"> Women Collection 2023 </span>
+              <span class="ltext-101 cl2 respon2">
+                <%= banner[0].smallHead%>
+              </span>
             </div>
 
             <div
@@ -21,7 +23,9 @@
               data-appear="fadeInUp"
               data-delay="800"
             >
-              <h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">NEW SEASON</h2>
+              <h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">
+                <%= banner[0].bigHead%>
+              </h2>
             </div>
 
             <div
@@ -30,7 +34,7 @@
               data-delay="1600"
             >
               <a
-                href="product.html"
+                href="<%= banner[0].link%>"
                 class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
               >
                 Shop Now
@@ -42,7 +46,7 @@
 
       <div
         class="item-slick1"
-        style="background-image: url(images/slide-02.jpg)"
+        style="background-image: url(/images/bannerImages/<%=banner[1].image%>)"
       >
         <div class="container h-full">
           <div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
@@ -51,7 +55,9 @@
               data-appear="rollIn"
               data-delay="0"
             >
-              <span class="ltext-101 cl2 respon2"> Men New-Season </span>
+              <span class="ltext-101 cl2 respon2">
+                <%= banner[1].smallHead%>
+              </span>
             </div>
 
             <div
@@ -60,7 +66,7 @@
               data-delay="800"
             >
               <h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">
-                Jackets & Coats
+                <%= banner[1].bigHead%>
               </h2>
             </div>
 
@@ -70,7 +76,7 @@
               data-delay="1600"
             >
               <a
-                href="product.html"
+                href="<%= banner[1].link%>"
                 class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
               >
                 Shop Now
@@ -82,7 +88,7 @@
 
       <div
         class="item-slick1"
-        style="background-image: url(images/slide-03.jpg)"
+        style="background-image: url(/images/bannerImages/<%=banner[2].image%>)"
       >
         <div class="container h-full">
           <div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
@@ -91,7 +97,9 @@
               data-appear="rotateInDownLeft"
               data-delay="0"
             >
-              <span class="ltext-101 cl2 respon2"> Men Collection 2023 </span>
+              <span class="ltext-101 cl2 respon2">
+                <%= banner[1].smallHead%>
+              </span>
             </div>
 
             <div
@@ -99,7 +107,9 @@
               data-appear="rotateInUpRight"
               data-delay="800"
             >
-              <h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">New arrivals</h2>
+              <h2 class="ltext-201 cl2 p-t-19 p-b-43 respon1">
+                <%= banner[1].bigHead%>
+              </h2>
             </div>
 
             <div
@@ -108,7 +118,7 @@
               data-delay="1600"
             >
               <a
-                href="product.html"
+                href="<%= banner[1].link%>"
                 class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
               >
                 Shop Now
@@ -182,8 +192,7 @@
     <!-- Load more -->
     <div class="flex-c-m flex-w w-full p-t-45">
       <a
-        href="/productlist
-        "
+        href="/productlist"
         class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04"
       >
         Load More
@@ -267,7 +276,9 @@
 
                       <span class="stext-105 cl3">
                         RS.<%=((productsList[i].ourPrice)/100)%>
-                        <span>Rs<%= productsList[i].orginalPrice %></span>
+                        <span class="slinecross"
+                          >Rs <%= productsList[i].orginalPrice %></span
+                        >
                       </span>
                     </div>
 

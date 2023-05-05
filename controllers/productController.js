@@ -361,4 +361,50 @@ module.exports = {
       next(error);
     }
   },
+  productquantity: async (productId, size) => {
+    try {
+      let canceled = "canceled";
+      let sizeValue;
+      console.log("size count:", size);
+
+      switch (size) {
+        case "S":
+          sizeValue = "Quantity.small";
+          break;
+        case "M":
+          sizeValue = "Quantity.medium";
+          break;
+        case "L":
+          sizeValue = "Quantity.large";
+          break;
+        case "XL":
+          sizeValue = "Quantity.extraLarge";
+          break;
+        default:
+          throw new Error("Invalid size value");
+      }
+      console.log(sizeValue);
+      const itemCount = await Product.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(productId),
+            isActive: true,
+          },
+        },
+        {
+          $project: {
+            itemCount: `$${sizeValue}`,
+          },
+        },
+      ]);
+      console.log(itemCount);
+      if (itemCount.length === 0) {
+        return 0;
+      }
+      return itemCount[0].itemCount;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
 };

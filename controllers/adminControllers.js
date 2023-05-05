@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 var users = require("../models/userSchema");
 var merchants = require("../models/merchantSchema");
 const otp = require("../controllers/otp");
-
+const multer = require("multer");
+const path = require("path");
+const Banner = require("../models/bannersSchema");
 const {
   Types: { ObjectId },
 } = require("mongoose");
@@ -427,5 +429,97 @@ module.exports = {
       author: "Admin#1233!",
       orderList: req.orderList,
     });
+  },
+  getAddBanner: async (req, res, next) => {
+    try {
+      res.render("admin/addbanner", {
+        title: "admin",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+      });
+    } catch (error) {
+      res.render("admin/404", {
+        title: "admin",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+      });
+    }
+  },
+  postAddBanner: async (req, res, next) => {
+    try {
+      const bannercode = Date.now().toString();
+      const filePath = `${__dirname}/../public/images/bannerImages/`;
+      const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, filePath);
+        },
+        filename: function (req, file, cb) {
+          const originalName = file.originalname;
+          const fileNameParts = originalName.split(".");
+          const fileExtension = fileNameParts[fileNameParts.length - 1];
+          const fileName = `banner-${bannercode}-0.${fileExtension}`;
+          cb(null, fileName);
+        },
+      });
+      const upload = multer({ storage }).single("img");
+
+      upload(req, res, async (err) => {
+        if (err) {
+          console.error(err);
+          res.redirect("/admin/login");
+          return;
+        }
+
+        const newBanner = new Banner({
+          smallHead: req.body.smallHead,
+          bigHead: req.body.bigHead,
+          link: req.body.link,
+          image: req.file.filename, // get filename from multer file object
+          isActive: true,
+        });
+
+        await newBanner.save();
+
+        console.log(newBanner);
+        res.redirect("/admin/login");
+      });
+    } catch (error) {
+      console.log(error);
+      res.redirect("/admin/login");
+    }
+  },
+  getBannerList: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      var banner = await Banner.find()
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+      const totalPages = Math.ceil((await Banner.countDocuments()) / count);
+      const startIndex = (page - 1) * count;
+      const totalCount = await Banner.countDocuments();
+      const endIndex = Math.min(startIndex + count, totalCount);
+      const pagination = {
+        totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      res.render("admin/viewBanner", {
+        title: "addCategory",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        pagination,
+        banner: banner,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
 };

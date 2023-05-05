@@ -27,7 +27,7 @@ function cart(req, res, next) {
     userController.getCartLocal(req, res, next);
   }
 }
-router.get("/", userController.getFilter, cart, userController.productHome);
+router.get("/", userController.getFilter, cart, userController.banner, userController.productHome);
 
 router.get("/signup", userauth, cart, userController.getSignUp);
 
@@ -117,4 +117,6 @@ router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.patch("updateOrderStatus", orderControllers.updateOrder);
 router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
 router.get("/paymentSuccess", verify, userController.getPaymentSucces);
+router.post("/changeQuantity", verify, userController.changeProductQuantity);
+
 module.exports = router;

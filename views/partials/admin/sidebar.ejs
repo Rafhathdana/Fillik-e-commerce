@@ -97,10 +97,17 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/admin/viewBanner">
+            <a class="nav-link" data-toggle="collapse" href="#banner" aria-expanded="false" aria-controls="banner">
               <i class="typcn typcn-mortar-board menu-icon"></i>
               <span class="menu-title">Banners</span>
+              <i class="menu-arrow"></i>
             </a>
+            <div class="collapse" id="banner">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="/admin/addBanner">Add Banners</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/viewBanner">View Banners</a></li>
+              </ul>
+            </div>
           </li>
         </ul>
       </nav>

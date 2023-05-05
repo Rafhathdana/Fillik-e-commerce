@@ -8,6 +8,9 @@ const bcrypt = require("bcrypt");
 const { response } = require("../app");
 const otp = require("../controllers/otp");
 const mongoose = require("mongoose");
+const Banner = require("../models/bannersSchema");
+const orderControllers = require("./orderControllers");
+const productController = require("./productController");
 
 module.exports = {
   getSignUp: (req, res, next) => {
@@ -392,6 +395,7 @@ module.exports = {
           loggedin: req.session.userLoggedIn,
           productsList,
           pagination,
+          cartItems: req.cartItems,
           category,
           colour,
           pattern,
@@ -835,7 +839,14 @@ module.exports = {
   },
 
   // new methods
-
+  banner: async (req, res, next) => {
+    var banner = await Banner.find({ isActive: true })
+      .sort({ updatedAt: -1 })
+      .limit(3);
+    req.banner = banner;
+    next();
+    // do something with the banner data
+  },
   productHome: async (req, res, next) => {
     try {
       const count = 20;
@@ -888,6 +899,7 @@ module.exports = {
           productsList,
           cartItems: req.cartItems,
           pagination,
+          banner: req.banner,
           category,
           colour,
           pattern,
@@ -900,6 +912,7 @@ module.exports = {
           productsList,
           cartItems: req.cartItems,
           pagination,
+          banner: req.banner,
           category,
           colour,
           pattern,
@@ -1011,4 +1024,55 @@ module.exports = {
   getPaymentSucces: (req, res) => {
     res.render("user/paymentSuccess");
   },
+  changeProductQuantity: async (req, res, next) => {
+    var count = parseInt(req.body.count);
+    var quantity = parseInt(req.body.quantity);
+    var size = req.body.size;
+    var productId = req.body.proId;
+    var cartId = req.body.cartId;
+    try {
+      if (count > 0) {
+        const sellcount = await orderControllers.productcount(productId, size);
+        console.log("Sell count:", sellcount);
+        const itemcount = await productController.productquantity(
+          productId,
+          size
+        );
+        let balance = itemcount - sellcount;
+        if (balance === 0) {
+          res.status(200).json({ noStock: true });
+        }
+        if (balance <= quantity + 1) {
+          res.status(200).json({ maxLimitStock: true });
+        }
+        if (balance > quantity + 1) {
+          await Cart.updateOne(
+            {
+              _id: new mongoose.Types.ObjectId(cartId),
+              productId: new mongoose.Types.ObjectId(productId),
+              size: size,
+            },
+            { quantity: quantity + count }
+          );
+        }
+      }
+      res.status(200).json({
+        message: "Product quantity updated successfully.",
+        success: true,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error", success: false });
+    }
+  },
 };
+//
+// {
+//
+// },
+// {
+//   $group: {
+//     _id: null,
+//     totalQuantity: { $sum: "$products.items.quantity" },
+//   },
+// },

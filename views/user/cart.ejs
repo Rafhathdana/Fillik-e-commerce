@@ -29,8 +29,7 @@
               <tr class="table_row">
                 <td class="column-1">Empty Cart</td>
               </tr>
-            </table>
-          </div>
+
               <%} else{ var total=0;%> <% cartList.forEach(function(item) { %>
 
               <tr class="table_row">
@@ -44,27 +43,35 @@
                 </td>
                 <td class="column-2"><%= item.product[0].name %></td>
                 <td class="column-3">
-                  Rs<%= item.product[0].ourPrice/100 %><span class="slinecross">
-                    Rs<%= item.product[0].orginalPrice %></span
+                  Rs<span id="itemTotal<%= item.productId %>"
+                    ><%= item.product[0].ourPrice/100 %></span
+                  >
+                  Rs<span
+                    class="slinecross"
+                    id="orgItemTotal<%= item.productId %>"
+                    ><%= item.product[0].orginalPrice %></span
                   >
                 </td>
                 <td class="column-4">
                   <div class="wrap-num-product flex-w m-l-auto m-r-0">
                     <div
-                      class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
+                      class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m minus"
+                      id="neg-btn<%= item.productId %>"
+                      onclick="changeQuantity('<%=item._id%>','<%= item.productId %>','<%= item.size%>',-1)"
                     >
                       <i class="fs-16 zmdi zmdi-minus"></i>
                     </div>
 
-                    <input
-                      class="mtext-104 cl3 txt-center num-product"
-                      type="number"
-                      name="num-product1"
-                      value="1"
-                    />
-
+                    <span
+                      class="mtext-104 cl3 txt-center num-product align-items-center adva"
+                      style="line-height: 2.7"
+                      id="<%= item.productId %>"
+                      name="quantity"
+                      ><%= item.quantity %></span
+                    >
                     <div
                       class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
+                      onclick="changeQuantity('<%= item._id %>','<%= item.productId %>','<%= item.size%>',+1)"
                     >
                       <i class="fs-16 zmdi zmdi-plus"></i>
                     </div>
@@ -74,14 +81,20 @@
                 total+=sum; let tsum=item.product[0].orginalPrice
                 *item.quantity; %>
                 <td class="column-5">
-                  Rs<%= sum %><span class="slinecross"> Rs<%= tsum %></span>
+                  Rs<span id="producttotal<%= item.productId %>"
+                    ><%= sum %></span
+                  >
+                  Rs<span
+                    class="slinecross"
+                    id="orgProducttotal<%= item.productId %>"
+                    ><%= tsum %></span
+                  >
                 </td>
               </tr>
 
               <% } )%>
             </table>
           </div>
-
           <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
             <div class="flex-w flex-m m-r-20 m-tb-5">
               <input
@@ -119,7 +132,10 @@
             </div>
 
             <div class="size-209">
-              <span class="mtext-110 cl2"> Rs. <%= total.toFixed(2) %> </span>
+              Rs.
+              <span class="mtext-110 cl2" id="subTotal">
+                <%= total.toFixed(2) %>
+              </span>
             </div>
           </div>
 
@@ -207,7 +223,7 @@
             </div>
             <%let gst= (total/100*18).toFixed(2) %>
             <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-              <p class="stext-111 cl6 p-t-2"><%= gst %></p>
+              <p class="stext-111 cl6 p-t-2" id="gst"><%= gst %></p>
             </div>
           </div>
           <div class="flex-w flex-t bor12 p-t-15 p-b-30">
@@ -216,7 +232,20 @@
             </div>
             <%let delivery= 0 %>
             <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-              <p class="stext-111 cl6 p-t-2"><%= delivery %></p>
+              <p class="stext-111 cl6 p-t-2" id="deliverycharge">
+                <%= delivery %>
+              </p>
+            </div>
+          </div>
+          <div class="flex-w flex-t bor12 p-t-15 p-b-30 d-none">
+            <div class="size-208 w-full-ssm">
+              <span class="stext-110 cl2">Coupon discount: </span>
+            </div>
+            <%let discountCoupon= 0 %>
+            <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
+              <p class="stext-111 cl6 p-t-2" id="discountCoupon">
+                <%= discountCoupon %>
+              </p>
             </div>
           </div>
           <div class="flex-w flex-t p-t-27 p-b-33">
@@ -226,7 +255,9 @@
             <% let mtotal=
             parseFloat(total)+parseFloat(gst)+parseFloat(delivery) %>
             <div class="size-209 p-t-1">
-              <span class="mtext-110 cl2"> <%= mtotal %></span>
+              <span class="mtext-110 cl2" id="mainTotal">
+                <%= mtotal.toFixed(2) %></span
+              >
             </div>
           </div>
           <div
@@ -307,3 +338,116 @@
   updateInputFields();
 </script>
 <%- include('address') -%> <%- include('checkOut') -%>
+<script>
+  function setHide(quantity, index) {
+    if (quantity === 1) {
+      mb[index].style.visibility = "hidden";
+    }
+  }
+
+  let mb = document.querySelectorAll(".minus");
+  let quantityArr = document.querySelectorAll(".adva");
+
+  function loop() {
+    for (let i = 0; i < quantityArr.length; i++) {
+      setHide(Number(quantityArr[i].innerHTML), i);
+    }
+  }
+
+  loop();
+
+  function changeQuantity(cartId, proId, size, count) {
+    let quantity = parseInt(document.getElementById(proId).innerText);
+
+    $.ajax({
+      url: "/changeQuantity",
+      data: {
+        cartId: cartId,
+        proId: proId,
+        count: count,
+        size: size,
+        quantity: quantity,
+      },
+      method: "post",
+      success: (response) => {
+        if (response.status) {
+          location.reload();
+          hide();
+        } else if (response.noStock) {
+          swal({
+            icon: "error",
+            title: "Oops..!",
+            text: "Out Of Stock!",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        } else if (response.maxLimitStock) {
+          swal({
+            icon: "warning",
+            title: "Oops..!",
+            text: "Limit is Reached!",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        } else {
+          document.getElementById(proId).innerHTML = quantity + count;
+          let newQuantity = parseFloat(
+            document.getElementById(proId).innerText
+          );
+
+          let itemTotal = parseFloat(
+            document.getElementById("itemTotal" + proId).innerText
+          );
+
+          let orgItemTotal = parseFloat(
+            document.getElementById("orgItemTotal" + proId).innerText
+          );
+          let deliverycharge = parseFloat(
+            document.getElementById("deliverycharge").innerText
+          );
+          let discountCoupon = parseFloat(
+            document.getElementById("discountCoupon").innerText
+          );
+
+          let productTotal = (newQuantity * itemTotal).toFixed(2);
+
+          let orgProductTotal = (newQuantity * orgItemTotal).toFixed(2);
+
+          let subTotal = parseFloat(
+            document.getElementById("subTotal").innerText
+          );
+          let newSubTotal;
+          if (count === 1) {
+            newSubTotal = (subTotal + itemTotal).toFixed(2);
+          } else {
+            newSubTotal = (subTotal - itemTotal).toFixed(2);
+          }
+          let gst = ((newSubTotal / 100) * 18).toFixed(2);
+
+          let total = (
+            newSubTotal +
+            parseFloat(gst) +
+            parseFloat(deliverycharge) -
+            parseFloat(discountCoupon)
+          ).toFixed(2);
+          document.getElementById("producttotal" + proId).innerHTML =
+            productTotal;
+          document.getElementById("orgProducttotal" + proId).innerHTML =
+            orgProductTotal;
+          document.getElementById("subTotal").innerHTML = newSubTotal;
+          document.getElementById("gst").innerHTML = gst;
+          document.getElementById("mainTotal").innerHTML = total;
+        }
+        hide(proId, newQuantity);
+      },
+    });
+  }
+
+  function hide(proId, quantity) {
+    if (quantity == 1) {
+      document.getElementById("neg-btn" + proId).style.visibility = "hidden";
+    } else {
+      document.getElementById("neg-btn" + proId).style.visibility = "visible";
+    }
+  }
+</script>

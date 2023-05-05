@@ -50,7 +50,6 @@ router.get(
 router.post("/login", adminAuth, adminController.postSignin); //almost
 router.get("/0124", adminAuth, adminController.getSignUp); //almost
 router.post("/0124", adminAuth, adminController.postSignup); //almost
-
 router.post("/emailpassexists", adminController.emailPasswordVerify); //almost
 router.post("/emailmobileexists", adminController.emailMobileVerify); //almost
 router.post("/sendotp", adminController.sendOtp); //almost
@@ -84,5 +83,8 @@ router.get(
 );
 router.get("/productList", adminVerify, productController.getAdminProductList);
 router.get("/logout", adminController.logout);
+router.get("/addBanner", adminVerify, adminController.getAddBanner);
+router.post("/addBanner", adminVerify, adminController.postAddBanner);
+router.get("/viewBanner", adminVerify, adminController.getBannerList);
 
 module.exports = router;

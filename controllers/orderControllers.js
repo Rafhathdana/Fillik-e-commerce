@@ -416,6 +416,47 @@ module.exports = {
     };
     next();
   },
+
+  productcount: async (productId, size) => {
+    try {
+      let canceled = "canceled"; // Replace with the actual value of the canceled status
+      const saleCount = await Order.aggregate([
+        { $unwind: "$products" },
+        {
+          $match: {
+            "products.productId": new mongoose.Types.ObjectId(productId),
+            "products.items": {
+              $elemMatch: {
+                size: size,
+              },
+            },
+            "products.status.currentStatus": { $ne: canceled },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalQuantity: {
+              $sum: {
+                $reduce: {
+                  input: "$products.items",
+                  initialValue: 0,
+                  in: { $add: ["$$value", "$$this.quantity"] },
+                },
+              },
+            },
+          },
+        },
+      ]);
+
+      console.log(saleCount); // Log the output to see if it contains any data
+
+      return saleCount[0].totalQuantity;
+    } catch (error) {
+      console.error(error); // Log any errors
+      throw error;
+    }
+  },
 };
 
 // // Get all orders
