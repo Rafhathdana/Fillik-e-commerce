@@ -537,6 +537,22 @@
         });
     }
   }
+  function viewCart() {
+    $.ajax({
+      url: "/postFromCart",
+      method: "POST",
+      success: function (response) {
+        console.log(response);
+        $("#sideCart").html(response);
+        var cartcount = parseInt($("#cartvalue").attr("data-notify")) + 1;
+        $(".cartvalue").attr("data-notify", cartcount);
+        swal("Item added to cart!", "success");
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      },
+    });
+  }
 </script>
 
 <%- include('productview') -%>

@@ -188,7 +188,7 @@
 
         <div class="col-md-4 offset-xl-1">
           <div class="py-4 d-flex justify-content-end">
-            <h6><a href="#!">Cancel and return to website</a></h6>
+            <h6><a href="">Cancel and return to website</a></h6>
           </div>
           <div
             class="rounded d-flex flex-column p-2"
@@ -341,16 +341,41 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.status) {
-          location.href = "/orderList";
+          location.href = "/paymentSuccess";
         } else {
           swal("payment failed");
+          returncart(payment,order);
         }
       })
       .catch((error) => {
         console.log(error);
       });
   }
+  function returncart(payment,order) {
+    fetch("/returnCart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        payment,
+        order,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status) {
+          location.href = "/paymentSuccess";
+        } else {
+          swal("payment failed");
+          returncart(payment,order);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
+  }
   function toggle() {
     const list = document.getElementById("placeorder").classList;
     const list2 = document.getElementById("paypal-button-container").classList;

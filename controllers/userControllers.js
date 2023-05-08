@@ -86,13 +86,18 @@ module.exports = {
     try {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
+      const totalCount = await Products.countDocuments();
+
+      // Calculate the total number of pages based on the count and the total count
+      const totalPages = Math.ceil(totalCount / count);
+
+      // Generate a random offset based on the total count and the page size
+      const randomOffset = Math.floor(Math.random() * (totalCount - count));
+
       const productsList = await Products.find()
-        .skip((page - 1) * count)
+        .skip(randomOffset + (page - 1) * count)
         .limit(count)
         .lean();
-      const totalPages = Math.ceil((await Products.countDocuments()) / count);
-      const startIndex = (page - 1) * count;
-      const totalCount = await Products.countDocuments();
 
       const endIndex = Math.min(startIndex + count, totalCount);
       let category = await filterproduct.find({ categoryname: "Category" });
@@ -281,6 +286,64 @@ module.exports = {
       const sort = req.sort || { createdAt: -1 };
       console.log(count, page, filter, sort);
       productsList = await Products.find(filter)
+        .sort(sort)
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+      console.log(productsList);
+      const totalCount = await Products.countDocuments(filter);
+      const totalPages = Math.ceil(totalCount / count);
+      const startIndex = (page - 1) * count;
+      const endIndex = Math.min(startIndex + count, totalCount);
+
+      const categories = await filterproduct.aggregate([
+        {
+          $match: {
+            categoryname: {
+              $in: ["Category", "Colour", "Pattern", "GenderType"],
+            },
+          },
+        },
+        { $group: { _id: "$categoryname", values: { $addToSet: "$value" } } },
+      ]);
+
+      const pagination = {
+        totalCount,
+        totalPages,
+        page,
+        count,
+        startIndex,
+        endIndex,
+      };
+
+      const loggedIn = req.session.userLoggedIn || false;
+      const fullName = req.session.user?.fullName || "";
+
+      res.render("user/product", {
+        title: "Product List",
+        noShow: true,
+        loggedIn,
+        fullName,
+        productsList,
+        categories,
+        pagination,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal server error");
+    }
+  },
+
+  searchProductFilterList: async (req, res, next) => {
+    try {
+      const count = 20;
+      const page = parseInt(req.query.page) || 1;
+      const filter = req.filterData || {};
+      const sort = req.sort || { createdAt: -1 };
+      filter.name = { $regex: `.*${req.body.value}.*`, $options: "i" };
+      console.log(count, page, filter, sort);
+
+      let productsList = await Products.find(filter)
         .sort(sort)
         .skip((page - 1) * count)
         .limit(count)
@@ -789,7 +852,7 @@ module.exports = {
           productId: "$productId",
           images: "$product.images",
           name: "$product.name",
-          ourPrice: "$product.ourPrice/100",
+          ourPrice: "$product.ourPrice",
           orginalPrice: "$product.orginalPrice",
           size: "$size",
           quantity: "$quantity",
@@ -798,13 +861,41 @@ module.exports = {
     ]);
 
     req.cartItems = items;
-    console.log(req.cartItems);
+    console.log(req.cartItems, "logged");
     res.render("user/sidecart", {
       title: "cart List",
-      loggedin: false,
+      loggedin: req.session.userLoggedIn,
       cartItems: req.cartItems,
       noShow: true,
     });
+    return;
+  },
+  getMainVariableCart: async (req, res, next) => {
+    let cartList = await Cart.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(req.session.user._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+    ]);
+    console.log(cartList);
+    res.render("user/cartdesign", {
+      title: "Users cartdesign",
+      noShow: true,
+      fullName: req.session.user.fullName,
+      loggedin: req.session.userLoggedIn,
+      cartList,
+      userAddresses: req.userAddressess,
+    });
+    return;
   },
   forgetPassword: async (req, res, next) => {
     res.render("user/forgetPassword", {
@@ -842,32 +933,36 @@ module.exports = {
   },
   productHome: async (req, res, next) => {
     try {
-      const count = 20;
-      const page = parseInt(req.query.page) || 1;
-      const filter = req.filterData;
-      const sort = req.sort;
+      const filter = req.filterData || {};
       console.log(filter);
-      let productsList;
-      if (filter) {
-        productsList = await Products.find(filter)
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("hel");
-        console.log(productsList);
-      } else {
-        productsList = await Products.find()
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("gad");
-        console.log(productsList);
-      }
+      const count = parseInt(req.query.count) || 20;
+      const page = parseInt(req.query.page) || 1;
       const totalCount = await Products.countDocuments(filter);
+
+      // Calculate the total number of pages based on the count and the total count
       const totalPages = Math.ceil(totalCount / count);
+
+      // Generate a random sort field and direction
+      const sortOptions = [
+        { field: "createdAt", direction: -1 },
+        { field: "category", direction: 1 },
+      ];
+
+      const randomIndex = Math.floor(Math.random() * sortOptions.length);
+      const { field, direction } = sortOptions[randomIndex];
+      const randomSort = { [field]: direction };
+
+      const skip = (page - 1) * count;
+      const safeSkip = Math.max(0, skip); // Ensure skip is non-negative
+
+      const productsList = await Products.find(filter)
+        .sort(randomSort)
+        .skip(safeSkip)
+        .limit(count)
+        .lean();
+
       console.log(totalCount);
+
       const startIndex = (page - 1) * count;
       const endIndex = Math.min(startIndex + count, totalCount);
 
@@ -945,24 +1040,22 @@ module.exports = {
   },
   deleteItemCrt: async (req, res, next) => {
     try {
-      if (req.session.user) {
+      if (req.session.userLoggedIn) {
         console.log(req.body.id);
         const result = await Cart.deleteOne({
           _id: new mongoose.Types.ObjectId(req.body.id),
         });
         console.log(`${result.deletedCount} item(s) deleted from cart`);
-        res.status(200).send({
-          success: true,
-        });
       } else {
-        const place = req.body.id[0] + req.body.id[1];
+        console.log(req.body);
+        const place = req.body.id + req.body.size;
         console.log(place);
         cache.del(place);
         console.log(`Item at place ${place} deleted from cache`);
-        res.status(200).send({
-          success: true,
-        });
       }
+      res.status(200).send({
+        success: true,
+      });
     } catch (error) {
       next(error);
       res.status(201).send({ success: false });
@@ -990,7 +1083,7 @@ module.exports = {
       for (const cartItem of cartItems) {
         const dbCartItem = await Cart.findOneAndUpdate(
           { userId, ...cartItem },
-          { $inc: { quantity: cartItem.quantity } },
+          { quantity: cartItem.quantity },
           { upsert: true, new: true }
         );
         if (!dbCartItem) {
@@ -1014,40 +1107,45 @@ module.exports = {
       });
     }
   },
+
   getPaymentSucces: (req, res) => {
     res.render("user/paymentSuccess");
   },
   changeProductQuantity: async (req, res, next) => {
-    var count = parseInt(req.body.count);
+    var count = req.body.count;
+    if (count == "-1") {
+      var count = -1;
+    } else {
+      var count = 1;
+    }
     var quantity = parseInt(req.body.quantity);
     var size = req.body.size;
     var productId = req.body.proId;
     var cartId = req.body.cartId;
+    console.log(count, quantity, size, productId, cartId);
     try {
-      if (count > 0) {
-        const sellcount = await orderControllers.productcount(productId, size);
-        console.log("Sell count:", sellcount);
-        const itemcount = await productController.productquantity(
-          productId,
-          size
+      const sellcount = await orderControllers.productcount(productId, size);
+      console.log("Sell count:", sellcount);
+      const itemcount = await productController.productquantity(
+        productId,
+        size
+      );
+      let balance = itemcount - sellcount;
+      if (balance === 0) {
+        res.status(200).json({ noStock: true });
+      }
+      if (balance <= quantity + 1) {
+        res.status(200).json({ maxLimitStock: true });
+      }
+      if (balance > quantity + 1) {
+        await Cart.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(cartId),
+            productId: new mongoose.Types.ObjectId(productId),
+            size: size,
+          },
+          { quantity: quantity + count }
         );
-        let balance = itemcount - sellcount;
-        if (balance === 0) {
-          res.status(200).json({ noStock: true });
-        }
-        if (balance <= quantity + 1) {
-          res.status(200).json({ maxLimitStock: true });
-        }
-        if (balance > quantity + 1) {
-          await Cart.updateOne(
-            {
-              _id: new mongoose.Types.ObjectId(cartId),
-              productId: new mongoose.Types.ObjectId(productId),
-              size: size,
-            },
-            { quantity: quantity + count }
-          );
-        }
       }
       res.status(200).json({
         message: "Product quantity updated successfully.",

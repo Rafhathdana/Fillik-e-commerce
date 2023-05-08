@@ -256,3 +256,84 @@
 <!--===============================================================================================-->
 <script src="/user/js/main.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+  const mainSearchInput = document.querySelector("#mainsearch-input");
+
+  mainSearchInput.addEventListener("keyup", function (event) {
+    const mainSearchQuery = event.target.value;
+    console.log(mainSearchQuery + " bnmb");
+    // Build query string with updated filter values
+    $.ajax({
+      url: "/searchItem",
+      method: "POST",
+      data: {
+        value: mainSearchQuery,
+      },
+      success: function (response) {
+        console.log(response);
+        $("#product").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      },
+    });
+  });
+</script>
+
+<script>
+  function deleteItem(id, size) {
+    console.log(id, size);
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this item from your cart!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        fetch("/deleteFromCart", {
+          method: "delete",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: id,
+            size: size,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              viewDelete();
+            }
+          })
+          .catch((error) => {
+            swal("Error deleting product from cart: " + error);
+          });
+      } else {
+        swal("Item not deleted!");
+      }
+    });
+  }
+
+  function viewDelete() {
+    $.ajax({
+      url: "/postFromCart",
+      method: "POST",
+      success: function (response) {
+        console.log(response);
+        $("#sideCart").html(response);
+        var cartcount = parseInt($("#cartvalue").attr("data-notify")) - 1;
+        $(".cartvalue").attr("data-notify", cartcount);
+        swal({
+          title: "Item deleted from cart!",
+          icon: "success",
+        });
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      },
+    });
+  }
+</script>

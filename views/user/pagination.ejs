@@ -1,6 +1,6 @@
 <div class="pagination p1 mx-auto">
   <ul>
-    <% if (pagination.page > 2) { %>
+    <% if (locals.pagination.page > 2) { %>
     <a href="?count=<%= pagination.count %>&page=<%= pagination.page-1 %>"
       ><li><</li></a
     >

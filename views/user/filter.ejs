@@ -130,6 +130,7 @@
       <input
         class="mtext-107 cl2 size-114 plh2 p-r-15"
         type="text"
+        id="search-input"
         name="search-product"
         placeholder="Search"
       />
@@ -487,6 +488,36 @@
       minPrice = priceInput[0].value;
       maxPrice = priceInput[1].value;
       toChangeFilter();
+    });
+  });
+</script>
+<script>
+  const searchInput = document.querySelector("#search-input");
+
+  searchInput.addEventListener("keyup", function (event) {
+    const searchQuery = event.target.value;
+    console.log(searchQuery + " bnmb");
+    // Build query string with updated filter values
+    $.ajax({
+      url: "/searchItem",
+      method: "POST",
+      data: {
+        value: searchQuery,
+        pattern: window.selectedpatterns,
+        category: window.selectedcategorys,
+        colour: window.selectedcolours,
+        genderType: window.selectedgenderTypes,
+        sorted: window.selectedsorteds,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+      },
+      success: function (response) {
+        console.log(response);
+        $("#product").html(response);
+      },
+      error: function (xhr, status, error) {
+        console.log(error);
+      },
     });
   });
 </script>

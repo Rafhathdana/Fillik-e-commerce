@@ -104,22 +104,21 @@
             <!-- Menu desktop -->
             <div class="menu-desktop">
               <ul class="main-menu">
-                <li class="active-menu">
+                <li
+                  class="${window.location.pathname === '/' ? 'active-menu' : ''}"
+                >
                   <a href="/">Home</a>
-                  <ul class="sub-menu">
-                    <li><a href="/index.html">Homepage 1</a></li>
-                    <li><a href="/home-02.html">Homepage 2</a></li>
-                    <li><a href="/home-03.html">Homepage 3</a></li>
-                  </ul>
                 </li>
 
-                <li>
+                <li
+                  class="${window.location.pathname === '/productlist' ? 'active-menu' : ''}"
+                >
                   <a href="/productlist">Products</a>
                 </li>
 
-                <li class="label1" data-label1="hot">
+                <!-- <li class="label1" data-label1="hot">
                   <a href="/shoping-cart.html">Features</a>
-                </li>
+                </li> -->
 
                 <li>
                   <a href="/blog">Blog</a>
@@ -224,37 +223,32 @@
       <div class="menu-mobile">
         <ul class="main-menu-m">
           <li>
-            <a href="/index.html">Home</a>
-            <ul class="sub-menu-m">
-              <li><a href="/index.html">Homepage 1</a></li>
-              <li><a href="/home-02.html">Homepage 2</a></li>
-              <li><a href="/home-03.html">Homepage 3</a></li>
-            </ul>
+            <a href="/">Home</a>
             <span class="arrow-main-menu-m">
               <i class="fa fa-angle-right" aria-hidden="true"></i>
             </span>
           </li>
 
           <li>
-            <a href="/product.html">Shop</a>
+            <a href="/productlist">Shop</a>
           </li>
 
-          <li>
+          <!-- <li>
             <a href="/shoping-cart.html" class="label1 rs1" data-label1="hot"
               >Features</a
             >
+          </li> -->
+
+          <li>
+            <a href="/blog">Blog</a>
           </li>
 
           <li>
-            <a href="/blog.html">Blog</a>
+            <a href="/about">About</a>
           </li>
 
           <li>
-            <a href="/about.html">About</a>
-          </li>
-
-          <li>
-            <a href="/contact.html">Contact</a>
+            <a href="/contact">Contact</a>
           </li>
         </ul>
       </div>
@@ -275,6 +269,7 @@
             <input
               class="plh3"
               type="text"
+              id="mainsearch-input"
               name="search"
               placeholder="Search..."
             />
@@ -317,6 +312,11 @@
             <li class="p-b-13">
               <a href="/ordersList" class="stext-102 cl2 hov-cl1 trans-04">
                 Orders List
+              </a>
+            </li>
+            <li class="p-b-13">
+              <a href="/couponsList" class="stext-102 cl2 hov-cl1 trans-04">
+                Coupons List
               </a>
             </li>
 

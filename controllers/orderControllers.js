@@ -60,7 +60,11 @@ module.exports = {
         actualRate: product.sellerPrice,
         mrp: product.sellerPrice,
         payableAmount: itemTotal - discountper,
-        status: "received",
+        status: [
+          {
+            currentStatus: "initiated",
+          },
+        ],
       });
     });
 
@@ -153,6 +157,7 @@ module.exports = {
       });
     }
   },
+  returnCartItem: (req, res, next) => {},
   verifyPaymentPost: (req, res) => {
     try {
       payementController
@@ -218,12 +223,18 @@ module.exports = {
           },
         },
         {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+        {
           $skip: startIndex,
         },
         {
           $limit: count,
         },
       ]);
+
       const totalOrdersCount = await Order.countDocuments({
         userId: new mongoose.Types.ObjectId(req.session.user._id),
       });
@@ -236,12 +247,11 @@ module.exports = {
       req.pagination = {
         totalCount: totalOrdersCount,
         totalPages: totalPages,
-        currentPage: page,
-        perPage: count,
+        page,
+        count,
         startIndex: startIndex,
         endIndex: endIndex,
       };
-
       next();
     } catch (error) {
       console.log(error);
@@ -250,21 +260,45 @@ module.exports = {
   },
   updateOrder: async (req, res, next) => {
     try {
-      const { allleid, pid, size } = req.body;
+      const { oid, pid, size } = req.body;
+      console.log(oid, pid, size);
+
+      const order = await Order.findOne({
+        _id: new mongoose.Types.ObjectId(oid),
+        "products._id": new mongoose.Types.ObjectId(pid),
+      });
+
+      // Check if the latest status is initiated
+      const latestStatus = order.status[order.status.length - 1].currentStatus;
+      if (latestStatus === "initiated") {
+        throw new Error("Unable to update cart when the status is initiated");
+      }
+      console.log(oid, pid, size, "rafhath");
+
       const updatedOrder = await Order.findOneAndUpdate(
         {
-          _id: allleid,
-          "products.productId": pid,
-          "products.items.size": size,
+          _id: new mongoose.Types.ObjectId(oid),
+          "products._id": new mongoose.Types.ObjectId(pid),
         },
         {
-          $set: { "products.$.status.currentStatus": req.body.orderStatus },
+          $push: {
+            "products.$[elem].status": {
+              currentStatus: "usercancel",
+              dateTimeOn: Date.now(),
+            },
+          },
         },
-        { new: true }
+        {
+          arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(pid) }],
+        }
       );
+
+      console.log(oid, pid, size, "rafhath");
+
       console.log("Successfully updated order status");
       res.json({ status: true });
     } catch (error) {
+      console.log(req.body);
       next(error);
     }
   },
@@ -420,6 +454,7 @@ module.exports = {
   productcount: async (productId, size) => {
     try {
       let canceled = "canceled"; // Replace with the actual value of the canceled status
+      console.log("productId:", productId, "size:", size);
       const saleCount = await Order.aggregate([
         { $unwind: "$products" },
         {
@@ -449,9 +484,14 @@ module.exports = {
         },
       ]);
 
-      console.log(saleCount); // Log the output to see if it contains any data
+      console.log("saleCount:", saleCount); // Log the output to see if it contains any data
 
-      return saleCount[0].totalQuantity;
+      if (saleCount && saleCount.length > 0) {
+        return saleCount[0].totalQuantity;
+      } else {
+        console.log("No sale count found");
+        return 0;
+      }
     } catch (error) {
       console.error(error); // Log any errors
       throw error;

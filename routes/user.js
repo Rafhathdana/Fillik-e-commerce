@@ -27,7 +27,13 @@ function cart(req, res, next) {
     userController.getCartLocal(req, res, next);
   }
 }
-router.get("/", userController.getFilter, cart, userController.banner, userController.productHome);
+router.get(
+  "/",
+  userController.getFilter,
+  cart,
+  userController.banner,
+  userController.productHome
+);
 
 router.get("/signup", userauth, cart, userController.getSignUp);
 
@@ -108,15 +114,28 @@ router.post("/postFromCart", (req, res, next) => {
     : userController.getCartVariableLocal(req, res, next);
 }); //pending after logedin
 
+router.post(
+  "/postFromMainCart",
+  verify,
+  addressControllers.getAddress,
+  userController.getMainVariableCart
+);
+
 router.get("/forgetPassword", userauth, userController.forgetPassword);
 router.post("/emailexists", userController.emailVerify);
 router.get("/DUMY", function (req, res, next) {
   res.render("user/orderProductView", {});
 });
 router.delete("/deleteFromCart", userController.deleteItemCrt);
-router.patch("updateOrderStatus", orderControllers.updateOrder);
+router.post("/updateOrderStatus", verify, orderControllers.updateOrder);
 router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
 router.get("/paymentSuccess", verify, userController.getPaymentSucces);
+router.get("/returnCart", verify, orderControllers.returnCartItem);
 router.post("/changeQuantity", verify, userController.changeProductQuantity);
+router.post(
+  "/searchItem",
+  userController.postFilter,
+  userController.searchProductFilterList
+);
 
 module.exports = router;

@@ -59,8 +59,8 @@
                         <input
                           type="text"
                           class="form-control"
-                          id="houseName"
-                          name="houseName"
+                          id="hname"
+                          name="hname"
                           required
                         />
                       </div>
@@ -176,8 +176,8 @@
                       <div class="col-sm-9">
                         <input
                           type="text"
-                          id="pinCode"
-                          name="pinCode"
+                          id="pinNumber"
+                          name="pinNumber"
                           class="form-control"
                         />
                       </div>
@@ -241,7 +241,7 @@
   function addAddress() {
     var name = document.querySelector("#name").value;
     var mobile = document.querySelector("#mobile").value;
-    var houseName = document.querySelector("#houseName").value;
+    var hname = document.querySelector("#hname").value;
     var place = document.querySelector("#place").value;
     var landMark = document.querySelector("#landMark").value;
     var postOffice = document.querySelector("#postOffice").value;
@@ -249,25 +249,42 @@
     var district = document.querySelector("#district").value;
     var state = document.querySelector("#state").value;
     var country = document.querySelector("#country").value;
-    var pinCode = document.querySelector("#pinCode").value;
-    var confirmPinCode = document.querySelector("#confirmPinCode").value;
+    var pinNumber = parseInt(document.querySelector("#pinNumber").value);
+    var confirmPinCode = parseInt(
+      document.querySelector("#confirmPinCode").value
+    );
     var termsCheckbox = document.querySelector("#termsCheckbox");
-
+    console.log(pinNumber);
     // Check that all required fields are filled out
     if (
       !name ||
       !mobile ||
-      !houseName ||
+      !hname ||
       !place ||
       !postOffice ||
       !city ||
+      !landMark ||
       !district ||
       !state ||
       !country ||
-      !pinCode ||
+      !pinNumber ||
       !confirmPinCode
     ) {
       swal("Please fill out all required fields.");
+      console.log(
+        name,
+        mobile,
+        hname,
+        landMark,
+        place,
+        postOffice,
+        city,
+        district,
+        state,
+        country,
+        pinNumber,
+        confirmPinCode
+      );
       return;
     }
 
@@ -278,12 +295,9 @@
     }
 
     // Check that the pin code is valid and matches the confirmed pin code
-    if (!/^\d{6}$/.test(pinCode)) {
-      swal("Please enter a valid 6-digit pin code.");
-      return;
-    }
 
-    if (pinCode !== confirmPinCode) {
+    if (pinNumber !== confirmPinCode) {
+      console.log(pinNumber, confirmPinCode);
       swal("The pin codes you entered do not match.");
       return;
     }
@@ -302,7 +316,7 @@
       body: JSON.stringify({
         name: name,
         mobile: mobile,
-        houseName: houseName,
+        houseName: hname,
         place: place,
         landMark: landMark,
         postOffice: postOffice,
@@ -310,7 +324,7 @@
         district: district,
         state: state,
         country: country,
-        pinCode: pinCode,
+        pinCode: pinNumber,
       }),
     })
       .then((response) => response.json())
@@ -324,78 +338,6 @@
       .catch((error) => {
         swal("Error adding product to cart: " + error);
       });
-  }
-
-  function viewCart() {
-    fetch("/postFromCart", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          var cartList = addCarted(data.items);
-          var cartcount = data.items.length;
-          var notifyEl = $("#cartvalue");
-
-          console.log(cartcount);
-          $("#cartItemsList").replaceWith(cartList);
-          notifyEl.attr("data-notify", cartcount);
-          swal("Item  added to cart !", "success");
-        }
-      })
-      .catch((error) => {
-        swal("Error adding product to cart: " + error);
-      });
-  }
-  function addCarted(cartItems) {
-    var cartList = $("<ul>")
-      .addClass("header-cart-wrapitem w-full")
-      .attr("id", "cartItemsList");
-
-    for (let i = 0; i < cartItems.length; i++) {
-      var cartItem = $("<li>")
-        .addClass("header-cart-item flex flex-t mb-2")
-        .appendTo(cartList);
-
-      var itemImg = $("<div>")
-        .addClass("header-cart-item-img")
-        .appendTo(cartItem);
-
-      $("<img>")
-        .attr("src", "/images/productImages/" + cartItems[i].images[0])
-        .attr("alt", "IMG")
-        .appendTo(itemImg);
-
-      var itemTxt = $("<div>")
-        .addClass("header-cart-item-txt p-t-8")
-        .appendTo(cartItem);
-
-      $("<a>")
-        .attr("href", "#")
-        .addClass("header-cart-item-name m-b-18 hov-cl1 trans-04")
-        .text(cartItems[i].name)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("header-cart-item-info")
-        .text("size: " + cartItems[i].size)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("header-cart-item-info")
-        .text(cartItems[i].quantity + " x RS." + cartItems[i].ourPrice)
-        .appendTo(itemTxt);
-
-      $("<span>")
-        .addClass("slinecross")
-        .text(cartItems[i].quantity + " x Rs" + cartItems[i].originalPrice)
-        .appendTo(itemTxt);
-    }
-
-    return cartList;
   }
 </script>
 <script>
@@ -427,7 +369,7 @@
           minlength: 10,
           number: true,
         },
-        houseName: {
+        hname: {
           required: true,
         },
         place: {
@@ -445,7 +387,7 @@
         country: {
           required: true,
         },
-        pinCode: {
+        pinNumber: {
           required: true,
           maxlength: 6,
           minlength: 6,
@@ -453,7 +395,7 @@
         },
         confirmPinCode: {
           required: true,
-          equalTo: "#pin_code",
+          equalTo: "#pinNumber",
         },
         termsCheckbox: {
           required: true,
@@ -471,7 +413,7 @@
           maxlength: "maximum 10 digit allowed in indian number",
           number: "only numbers allowed",
         },
-        houseName: {
+        hname: {
           required: "Please enter your house name",
         },
         place: {

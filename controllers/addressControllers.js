@@ -33,10 +33,10 @@ module.exports = {
       await Address.create(newAddress);
       req.session.Addresserrmsg = null;
       console.log(newAddress);
-      res.status(200).send((status = true));
+      res.status(200).send((success = true));
     } catch (error) {
       console.log(error);
-      res.status(400).send((status = false));
+      res.status(400).send((success = false));
     }
   },
   getAddress: async (req, res, next) => {

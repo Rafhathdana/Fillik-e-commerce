@@ -5,7 +5,8 @@
       <div class="header-cart-item-img">
         <% let link=loggedin?(cartItems[i].images[0][0]
         ):(cartItems[i].images[0]) ;console.log(link)%>
-        <img src="/images/productImages/<%=link%>" alt="IMG" />
+
+        <img src="/images/productImages/<%=link.split(',')[0] %>" alt="IMG" />
       </div>
 
       <div class="header-cart-item-txt p-t-8">
@@ -28,8 +29,8 @@
           </div>
           <div
             class="btn btn-danger mb-3 mr-3"
-            height="30px"
-            onclick="deleteItem(`<%= loggedin?(cartItems[i].id):(cartItems[i].productId,cartItems[i].size)%>`)"
+            style="height: 30px"
+            onclick="deleteItem('<%= loggedin ? cartItems[i]._id : cartItems[i].productId %>', '<%= loggedin ? '' : cartItems[i].size %>')"
           >
             X
           </div>

@@ -24,8 +24,8 @@ module.exports = {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: "/payment-success",
-          cancel_url: "/cart",
+          return_url: "/paymentSuccess",
+          cancel_url: "/returnCart",
         },
         transactions: [
           {
