@@ -4,6 +4,7 @@ const merchantController = require("../controllers/merchantControllers");
 const productController = require("../controllers/productController");
 const multer = require("multer");
 const orderControllers = require("../controllers/orderControllers");
+const filterController = require("../controllers/filterController");
 function merchantauth(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
     res.redirect("/merchant/");
@@ -20,18 +21,35 @@ function merchantverify(req, res, next) {
     res.redirect("/merchant/login");
   }
 }
-router.get("/", merchantverify, merchantController.getDashBoard); //almost
+router.get(
+  "/",
+  merchantverify,
+  orderControllers.dashboard,
+  orderControllers.monthWise,
+  merchantController.getDashBoard
+); //almost
 router.get("/signup", merchantauth, merchantController.getSignIn); //almost
 router.get("/login", merchantauth, merchantController.getLogin); //almost
-router.get("/addproduct", merchantverify, productController.getAddProduct); //almost exept crop
+router.get(
+  "/addproduct",
+  merchantverify,
+  filterController.getAllCategory,
+  productController.getAddProduct
+); //almost exept crop
 router.post("/addproduct", merchantverify, productController.postAddProduct); //almost
-router.get("/productList", merchantverify, productController.getProductList);
+router.get(
+  "/productList",
+  merchantverify,
+  filterController.getAllCategory,
+  productController.getProductList
+);
 router.get("/profile", merchantverify, merchantController.getProfile);
 router.post("/signup", merchantauth, merchantController.postSignup);
 router.post("/login", merchantauth, merchantController.postSignin);
 router.get(
   "/editproduct/:Id",
   merchantverify,
+  filterController.getAllCategory,
   productController.getEditProduct
 );
 router.post(
@@ -63,9 +81,10 @@ router.get(
   orderControllers.merchantOrderList,
   merchantController.orderList
 );
-router.put(
-  "/updateOrderStatus",
+router.get(
+  "/orderedDetails/:id",
   merchantverify,
-  orderControllers.OrderStatusUpdate 
+  orderControllers.merchantProductOrder
 );
+router.post("/updateOrderStatus", merchantverify, orderControllers.updateOrder);
 module.exports = router;

@@ -19,8 +19,7 @@
               size :<%= cartItems[i].size %>
             </span>
             <span class="header-cart-item-info">
-              <%=cartItems[i].quantity%> x RS <%=
-              loggedin?cartItems[i].ourPrice/100:cartItems[i].ourPrice%>
+              <%=cartItems[i].quantity%> x RS <%=cartItems[i].ourPrice%>
             </span>
             <span class="slinecross"
               ><%=cartItems[i].quantity%> x Rs<%= cartItems[i].orginalPrice
@@ -37,8 +36,8 @@
         </div>
       </div>
     </li>
-    <% loggedin?(sum += cartItems[i].quantity* cartItems[i].ourPrice/100):(sum
-    += cartItems[i].quantity* cartItems[i].ourPrice) %> <% } %>
+    <% loggedin?(sum += cartItems[i].quantity* cartItems[i].ourPrice):(sum +=
+    cartItems[i].quantity* cartItems[i].ourPrice) %> <% } %>
   </ul>
 
   <div class="w-full">

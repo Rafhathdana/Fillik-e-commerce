@@ -100,20 +100,14 @@ const orderSchema = new Schema(
     totalAmount: {
       type: Number,
       required: true,
-      get: (v) => (v / 100).toFixed(2),
-      set: (v) => Math.round(v * 100),
     },
     gst: {
       type: Number,
       required: true,
-      get: (v) => (v / 100).toFixed(2),
-      set: (v) => Math.round(v * 100),
     },
     deliveryCharge: {
       type: Number,
       required: true,
-      get: (v) => (v / 100).toFixed(2),
-      set: (v) => Math.round(v * 100),
     },
     coupons: {
       couponsId: {
@@ -123,8 +117,6 @@ const orderSchema = new Schema(
       discountAmount: {
         type: Number,
         required: true,
-        get: (v) => (v / 100).toFixed(2),
-        set: (v) => Math.round(v * 100),
       },
     },
     paymentMethod: {

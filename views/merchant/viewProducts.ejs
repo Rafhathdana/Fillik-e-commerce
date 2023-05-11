@@ -19,8 +19,8 @@
       </ul>
     </div>
   </div>
-  <%if(locals.endIndex>0){%> <% for (let i = locals.startIndex; i <
-  locals.endIndex; i++) { %>
+  <%if(locals.pagination.endIndex>0){%> <% for (let i =0; i <
+  locals.pagination.endIndex; i++) { %>
 
   <div class="outer-box">
     <img
@@ -81,9 +81,7 @@
         RS.<%= productList[i].orginalPrice %>
       </div>
       <div class="product-price">Actual Price:</div>
-      <div class="product-price-value">
-        RS.<%= productList[i].ourPrice/100 %>
-      </div>
+      <div class="product-price-value">RS.<%= productList[i].ourPrice %></div>
       <span class="shorttext"> (After deducting 5% cut to us)</span>
     </div>
     <div class="flex-column">
@@ -111,25 +109,5 @@
       Click here to ADD Product</a
     >
   </div>
-  <% } %>
-  <div class="pagenumbers">
-    <% for (let i = 1; i <= locals.totalPages; i++) { %>
-    <a
-      href="?count=<%= count %>&page=<%= i %>"
-      class="page<%= i === parseInt(page) ? ' active' : '' %>"
-      ><%= i %></a
-    >
-    <% } %>
-  </div>
-  <div class="nextprev">
-    <% if (locals.page > 1) { %>
-    <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
-      >Prev</a
-    >
-    <% } %> <% if (locals.page < locals.totalPages) { %>
-    <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
-      >Next</a
-    >
-    <% } %>
-  </div>
+  <% } %> <%-include('pagination')-%>
 </div>

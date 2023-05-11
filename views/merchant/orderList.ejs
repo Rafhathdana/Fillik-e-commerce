@@ -55,9 +55,21 @@
             <% for (let i = 0; i < orderList.length; i++) { %> <% for (let j =
             0; j < orderList[i].products.length; j++) { %>
             <tr></tr>
+
             <tr>
-              <td data-label="Order ID"><%= orderList[i]._id %></td>
-              <td data-label="Product ID" class="md-none">
+              <td
+                onclick="window.location.href='/merchant/orderedDetails/<%= orderList[i].products[j].id %>'"
+                data-label="Order ID"
+                style="cursor: pointer"
+              >
+                <%= orderList[i]._id %>
+              </td>
+              <td
+                onclick="window.location.href='/merchant/orderedDetails/<%= orderList[i].products[j].id %>'"
+                data-label="Product ID"
+                class="md-none"
+                style="cursor: pointer"
+              >
                 <%= orderList[i].products[j].productId %>
               </td>
               <td data-label="Quantity" class="text-danger">
@@ -72,79 +84,84 @@
                 %>
               </td>
               <td data-label="Status">
-                <% if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="placed"){
-                %>
+                <% let
+                currentStatus=orderList[i].products[j].currentStatus[orderList[i].products[j].currentStatus.length-1].currentStatus;
+                console.log(currentStatus+"fgdxgf"); const purchaseDate = new
+                Date(orderList[i].products[j].status[orderList[i].products[j].status.length-1].dateTimeOn);
+                const currentDate = new Date(); const daysPassed =
+                Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 *
+                24)); if (currentStatus === "usercancel" || currentStatus ===
+                "merchantCancel" || currentStatus === "adminCancel"||daysPassed
+                > 14) { %>
+
+                <button
+                  type="button"
+                  class="btn btn-gradient-danger btn-rounded btn-fw"
+                >
+                  <%=currentStatus%></button
+                ><br /><br /><br />
+                <%}else if(currentStatus =="initiated"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Accepted', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Accepted', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Accept</button
                 ><br /><br /><br />
                 <button
                   type="button"
                   class="btn btn-gradient-danger btn-rounded btn-fw"
-                  onclick="orderUpdate('Cancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Cancel
                 </button>
-                <% }else if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="Accepted"){
-                %>
+                <% }else if( currentStatus=="Accepted"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-danger btn-rounded btn-fw"
-                  onclick="orderUpdate('Cancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Cancel
                 </button>
+                <br /><br /><br />
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Packed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Packed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Packed</button
                 ><br /><br /><br />
 
-                <% } else if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="Packed"){
-                %>
+                <% } else if( currentStatus=="Packed"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Sented', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Sented', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Sented
                 </button>
-                <% } else if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="Sented"){
-                %>
+                <% } else if( currentStatus=="Sented"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Completed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Completed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Completed</button
                 ><br /><br /><br />
 
-                <% } else if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="Completed"){
-                %>
+                <% } else if( currentStatus=="Completed"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Returned', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Returned', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   Returned</button
                 ><br /><br /><br />
-                <% } else if(
-                orderList[i].products[j].status[orderList[i].products[j].status.length-1].currentStatus=="Returned"){
-                %>
+                <% } else if( currentStatus=="Returned"){ %>
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('recievedBack', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].productId %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('recievedBack', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
                 >
                   recievedBack</button
                 ><br /><br /><br />
@@ -157,39 +174,50 @@
           </tbody>
         </table>
       </div>
+      <%- include('pagination')-%>
     </div>
   </div>
 </div>
+
 <!-- At the bottom of the HTML body -->
 <script>
-  function orderUpdate(data, oid, pid) {
-    swal({
-      text: "Are you sure you want to update this to " + data + "?",
-      buttons: ["Cancel", "Yes"],
-    }).then(async function (confirmed) {
-      if (confirmed) {
-        try {
-          const response = await fetch("/merchant/updateOrderStatus", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              orderId: oid,
-              productId: pid,
-              status: data,
-            }),
+  function orderUpdate(data, oid, pid, size) {
+    console.log(data, oid, pid, size);
+    swal(`Are you sure to ${data}?`, {
+      buttons: {
+        yes: {
+          text: "Yes",
+          value: true,
+        },
+        no: {
+          text: "No",
+          value: false,
+        },
+      },
+    }).then((value) => {
+      if (value) {
+        fetch("/merchant/updateOrderStatus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            oid: oid,
+            pid: pid,
+            size: size,
+            orderStatus: data,
+          }),
+        })
+          .then((response) => {
+            if (response.status) {
+              swal(`Order ${data} successfully.`).then(() => {
+                window.location.reload();
+              });
+            }
+          })
+          .catch((error) => {
+            swal("Some error occurred: " + error);
           });
-          const responseData = await response.json();
-          if (responseData.success) {
-            window.location.reload();
-          } else {
-            console.log(responseData);
-            swal("Status not updated!");
-          }
-        } catch (error) {
-          console.error(error);
-        }
       }
     });
   }

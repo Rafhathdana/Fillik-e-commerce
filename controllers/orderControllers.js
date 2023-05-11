@@ -1,6 +1,7 @@
 var Admin = require("../models/adminSchema");
 const mongoose = require("mongoose");
 var Users = require("../models/userSchema");
+var Merchants = require("../models/merchantSchema");
 var Address = require("../models/addressSchema");
 var Cart = require("../models/cartSchema");
 var Order = require("../models/orderSchema");
@@ -68,9 +69,9 @@ module.exports = {
       });
     });
 
-    total = parseFloat((total / 100).toFixed(2));
+    total = parseFloat(total.toFixed(2));
     console.log(total + "hfgvb");
-    const gst = parseFloat((total / 100) * 18).toFixed(2);
+    const gst = parseFloat(total * 18).toFixed(2);
     console.log(total + "hfjogvb");
     const deliveryCharge = 0;
     total =
@@ -78,13 +79,14 @@ module.exports = {
       parseFloat(gst) +
       parseFloat(deliveryCharge) -
       parseFloat(discountAmount);
-    total = parseFloat((total / 100).toFixed(2));
+    total = parseFloat(total.toFixed(2));
 
     const newOrder = new Order({
       userId: req.session.user._id,
       products,
       address: {
         addressId: userAddress._id,
+        name: userAddress.name,
         houseName: userAddress.houseName,
         mobile: userAddress.mobile,
         place: userAddress.place,
@@ -153,7 +155,7 @@ module.exports = {
       payementController.generateRazorpay(orderId, total).then((response) => {
         console.log(response, "responsee");
         console.log(orderId, "ordeereeee");
-        res.json(response);
+        res.json({ razorpay: true, response });
       });
     }
   },
@@ -267,7 +269,7 @@ module.exports = {
         _id: new mongoose.Types.ObjectId(oid),
         "products._id": new mongoose.Types.ObjectId(pid),
       });
-
+      console.log(order);
       // Check if the latest status is initiated
       const latestStatus = order.status[order.status.length - 1].currentStatus;
       if (latestStatus === "initiated") {
@@ -283,7 +285,7 @@ module.exports = {
         {
           $push: {
             "products.$[elem].status": {
-              currentStatus: "usercancel",
+              currentStatus: req.body.orderStatus,
               dateTimeOn: Date.now(),
             },
           },
@@ -337,8 +339,10 @@ module.exports = {
                       },
                     },
                     in: {
-                      productId: "$$this._id",
+                      id: "$$this._id",
+                      productId: "$$this.productId",
                       items: "$$this.items",
+                      currentStatus: "$$this.status",
                       status: "$status",
                       amount: "$$this.actualRate",
                       name: "$$this.name",
@@ -370,23 +374,97 @@ module.exports = {
     ]);
 
     const orderList = result.orders;
-    const totalOrdersCount = result.totalCount[0].totalCount;
+    const totalOrdersCount = result.totalCount[0]
+      ? result.totalCount[0].totalCount
+      : 0;
 
     const totalPages = Math.ceil(totalOrdersCount / count);
 
     const endIndex = Math.min(startIndex + count, totalOrdersCount);
 
     req.orderList = orderList;
+
     req.pagination = {
       totalCount: totalOrdersCount,
       totalPages: totalPages,
-      currentPage: page,
-      perPage: count,
+      page: page,
+      count: count,
       startIndex: startIndex,
       endIndex: endIndex,
     };
+    console.log(req.pagination);
     next();
   },
+  merchantProductOrder: async (req, res, next) => {
+    const mid = req.session.merchant._id;
+    const pid = req.params.id;
+
+    const [result] = await Order.aggregate([
+      {
+        $match: {
+          "products.merchantId": new mongoose.Types.ObjectId(mid),
+          "products._id": new mongoose.Types.ObjectId(pid),
+        },
+      },
+      {
+        $project: {
+          _id: "$_id",
+          products: {
+            $map: {
+              input: {
+                $filter: {
+                  input: "$products",
+                  as: "product",
+                  cond: {
+                    $and: [
+                      {
+                        $eq: [
+                          "$$product.merchantId",
+                          new mongoose.Types.ObjectId(mid),
+                        ],
+                      },
+                      {
+                        $eq: [
+                          "$$product._id",
+                          new mongoose.Types.ObjectId(pid),
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+              in: {
+                id: "$$this._id",
+                productId: "$$this.productId",
+                items: "$$this.items",
+                status: "$status",
+                amount: "$$this.actualRate",
+                name: "$$this.name",
+                address: "$address",
+                orderId: "$_id",
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const orderList =
+      result && result.products && result.products.length > 0
+        ? result.products[0]
+        : [];
+    console.log(orderList);
+    req.orderList = orderList;
+    res.render("merchant/orderProductView", {
+      title: "merchant",
+      brandName: req.session.merchant.brandName,
+      merchantLoggedin: req.session.merchantLoggedIn,
+      author: "Merchant#123!",
+      merchantData: req.session.merchant,
+      orderList: req.orderList,
+    });
+  },
+
   OrderStatusUpdate: async (req, res, next) => {
     try {
       const updatedOrder = await Order.findOneAndUpdate(
@@ -497,104 +575,440 @@ module.exports = {
       throw error;
     }
   },
+  dashboard: async (req, res, next) => {
+    const mid = req.session.merchant._id;
+
+    const [result] = await Order.aggregate([
+      {
+        $facet: {
+          orders: [
+            {
+              $match: {
+                "products.merchantId": new mongoose.Types.ObjectId(mid),
+              },
+            },
+            {
+              $project: {
+                _id: "$_id",
+                products: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$products",
+                        as: "product",
+                        cond: {
+                          $eq: [
+                            "$$product.merchantId",
+                            new mongoose.Types.ObjectId(mid),
+                          ],
+                        },
+                      },
+                    },
+                    in: {
+                      id: "$$this._id",
+                      productId: "$$this.productId",
+                      items: "$$this.items",
+                      currentStatus: "$$this.status",
+                      status: "$status",
+                      amount: "$$this.actualRate",
+                      name: "$$this.name",
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          totalCount: [
+            {
+              $match: {
+                "products.merchantId": new mongoose.Types.ObjectId(mid),
+              },
+            },
+            {
+              $group: {
+                _id: "$_id",
+              },
+            },
+            {
+              $count: "totalCount",
+            },
+          ],
+        },
+      },
+    ]);
+
+    const orderList = result.orders;
+
+    req.orderList = orderList;
+
+    let totalCompleteAmount = 0;
+    let totalCancelledAmount = 0;
+    let totalReturnedAmount = 0;
+    let totalReturnedPendingAmount = 0;
+    let pendingAmount = 0;
+    let totalCompleteOrder = 0;
+    let totalCancelledOrder = 0;
+    let totalReturnedOrder = 0;
+    let totalReturnedPendingOrder = 0;
+    let pendingOrder = 0;
+    orderList.forEach((order) => {
+      order.products.forEach((product) => {
+        console.log(
+          product.currentStatus[product.currentStatus.length - 1].currentStatus
+        );
+        if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "Completed"
+        ) {
+          product.items.forEach((item) => {
+            totalCompleteAmount += item.quantity * product.amount;
+          });
+          totalCompleteOrder += 1;
+          console.log(totalCompleteAmount + "totalCompleteAmount");
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "adminCancel" ||
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "merchantCancel" ||
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "usercancel"
+        ) {
+          product.items.forEach((item) => {
+            totalCancelledAmount += item.quantity * product.amount;
+          });
+          totalCancelledOrder += 1;
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "recievedBack"
+        ) {
+          product.items.forEach((item) => {
+            totalReturnedAmount += item.quantity * product.amount;
+          });
+          totalReturnedOrder += 1;
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "Returned"
+        ) {
+          product.items.forEach((item) => {
+            totalReturnedPendingAmount += item.quantity * product.amount;
+          });
+          totalReturnedPendingOrder += 1;
+        } else {
+          product.items.forEach((item) => {
+            pendingAmount += item.quantity * product.amount;
+          });
+          pendingOrder += 1;
+        }
+      });
+    });
+
+    req.totalresult = {
+      totalCompleteAmount,
+      totalCancelledAmount,
+      totalReturnedAmount,
+      totalReturnedPendingAmount,
+      pendingAmount,
+      totalCancelledOrder,
+      totalReturnedOrder,
+      totalCompleteOrder,
+      totalReturnedPendingOrder,
+      pendingOrder,
+    };
+    console.log(req.totalresult);
+    const [resulte] = await Order.aggregate([
+      {
+        $match: {
+          "products.merchantId": new mongoose.Types.ObjectId(mid),
+        },
+      },
+      {
+        $project: {
+          orderDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          products: {
+            $map: {
+              input: {
+                $filter: {
+                  input: "$products",
+                  as: "product",
+                  cond: {
+                    $eq: [
+                      "$$product.merchantId",
+                      new mongoose.Types.ObjectId(mid),
+                    ],
+                  },
+                },
+              },
+              in: {
+                id: "$$this._id",
+                productId: "$$this.productId",
+                items: "$$this.items",
+                currentStatus: "$$this.status",
+                status: "$status",
+                amount: {
+                  $convert: {
+                    input: "$$this.actualRate",
+                    to: "double",
+                    onError: 0,
+                    onNull: 0,
+                  },
+                },
+                name: "$$this.name",
+              },
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%U", date: { $toDate: "$orderDate" } },
+          },
+          orders: { $push: "$$ROOT" },
+          totalAmount: {
+            $sum: {
+              $reduce: {
+                input: "$products",
+                initialValue: 0,
+                in: {
+                  $add: [
+                    "$$value",
+                    {
+                      $sum: {
+                        $map: {
+                          input: "$$this.items",
+                          as: "item",
+                          in: {
+                            $multiply: ["$$item.quantity", "$$this.amount"],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          totalCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    req.weekreport = resulte;
+    console.log(req.weekreport);
+
+    next();
+    // Get the orders with status 'Completed' and 'Returned' for a specific merchant
+  },
+  monthWise: async (req, res, next) => {
+    const mid = req.session.merchant._id;
+    const [result] = await Order.aggregate([
+      {
+        $facet: {
+          orders: [
+            {
+              $match: {
+                "products.merchantId": new mongoose.Types.ObjectId(mid),
+              },
+            },
+            {
+              $project: {
+                _id: "$_id",
+                date: { $month: "$createdAt" },
+                products: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$products",
+                        as: "product",
+                        cond: {
+                          $eq: [
+                            "$$product.merchantId",
+                            new mongoose.Types.ObjectId(mid),
+                          ],
+                        },
+                      },
+                    },
+                    in: {
+                      id: "$$this._id",
+                      productId: "$$this.productId",
+                      items: "$$this.items",
+                      currentStatus: "$$this.status",
+                      status: "$status",
+                      amount: "$$this.actualRate",
+                      name: "$$this.name",
+                    },
+                  },
+                },
+              },
+            },
+          ],
+          totalCount: [
+            {
+              $match: {
+                "products.merchantId": new mongoose.Types.ObjectId(mid),
+              },
+            },
+            {
+              $group: {
+                _id: "$_id",
+              },
+            },
+            {
+              $count: "totalCount",
+            },
+          ],
+        },
+      },
+    ]);
+
+    const orderList = result.orders;
+
+    req.orderList = orderList;
+    const monthlyData = {};
+
+    orderList.forEach((order) => {
+      order.products.forEach((product) => {
+        if (!monthlyData[order.date]) {
+          monthlyData[order.date] = {
+            totalCompleteAmount: 0,
+            totalCancelledAmount: 0,
+            totalReturnedAmount: 0,
+            totalReturnedPendingAmount: 0,
+            pendingAmount: 0,
+            totalCompleteOrder: 0,
+            totalCancelledOrder: 0,
+            totalReturnedOrder: 0,
+            totalReturnedPendingOrder: 0,
+            pendingOrder: 0,
+            totalCompleteQuantity: 0,
+            totalCancelledQuantity: 0,
+            totalReturnedQuantity: 0,
+            totalReturnedPendingQuantity: 0,
+            pendingQuantity: 0,
+          };
+        }
+
+        if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "Completed"
+        ) {
+          product.items.forEach((item) => {
+            monthlyData[order.date].totalCompleteAmount +=
+              item.quantity * product.amount;
+            monthlyData[order.date].totalCompleteQuantity += item.quantity;
+          });
+          monthlyData[order.date].totalCompleteOrder += 1;
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "adminCancel" ||
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "merchantCancel" ||
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "usercancel"
+        ) {
+          product.items.forEach((item) => {
+            monthlyData[order.date].totalCancelledAmount +=
+              item.quantity * product.amount;
+            monthlyData[order.date].totalCancelledQuantity += item.quantity;
+          });
+          monthlyData[order.date].totalCancelledOrder += 1;
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "recievedBack"
+        ) {
+          product.items.forEach((item) => {
+            monthlyData[order.date].totalReturnedAmount +=
+              item.quantity * product.amount;
+            monthlyData[order.date].totalReturnedQuantity += item.quantity;
+          });
+          monthlyData[order.date].totalReturnedOrder += 1;
+        } else if (
+          product.currentStatus[product.currentStatus.length - 1]
+            .currentStatus === "Returned"
+        ) {
+          product.items.forEach((item) => {
+            monthlyData[order.date].totalReturnedPendingAmount +=
+              item.quantity * product.amount;
+            monthlyData[order.date].totalReturnedPendingQuantity +=
+              item.quantity;
+          });
+          monthlyData[order.date].totalReturnedPendingOrder += 1;
+        } else {
+          product.items.forEach((item) => {
+            monthlyData[order.date].pendingAmount +=
+              item.quantity * product.amount;
+            monthlyData[order.date].pendingQuantity += item.quantity;
+          });
+          monthlyData[order.date].pendingOrder += 1;
+        }
+      });
+    });
+
+    req.monthlyData = monthlyData;
+    console.log("hhkj");
+    console.log(monthlyData);
+    next();
+  },
+
+  //admin month wise
+  adminDashboard: async (req, res, next) => {
+    // Get week-wise new users data
+    // First, get the monthly data from the server-side
+    const results = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $in: ["usercancel", "merchantCancel", "adminCancel"],
+          },
+        },
+      },
+      {
+        $project: {
+          yearMonth: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          status: "$products.status.currentStatus",
+          sellRate: "$products.sellRate",
+          actualRate: "$products.actualRate",
+          quantity: { $arrayElemAt: ["$products.items.quantity", 0] }, // Accessing the first element of the array using $arrayElemAt operator
+          payableAmount: "$products.payableAmount",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            yearMonth: "$yearMonth",
+          },
+          sellRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$sellRate" },
+                { $toDouble: "$quantity" }, // Removed [0] as we already extracted the first element using $arrayElemAt
+              ],
+            },
+          },
+          actualRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$actualRate" },
+                { $toDouble: "$quantity" }, // Removed [0] as we already extracted the first element using $arrayElemAt
+              ],
+            },
+          },
+          payableAmount: { $sum: { $toDouble: "$payableAmount" } },
+          productCount: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.yearMonth": 1 },
+      },
+    ]);
+
+    console.log(results);
+
+    next();
+  },
 };
-
-// // Get all orders
-// router.get("/", async (req, res) => {
-//     try {
-//       const orders = await Order.find();
-//       res.json(orders);
-//     } catch (err) {
-//       res.status(500).json({ message: err.message });
-//     }
-//   });
-
-//   // Get an order by ID
-//   router.get("/:id", getOrder, (req, res) => {
-//     res.json(res.order);
-//   });
-
-//   // Create a new order
-//   router.post("/", async (req, res) => {
-//     const order = new Order({
-//       userid: req.body.userid,
-//       merchantid: req.body.merchantid,
-//       products: req.body.products,
-//       address: req.body.address,
-//       totalAmount: req.body.totalAmount,
-//       gst: req.body.gst,
-//       deliveryCharge: req.body.deliveryCharge,
-//       coupons: req.body.coupons,
-//       paymentMethod: req.body.paymentMethod,
-//       paymentStatus: req.body.paymentStatus,
-//       status: req.body.status,
-//     });
-
-//     try {
-//       const newOrder = await order.save();
-//       res.status(201).json(newOrder);
-//     } catch (err) {
-//       res.status(400).json({ message: err.message });
-//     }
-//   });
-
-//   // Update an order by ID
-//   router.patch("/:id", getOrder, async (req, res) => {
-//     if (req.body.userid != null) {
-//       res.order.userid = req.body.userid;
-//     }
-//     if (req.body.merchantid != null) {
-//       res.order.merchantid = req.body.merchantid;
-//     }
-//     if (req.body.products != null) {
-//       res.order.products = req.body.products;
-//     }
-//     if (req.body.address != null) {
-//       res.order.address = req.body.address;
-//     }
-//     if (req.body.totalAmount != null) {
-//       res.order.totalAmount = req.body.totalAmount;
-//     }
-//     if (req.body.gst != null) {
-//       res.order.gst = req.body.gst;
-//     }
-//     if (req.body.deliveryCharge != null) {
-//       res.order.deliveryCharge = req.body.deliveryCharge;
-//     }
-//     if (req.body.coupons != null) {
-//       res.order.coupons = req.body.coupons;
-//     }
-//     if (req.body.paymentMethod != null) {
-//       res.order.paymentMethod = req.body.paymentMethod;
-//     }
-//     if (req.body.paymentStatus != null) {
-//       res.order.paymentStatus = req.body.paymentStatus;
-//     }
-//     if (req.body.status != null) {
-//       res.order.status = req.body.status;
-//     }
-
-//     try {
-//       const updatedOrder = await res.order.save();
-//       res.json(updatedOrder);
-//     } catch (err) {
-//       res.status(400).json({ message: err.message });
-//     }
-//   });
-
-//   // Delete an order by ID
-//   router.delete("/:id", getOrder, async (req, res) => {
-//     try {
-//       await res.order.remove();
-//       res.json({ message: "Order deleted successfully" });
-//     } catch (err) {
-//       res.status(500).json({ message: err.message });
-//     }
-//   });
-
-//   // Middleware function to get an order by ID
-//   async function getOrder(req, res, next) {
-//     try {
-//       const order = await Order.findById(req.params.id);
-//       if (order == null) {
-//         return res.status(404).json({ message: "

@@ -11,7 +11,7 @@ const mongoose = require("mongoose");
 const Banner = require("../models/bannersSchema");
 const orderControllers = require("./orderControllers");
 const productController = require("./productController");
-
+const moment = require("moment");
 module.exports = {
   getSignUp: (req, res, next) => {
     res.render("user/signup", {
@@ -1156,14 +1156,53 @@ module.exports = {
       res.status(500).json({ message: "Server error", success: false });
     }
   },
+  adminUserDashboard: async (req, res, next) => {
+    const weekUserData = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            week: { $isoWeek: "$createdAt" },
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.week": 1 },
+      },
+    ]);
+    // Get month-wise new users Userdata
+    const monthUserData = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    // Get year-wise new users Userdata
+    const yearUserData = await User.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+    req.userReport = [weekUserData, monthUserData, yearUserData];
+    next();
+  },
 };
-//
-// {
-//
-// },
-// {
-//   $group: {
-//     _id: null,
-//     totalQuantity: { $sum: "$products.items.quantity" },
-//   },
-// },

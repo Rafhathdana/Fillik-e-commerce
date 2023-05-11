@@ -30,6 +30,9 @@ module.exports = {
       brandName: req.session.merchant.brandName,
       merchantLoggedin: req.session.merchantLoggedIn,
       author: "Merchant#123!",
+      weekreport: req.weekreport,
+      totalresult: req.totalresult,
+      monthlyData: req.monthlyData,
     });
   },
 
@@ -335,8 +338,64 @@ module.exports = {
       brandName: req.session.merchant.brandName,
       merchantLoggedin: req.session.merchantLoggedIn,
       author: "Merchant#123!",
+      pagination: req.pagination,
       merchantData: req.session.merchant,
       orderList: req.orderList,
     });
+  },
+
+  adminMerchantyDashboard: async (req, res, next) => {
+    const weekMerchantData = await Merchant.aggregate([
+      {
+        $group: {
+          _id: {
+            week: { $isoWeek: "$createdAt" },
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.week": 1 },
+      },
+    ]);
+    // Get month-wise new Merchants Merchantdata
+    const monthMerchantData = await Merchant.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    // Get year-wise new Merchants Merchantdata
+    const yearMerchantData = await Merchant.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+    req.MerchantReport = [
+      weekMerchantData,
+      monthMerchantData,
+      yearMerchantData,
+    ];
+    console.log(req.MerchantReport);
+    next();
   },
 };

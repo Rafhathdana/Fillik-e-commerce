@@ -22,7 +22,7 @@
               </tbody>
             </table>
             <% } else { var total = 0; cartList.forEach(function(item) { let sum
-            = item.product[0].ourPrice / 100 * item.quantity; let tsum =
+            = item.product[0].ourPrice  * item.quantity; let tsum =
             item.product[0].orginalPrice * item.quantity; total += sum; %>
             <tr class="table_row">
               <td class="column-1">
@@ -37,7 +37,7 @@
               <td class="column-3">
                 <div>
                   Rs<span id="itemTotal<%= item.productId %>"
-                    ><%= item.product[0].ourPrice / 100 %></span
+                    ><%= item.product[0].ourPrice %></span
                   >
                 </div>
                 <div>

@@ -11,6 +11,7 @@ const productSchema = new Schema(
     merchantid: {
       type: ObjectId,
       ref: "merchants",
+      required: true,
     },
     name: {
       type: String,
@@ -23,14 +24,17 @@ const productSchema = new Schema(
     category: {
       type: ObjectId,
       ref: "filterdatas",
+      required: true,
     },
     colour: {
       type: ObjectId,
       ref: "filterdatas",
+      required: true,
     },
     pattern: {
       type: ObjectId,
       ref: "filterdatas",
+      required: true,
     },
     orginalPrice: {
       type: Number,
@@ -38,8 +42,7 @@ const productSchema = new Schema(
     },
     ourPrice: {
       type: Number,
-      get: (v) => (v / 100).toFixed(2),
-      set: (v) => Math.round(v * 100),
+      required: true,
     },
     sellerPrice: {
       type: Number,
@@ -48,6 +51,7 @@ const productSchema = new Schema(
     genderType: {
       type: ObjectId,
       ref: "filterdatas",
+      required: true,
     },
     Quantity: {
       type: Object,

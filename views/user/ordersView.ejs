@@ -193,9 +193,10 @@
             <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1" />
             <% const currentStatus =
             ordersList.products[i].status[ordersList.products[i].status.length -
-            1].currentStatus; const purchaseDate = new
-            Date(ordersList.products[i].status[ordersList.products[i].status.length
-            - 1].dateTimeOn); const currentDate = new Date(); const daysPassed =
+            1].currentStatus; 
+            const purchaseDate = new Date(ordersList.products[i].status[ordersList.products[i].status.length
+            - 1].dateTimeOn); 
+            const currentDate = new Date(); const daysPassed =
             Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 * 24)); if
             (currentStatus === "usercancel" || currentStatus ===
             "merchantCancel" || currentStatus === "adminCancel"||daysPassed >

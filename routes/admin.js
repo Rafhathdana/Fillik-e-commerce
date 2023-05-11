@@ -5,6 +5,8 @@ const filterController = require("../controllers/filterController");
 const couponController = require("../controllers/couponController");
 const orderControllers = require("../controllers/orderControllers");
 const productController = require("../controllers/productController");
+const userControllers = require("../controllers/userControllers");
+const merchantControllers = require("../controllers/merchantControllers");
 
 function adminAuth(req, res, next) {
   if (req.session && req.session.admin && req.session.adminLoggedIn) {
@@ -22,9 +24,16 @@ function adminVerify(req, res, next) {
   }
 }
 
-router.get("/", adminVerify, adminVerify, adminController.getHome);
+router.get("/", adminVerify, adminController.getHome);
 router.get("/login", adminAuth, adminController.getLogin); //almost
-router.get("/home", adminVerify, adminController.getHome);
+router.get(
+  "/home",
+  adminVerify,
+  userControllers.adminUserDashboard,
+  merchantControllers.adminMerchantyDashboard,
+  orderControllers.adminDashboard,
+  adminController.getHome
+);
 router.get("/userList", adminVerify, adminController.getUser); //almost
 router.get("/userBlockList", adminVerify, adminController.getBlockUser); //almost
 router.get("/userActiveList", adminVerify, adminController.getActiveUser); //almost

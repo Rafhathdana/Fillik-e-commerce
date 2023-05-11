@@ -283,14 +283,14 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
+        if (data.codStatus) {
           swal("Order Success");
           location.href = "/paymentSuccess";
         } else if (data.paypal) {
           location.href = data.link;
         } else if (data.result) {
           location.href = "/paymentSuccess";
-        } else {
+        } else if (data.razorpay) {
           razorpayPayment(data);
         }
       })
@@ -344,14 +344,14 @@
           location.href = "/paymentSuccess";
         } else {
           swal("payment failed");
-          returncart(payment,order);
+          returncart(payment, order);
         }
       })
       .catch((error) => {
         console.log(error);
       });
   }
-  function returncart(payment,order) {
+  function returncart(payment, order) {
     fetch("/returnCart", {
       method: "POST",
       headers: {
@@ -368,13 +368,12 @@
           location.href = "/paymentSuccess";
         } else {
           swal("payment failed");
-          returncart(payment,order);
+          returncart(payment, order);
         }
       })
       .catch((error) => {
         console.log(error);
       });
-
   }
   function toggle() {
     const list = document.getElementById("placeorder").classList;

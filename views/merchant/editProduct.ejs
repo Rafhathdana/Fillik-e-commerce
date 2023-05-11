@@ -1,16 +1,18 @@
 <div class="main-panel">
   <div class="content-wrapper">
     <div class="page-header">
-      <h3 class="page-title">Add Products</h3>
+      <h3 class="page-title">Edit Products</h3>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">View Products</a></li>
+          <li class="breadcrumb-item">
+            <a href="/merchant/productList">View Products</a>
+          </li>
           <li class="breadcrumb-item active" aria-current="page">
-            Add Products<a
+            <a
               href="#"
               class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1"
             >
-              Quick View
+              Edit Products
             </a>
           </li>
         </ol>
@@ -30,6 +32,7 @@
                   id="name"
                   name="name"
                   placeholder="Enter the Name of..."
+                  value="<%= productEdit[0].name %>"
                 />
               </div>
               <div class="form-group">
@@ -38,6 +41,7 @@
                   type="text"
                   class="form-control"
                   id="description"
+                  value="<%= productEdit[0].description %>"
                   name="description"
                   placeholder="Enter the Description..."
                 />
@@ -50,6 +54,13 @@
                   id="genderType"
                   style="padding: 1rem"
                 >
+                  <option
+                    class="selectoption"
+                    value="<%= productEdit[0].genderType[0]._id %>"
+                    selected
+                  >
+                    <%= productEdit[0].genderType[0].values %>
+                  </option>
                   <% for (let i = 0; i < genderType.length; i++) { %>
                   <option
                     class="selectoption"
@@ -68,6 +79,13 @@
                   id="category"
                   style="padding: 1rem"
                 >
+                  <option
+                    class="selectoption"
+                    value="<%= productEdit[0].category[0]._id %>"
+                    selected
+                  >
+                    <%= productEdit[0].category[0].values %>
+                  </option>
                   <% for (let i = 0; i < category.length; i++) { %>
                   <option
                     class="selectoption"
@@ -82,6 +100,13 @@
               <div class="form-group">
                 <label for="colour">Colour</label>
                 <select class="form-control" id="colour" style="padding: 1rem">
+                  <option
+                    class="selectoption"
+                    value="<%= productEdit[0].colour[0]._id %>"
+                    selected
+                  >
+                    <%= productEdit[0].colour[0].values %>
+                  </option>
                   <% for (let i = 0; i < colour.length; i++) { %>
                   <option
                     class="selectoption"
@@ -96,6 +121,13 @@
               <div class="form-group">
                 <label for="pattern">Pattern</label>
                 <select class="form-control" id="pattern" style="padding: 1rem">
+                  <option
+                    class="selectoption"
+                    value="<%= productEdit[0].pattern[0]._id %>"
+                    selected
+                  >
+                    <%= productEdit[0].pattern[0].values %>
+                  </option>
                   <% for (let i = 0; i < pattern.length; i++) { %>
                   <option
                     class="selectoption"
@@ -113,6 +145,7 @@
                   type="text"
                   class="form-control"
                   id="orginalPrice"
+                  value="<%= productEdit[0].orginalPrice %>"
                   name="orginalPrice"
                   placeholder="Enter the actual price..."
                 />
@@ -122,6 +155,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  value="<%= productEdit[0].sellerPrice %>"
                   id="sellerPrice"
                   name="sellerPrice"
                   placeholder="Enter the actual price..."
@@ -139,6 +173,7 @@
                       name="small"
                       class="form-control"
                       min="0"
+                      value="<%= productEdit[0].Quantity.small %>"
                       id="small"
                       placeholder="0"
                       value="0"
@@ -154,6 +189,7 @@
                       type="number"
                       class="form-control"
                       name="medium"
+                      value="<%= productEdit[0].Quantity.medium %>"
                       min="0"
                       id="medium"
                       placeholder="0"
@@ -170,6 +206,7 @@
                       type="number"
                       class="form-control"
                       name="large"
+                      value="<%= productEdit[0].Quantity.large %>"
                       min="0"
                       id="large"
                       placeholder="0"
@@ -186,6 +223,7 @@
                       type="number"
                       class="form-control"
                       name="extraLarge"
+                      value="<%= productEdit[0].Quantity.extraLarge %>"
                       min="0"
                       id="extraLarge"
                       placeholder="0"
@@ -200,11 +238,12 @@
                   class="form-control"
                   id="moreinfo"
                   name="moreinfo"
+                  value="<%= productEdit[0].moreinfo %>"
                   rows="4"
                 ></textarea>
               </div>
               <div class="form-group">
-                <label class="block mt-4 text-sm">
+                <!-- <label class="block mt-4 text-sm">
                   <img
                     src="/images/upload-icon.png"
                     alt=""
@@ -220,8 +259,8 @@
                     id="image1"
                     required
                   />
-                </label>
-                <label class="block mt-4 text-sm">
+                </label> -->
+                <!-- <label class="block mt-4 text-sm">
                   <img
                     src="/images/upload-icon.png"
                     alt=""
@@ -271,7 +310,7 @@
                     id="image4"
                     required
                   />
-                </label>
+                </label> -->
               </div>
               <!-- in case of file uploading use in above form as enctype="multipart/form-data"
                  <div class="form-group">
