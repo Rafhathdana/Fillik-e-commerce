@@ -59,9 +59,9 @@
             <div class="row">
               <div class="col-md-2">
                 <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/13.webp"
+                  src="/images/productImages/<%=ordersList.productsdetail[i].images[0] %>"
                   class="img-fluid"
-                  alt="Phone"
+                  alt="Phonee"
                 />
               </div>
               <div
@@ -88,7 +88,7 @@
                 class="col-md-2 text-center d-flex justify-content-center align-items-center"
               >
                 <p class="text-muted mb-0 small">
-                  Rs <%=ordersList.products[i].payableAmount/100%>
+                  Rs <%=ordersList.products[i].payableAmount%>
                 </p>
               </div>
             </div>
@@ -123,13 +123,13 @@
           </div>
         </div>
 
-        <% } }else{ %>
+        <% } }else{ console.log(ordersList.productsdetail[i]) %>
         <div class="card shadow-0 border mb-4">
           <div class="card-body">
             <div class="row">
               <div class="col-md-2">
                 <img
-                  src="/<%=ordersList.products[i].images%>"
+                  src="/images/productImages/<%=ordersList.productsdetail[i]%>""
                   class="img-fluid"
                   alt="Phone"
                 />
@@ -158,7 +158,7 @@
                 class="col-md-2 text-center d-flex justify-content-center align-items-center"
               >
                 <p class="text-muted mb-0 small">
-                  Rs <%=ordersList.products[i].payableAmount/100%>
+                  Rs <%=ordersList.products[i].payableAmount%>
                 </p>
               </div>
             </div>
@@ -238,6 +238,48 @@
       </ul>
     </div>
   </div>
+  <div class="d-flex justify-content-between pt-2">
+    <p class="fw-bold mb-0">Order Details</p>
+    <p class="text-muted mb-0">
+      <span class="fw-bold me-4">Total</span> $898.00
+    </p>
+  </div>
+
+  <div class="d-flex justify-content-between pt-2">
+    <p class="text-muted mb-0">Invoice Number : 788152</p>
+    <p class="text-muted mb-0">
+      <span class="fw-bold me-4">Discount</span> $19.00
+    </p>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <p class="text-muted mb-0">Invoice Date : 22 Dec,2019</p>
+    <p class="text-muted mb-0">
+      <span class="fw-bold me-4">GST 18%</span> 123
+    </p>
+  </div>
+
+  <div class="d-flex justify-content-between mb-5">
+    <p class="text-muted mb-0">Recepits Voucher : 18KU-62IIK</p>
+    <p class="text-muted mb-0">
+      <span class="fw-bold me-4">Delivery Charges</span> Free
+    </p>
+  </div>
+</div>
+<div
+  class="card-footer border-0 px-4 py-5"
+  style="
+    background-color: #a8729a;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  "
+>
+  <h5
+    class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"
+  >
+    Total paid: <span class="h2 mb-0 ms-2">$1040</span>
+  </h5>
+</div>
 </div>
 <script>
   function updateStatus(oid, pid, size, orderUpdate) {

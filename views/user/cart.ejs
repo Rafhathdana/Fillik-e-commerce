@@ -7,8 +7,8 @@
 
     <span class="stext-109 cl4"> Shoping Cart </span>
   </div>
-  <%- include('cartdesign') -%> <%- include('address') -%> <%-
-  include('checkOut') -%>
+  <%- include('cartdesign') -%> <%- include('address') -%> <%- include('coupon')
+  -%><%- include('checkOut') -%>
   <script>
     function checkAddress() {
       var addressSelect = document.getElementById("address");
@@ -21,6 +21,55 @@
       } else {
         document.querySelector(".js-show-modal4").click();
       }
+    }
+    function couponapply() {
+      const couponCode = document.getElementById("couponapply").value;
+
+      console.log(couponCode);
+      $.ajax({
+        url: "/applyCoupon",
+        method: "post",
+        data: {
+          couponCode: couponCode,
+        },
+        success: (response) => {
+          if (response.getMinRupees) {
+            let m = parseInt($("#discountCoupon").text());
+            let k = m + response.discountAmount;
+            $("#mainTotal").html(`${k}`);
+            $("#discountarea").addClass("d-none");
+            swal({
+              icon: "error",
+              title: "Oops..You have a USed this Code Enough Time!",
+              text: "You have a USed this Code Enough Time!",
+              showConfirmButton: false,
+              timer: 5000,
+            });
+          } else if (response.getCode) {
+            $("#discountReport").html(
+              `<i class="fa fa-check"></i> Coupon ${response.code.couponCode} applied. Discount: ${response.discountAmount}`
+            );
+            $("#discountCoupon").html(`${response.discountAmount}`);
+            $("#discountarea").removeClass("d-none");
+            let m = parseInt($("#mainTotal").text());
+            let k = m - response.discountAmount;
+            $("#mainTotal").html(`${k}`);
+          } else {
+            let m = parseInt($("#discountCoupon").text());
+            let k = m + response.discountAmount;
+            $("#mainTotal").html(`${k}`);
+            $("#discountarea").addClass("d-none");
+            parseInt($("#mainTotal").text());
+            swal({
+              icon: "error",
+              title: "Oops..You Type a Wrong Code!",
+              text: "Out Of Stock!",
+              showConfirmButton: false,
+              timer: 5000,
+            });
+          }
+        },
+      });
     }
   </script>
   <script>

@@ -155,15 +155,15 @@ module.exports = {
           category: req.body.category,
           colour: req.body.colour,
           pattern: req.body.pattern,
-          orginalPrice: req.body.orginalPrice,
-          sellerPrice: req.body.sellerPrice,
-          ourPrice: (req.body.sellerPrice / 100) * 105,
+          orginalPrice: parseInt(req.body.orginalPrice),
+          sellerPrice: parseInt(req.body.sellerPrice),
+          ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
           genderType: req.body.genderType,
           Quantity: {
-            small: req.body.small,
-            medium: req.body.medium,
-            large: req.body.large,
-            extraLarge: req.body.extraLarge,
+            small: parseInt(req.body.small),
+            medium: parseInt(req.body.medium),
+            large: parseInt(req.body.large),
+            extraLarge: parseInt(req.body.extraLarge),
           },
           moreinfo: req.body.moreinfo,
           images: images,
@@ -326,12 +326,6 @@ module.exports = {
       console.log(productList);
       const totalProductsCount = await Product.countDocuments(match); // add match object to countDocuments method
       const totalPages = Math.ceil(totalProductsCount / count);
-
-      let category = await filterproduct.find({ categoryname: "Category" });
-      let colour = await filterproduct.find({ categoryname: "Colour" });
-      let pattern = await filterproduct.find({ categoryname: "Pattern" });
-      let genderType = await filterproduct.find({ categoryname: "GenderType" });
-
       const endIndex = Math.min(startIndex + count - 1, totalProductsCount - 1);
 
       const pagination = {
@@ -349,10 +343,10 @@ module.exports = {
         adminLoggedIn: req.session.adminLoggedIn,
         author: "Admin#1233!",
         productList,
-        category,
-        colour,
-        pattern,
-        genderType,
+        category: req.category,
+        colour: req.colour,
+        pattern: req.pattern,
+        genderType: req.genderType,
         pagination, // pass pagination object to the view
       });
     } catch (error) {
@@ -403,6 +397,168 @@ module.exports = {
     } catch (error) {
       console.error(error);
       throw error;
+    }
+  },
+
+  // USER
+  productList: async (req, res, next) => {
+    try {
+      const count = 20;
+      const page = parseInt(req.query.page) || 1;
+      const filter = req.filterData;
+      const sort = req.sort;
+      console.log(filter);
+      let productsList;
+
+      if (filter) {
+        productsList = await Product.find(filter)
+          .sort(sort)
+          .skip((page - 1) * count)
+          .limit(count)
+          .lean();
+        console.log("hel");
+        console.log(productsList);
+      } else {
+        productsList = await Product.find()
+          .sort(sort)
+          .skip((page - 1) * count)
+          .limit(count)
+          .lean();
+        console.log("gad");
+        console.log(productsList);
+      }
+
+      const totalCount = await Product.countDocuments(filter);
+      const totalPages = Math.ceil(totalCount / count);
+      console.log(totalCount);
+      const startIndex = (page - 1) * count;
+      const endIndex = Math.min(startIndex + count, totalCount);
+
+      const pagination = {
+        totalCount: totalCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+
+      if (req.session.userLoggedIn) {
+        res.render("user/productList", {
+          title: "Users List",
+          fullName: req.session.user.fullName,
+          loggedin: req.session.userLoggedIn,
+          productsList,
+          pagination,
+          cartItems: req.cartItems,
+          category: req.category,
+          colour: req.colour,
+          pattern: req.pattern,
+          genderType: req.genderType,
+        });
+      } else {
+        res.render("user/productlist", {
+          title: "Product List",
+          loggedin: false,
+          productsList,
+          cartItems: req.cartItems,
+          pagination, // add pagination to the render parameters
+          category: req.category,
+          colour: req.colour,
+          pattern: req.pattern,
+          genderType: req.genderType,
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+  getProductView: async (req, res, next) => {
+    try {
+      const count = 10;
+      const page = 1;
+      const productsList = await Product.find()
+        .skip((page - 1) * count)
+        .limit(count)
+        .lean();
+
+      const totalPages = Math.ceil((await Product.countDocuments()) / count);
+      const startIndex = (page - 1) * count;
+
+      const endIndex = Math.min(
+        startIndex + count,
+        await Product.countDocuments()
+      );
+      const productItem = await Product.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(req.params.productId),
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "category",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "colour",
+            foreignField: "_id",
+            as: "colour",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "pattern",
+            foreignField: "_id",
+            as: "pattern",
+          },
+        },
+        {
+          $lookup: {
+            from: "filterdatas",
+            localField: "genderType",
+            foreignField: "_id",
+            as: "genderType",
+          },
+        },
+      ]);
+      console.log(productItem);
+      if (req.session.userLoggedIn) {
+        res.render("user/productDetailView", {
+          title: "Users List",
+          fullName: req.session.user.fullName,
+          loggedin: req.session.userLoggedIn,
+          cartItems: req.cartItems,
+          productItem,
+          productsList,
+          count,
+          page,
+          totalPages,
+          startIndex,
+          endIndex,
+        });
+      } else {
+        res.render("user/productDetailView", {
+          title: "Users List",
+          loggedin: false,
+          cartItems: req.cartItems,
+          productItem,
+          productsList,
+          count,
+          page,
+          totalPages,
+          startIndex,
+          endIndex,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
   },
 };

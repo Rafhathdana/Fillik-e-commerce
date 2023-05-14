@@ -94,25 +94,15 @@
           <form id="signin-form" method="post">
             <div class="form-floating mb-3">
               <input
-                type="email"
+                type="mobile"
                 class="form-control"
-                id="email"
-                name="email"
-                placeholder="name@example.com"
+                id="mobile"
+                name="mobile"
+                placeholder="Mobile Number"
               />
-              <label for="email">Email address</label>
+              <label for="email">Mobile Number</label>
             </div>
 
-            <div class="form-floating mb-3">
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                name="password"
-                placeholder="Password"
-              />
-              <label for="password">Password</label>
-            </div>
             <div class="mb-4">
               <div class="form-check">
                 <label
@@ -159,10 +149,10 @@
             <a href="/signup" class="text-white">Create New User</a>
           </div>
           <div class="d-flex justify-content-between links">
-            <a href="/otpLogin" class="text-white" id="forget">Login with Otp</a>
+            <a href="/signin" class="text-white" id="forget">Nromal Login </a>
             <!-- <a href="/signup" class="text-white">Create New User</a> -->
           </div>
-          <!-- <div id="otp-section" class="d-none">
+          <div id="otp-section" class="d-none">
             <form>
               <h6>OTP</h6>
               <div class="pin-input">
@@ -203,7 +193,7 @@
                 >back</a
               >
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>
@@ -214,38 +204,33 @@
 <script>
   $(document).ready(function () {
     $.validator.addMethod(
-      "email",
+      "number",
       function (value, element) {
-        return (
-          this.optional(element) ||
-          /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(value)
-        );
+        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
       },
-      "Please enter a valid email address"
+      "numbers only allowed"
     );
+
     $("#signin-form").validate({
       rules: {
-        email: {
+        mobile: {
           required: true,
-          email: true,
-        },
-        password: {
-          required: true,
-          minlength: 8,
+          maxlength: 10,
+          minlength: 10,
+          number: true,
         },
         termsCheckbox: {
           required: true,
         },
       },
       messages: {
-        email: {
-          required: "Please enter your email address",
-          email: "Please enter a valid email address",
+        mobile: {
+          required: "Please enter Mobile Number",
+          minlength: "10 digit indian number should be there",
+          maxlength: "maximum 10 digit allowed in indian number",
+          number: "only numbers allowed",
         },
-        password: {
-          required: "Please enter a password",
-          minlength: "Your password must be at least 8 characters long",
-        },
+
         termsCheckbox: {
           required: "Please agree to the Terms & Conditions",
         },
@@ -273,7 +258,7 @@
     );
   });
 </script>
-<!-- <script>
+ <script>
   const inputs = document.querySelectorAll(".pin-box");
 
   inputs.forEach((input, index) => {
@@ -294,8 +279,7 @@
       }
     });
   });
-</script> -->
-<!-- 
+</script>
 <script>
   const signupForm = document.getElementById("signin-form");
   const otpSection = document.getElementById("otp-section");
@@ -464,5 +448,5 @@
         swal("An error occurred. Please try again later.");
       });
   }
-</script> -->
+</script> 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

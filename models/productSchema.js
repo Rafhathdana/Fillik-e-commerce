@@ -57,15 +57,19 @@ const productSchema = new Schema(
       type: Object,
       small: {
         type: Number,
+        required: true,
       },
       medium: {
         type: Number,
+        required: true,
       },
       large: {
         type: Number,
+        required: true,
       },
       extraLarge: {
         type: Number,
+        required: true,
       },
     },
     moreinfo: {

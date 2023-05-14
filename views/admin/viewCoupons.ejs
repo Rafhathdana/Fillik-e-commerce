@@ -1,0 +1,103 @@
+<head>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="http://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"
+  />
+  <script src="http://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+</head>
+
+<div class="categoryHeading ml-5">
+  <h5>Coupons</h5>
+  <div class="table-responsive">
+    <table class="table" id="categoryTable">
+      <thead>
+        <tr>
+          <th>Offer Type</th>
+          <th>Coupon Code</th>
+          <th>Count Access</th>
+          <th>Minimum Rs</th>
+          <th>expiryDate</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < coupon.length; i++) { %>
+        <tr>
+          <td><%= coupon[i].offertype %></td>
+          <td><%= coupon[i].couponCode %></td>
+          <td><%= coupon[i].countAccess %></td>
+          <td><%= coupon[i].minRupees %></td>
+          <td><%= coupon[i].expiryDate %></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <button
+                type="button"
+                class="btn btn-success btn-sm btn-icon-text mr-3"
+                onclick="window.location='/admin/editCoupon/<%=coupon[i]._id %>'"
+              >
+                Edit
+                <i class="typcn typcn-edit btn-icon-append"></i>
+              </button>
+              <% if(coupon[i].status){%>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm btn-icon-text"
+                onclick="confirmStatus('<%= coupon[i]._id %>')"
+              >
+                Block
+                <i class="typcn typcn-delete-outline btn-icon-append"></i>
+              </button>
+              <% } else { %>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm btn-icon-text"
+                onclick="confirmStatus('<%= coupon[i]._id %>')"
+              >
+                Unblock
+                <i class="typcn typcn-delete-outline btn-icon-append"></i>
+              </button>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <br />
+  <br />
+  <br />
+  <br />
+</div>
+
+<script>
+  function confirmStatus(userId) {
+    if (confirm("Are you sure you want to Block this Coupon Code?")) {
+      fetch(`statusCodeUpdate/${userId}`, { method: "POST" })
+        .then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            swal("unable to update user");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          swal("Internal server error");
+        });
+    } else {
+      // User cancelled, do nothing
+      console.log("Coupon code cancelled Blocking ", userId);
+    }
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    $("#categoryTable").DataTable();
+  });
+</script>

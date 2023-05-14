@@ -8,9 +8,9 @@
 </head>
 
 <div class="ml-5" style="width: 50%">
-  Add Coupons
+  Edit Coupons
   <div class="main-div">
-    <form id="category-form" action="/admin/addcoupon" method="post">
+    <form id="category-form" action="/admin/editcoupon" method="post">
       <div class="category">
         <div class="form-group">
           <label>select type</label>
@@ -42,6 +42,7 @@
             class="form-control"
             name="minRupees"
             id="minRupees"
+            value="<%=coupon[0].minRupees%>"
             placeholder="Type Carefully"
             aria-label="categoryvalue"
           />
@@ -53,8 +54,9 @@
             class="form-control"
             name="countAccess"
             id="countAccess"
+            value="<%=coupon[0].countAccess%>"
             placeholder="Type Carefully"
-            aria-label="categoryvalue"
+            aria-label="countAccess"
           />
         </div>
         <div class="form-group">
@@ -64,10 +66,12 @@
             class="form-control datepicker"
             name="expirydate"
             id="expirydate"
+            value="<%=coupon[0].expirydate%>"
             placeholder="check spelling correctly"
-            aria-label="categoryvalue"
+            aria-label="Expiry date for user access"
           />
         </div>
+
         <div class="form-group">
           <label>Max Discount</label>
           <input
@@ -75,6 +79,7 @@
             class="form-control"
             name="maxDiscount"
             id="maxDiscount"
+            value="<%=coupon[0].maxDiscount%>"
             placeholder="Type Carefully"
             aria-label="maxDiscount write only digit here"
           />
@@ -86,6 +91,7 @@
             class="form-control"
             name="maxPercentage"
             id="maxPercentage"
+            value="<%=coupon[0].maxPercentage%>"
             placeholder="Type Carefully write only digit here"
             aria-label="maxPercentage"
           />
@@ -97,12 +103,13 @@
             class="form-control"
             name="couponcode"
             id="couponcode"
+            value="<%=coupon[0].couponCode%>"
             placeholder="Type Carefully"
             aria-label="couponcode"
           />
         </div>
 
-        <button type="submit" class="btn btn-rounded btn-primary">Add</button>
+        <button type="submit" class="btn btn-rounded btn-primary">Edit</button>
       </div>
       <% if(locals.errorout) { %>
       <div class="alert alert-danger mt-2" role="alert" style="width: '87%'">
@@ -203,47 +210,3 @@
     $("#expirydate").datepicker();
   });
 </script>
-<!-- <div class="form-group">
-          <label>Category Applicable on</label>
-          <select class="js-example-basic-multiple w-100" multiple="multiple">
-            <option value="all">All</option>
-            <% for (let i = 0; i < category.length; i++) { %>
-            <option value="<%= category[i]._id %>">
-              <%= category[i].values %>
-            </option>
-            <%}%>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Pattern Applicable on</label>
-          <select class="js-example-basic-multiple w-100" multiple="multiple">
-            <option value="all">All</option>
-            <% for (let i = 0; i < pattern.length; i++) { %>
-            <option value="<%= pattern[i]._id %>">
-              <%= pattern[i].values %>
-            </option>
-            <%}%>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Colour Applicable on</label>
-          <select class="js-example-basic-multiple w-100" multiple="multiple">
-            <option value="all">All</option>
-            <% for (let i = 0; i < colour.length; i++) { %>
-            <option value="<%= colour[i]._id %>">
-              <%= colour[i].values %>
-            </option>
-            <%}%>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Gender Type Applicable on</label>
-          <select class="js-example-basic-multiple w-100" multiple="multiple">
-            <option value="all">All</option>
-            <% for (let i = 0; i < genderType.length; i++) { %>
-            <option value="<%= genderType[i]._id %>">
-              <%= genderType[i].values %>
-            </option>
-            <%}%>
-          </select>
-        </div> -->

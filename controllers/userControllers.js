@@ -33,60 +33,13 @@ module.exports = {
     });
     req.session.errmsg = null;
   },
-  getProductView: async (req, res, next) => {
-    try {
-      const count = 10;
-      const page = 1;
-      const productsList = await Products.find()
-        .skip((page - 1) * count)
-        .limit(count)
-        .lean();
-
-      const totalPages = Math.ceil((await Products.countDocuments()) / count);
-      const startIndex = (page - 1) * count;
-
-      const endIndex = Math.min(
-        startIndex + count,
-        await Products.countDocuments()
-      );
-      const productItem = await Products.findById(req.params.productId);
-      if (req.session.userLoggedIn) {
-        res.render("user/productDetailView", {
-          title: "Users List",
-          fullName: req.session.user.fullName,
-          loggedin: req.session.userLoggedIn,
-          cartItems: req.cartItems,
-          productItem,
-          productsList,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
-        });
-      } else {
-        res.render("user/productDetailView", {
-          title: "Users List",
-          loggedin: false,
-          cartItems: req.cartItems,
-          productItem,
-          productsList,
-          count,
-          page,
-          totalPages,
-          startIndex,
-          endIndex,
-        });
-      }
-    } catch (error) {
-      next(error);
-    }
-  },
+  
   getProductlist: async (req, res, next) => {
     try {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
       const totalCount = await Products.countDocuments();
+      const startIndex = (page - 1) * count;
 
       // Calculate the total number of pages based on the count and the total count
       const totalPages = Math.ceil(totalCount / count);
@@ -95,15 +48,11 @@ module.exports = {
       const randomOffset = Math.floor(Math.random() * (totalCount - count));
 
       const productsList = await Products.find()
-        .skip(randomOffset + (page - 1) * count)
+        .skip(randomOffset + startIndex)
         .limit(count)
         .lean();
 
       const endIndex = Math.min(startIndex + count, totalCount);
-      let category = await filterproduct.find({ categoryname: "Category" });
-      let colour = await filterproduct.find({ categoryname: "Colour" });
-      let pattern = await filterproduct.find({ categoryname: "Pattern" });
-      let genderType = await filterproduct.find({ categoryname: "GenderType" });
       const pagination = {
         totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
         totalPages: totalPages,
@@ -392,216 +341,8 @@ module.exports = {
     }
   },
 
-  productList: async (req, res, next) => {
-    try {
-      const count = 20;
-      const page = parseInt(req.query.page) || 1;
-      const filter = req.filterData;
-      const sort = req.sort;
-      console.log(filter);
-      let productsList;
+ 
 
-      if (filter) {
-        productsList = await Products.find(filter)
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("hel");
-        console.log(productsList);
-      } else {
-        productsList = await Products.find()
-          .sort(sort)
-          .skip((page - 1) * count)
-          .limit(count)
-          .lean();
-        console.log("gad");
-        console.log(productsList);
-      }
-
-      const totalCount = await Products.countDocuments(filter);
-      const totalPages = Math.ceil(totalCount / count);
-      console.log(totalCount);
-      const startIndex = (page - 1) * count;
-      const endIndex = Math.min(startIndex + count, totalCount);
-
-      let category = await filterproduct.find({ categoryname: "Category" });
-      let colour = await filterproduct.find({ categoryname: "Colour" });
-      let pattern = await filterproduct.find({ categoryname: "Pattern" });
-      let genderType = await filterproduct.find({ categoryname: "GenderType" });
-
-      const pagination = {
-        totalCount: totalCount,
-        totalPages: totalPages,
-        page: page,
-        count: count,
-        startIndex: startIndex,
-        endIndex: endIndex,
-      };
-
-      if (req.session.userLoggedIn) {
-        res.render("user/productList", {
-          title: "Users List",
-          fullName: req.session.user.fullName,
-          loggedin: req.session.userLoggedIn,
-          productsList,
-          pagination,
-          cartItems: req.cartItems,
-          category,
-          colour,
-          pattern,
-          genderType,
-        });
-      } else {
-        res.render("user/productlist", {
-          title: "Product List",
-          loggedin: false,
-          productsList,
-          cartItems: req.cartItems,
-          pagination, // add pagination to the render parameters
-          category,
-          colour,
-          pattern,
-          genderType,
-        });
-      }
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  getFilter: async (req, res, next) => {
-    try {
-      let {
-        sorted,
-        pattern,
-        minPrice,
-        maxPrice,
-        colour,
-        category,
-        sizes,
-        genderType,
-      } = req.query;
-      console.log(minPrice, maxPrice);
-      const filter = {};
-
-      if (minPrice && maxPrice) {
-        filter.ourPrice = { $gte: minPrice * 100, $lte: maxPrice * 100 };
-      } else if (minPrice) {
-        filter.ourPrice = { $gte: minPrice * 100 };
-      } else if (maxPrice) {
-        filter.ourPrice = { $lte: maxPrice * 100 };
-      }
-
-      if (category) {
-        filter.category = category;
-      }
-
-      if (genderType) {
-        filter.genderType = genderType;
-      }
-
-      if (colour) {
-        filter.colour = colour;
-      }
-
-      if (sizes) {
-        filter.sizes = { $in: sizes };
-      }
-
-      let sort = {};
-
-      if (sorted) {
-        let sortField = "ourPrice";
-        let sortOrder = 1;
-
-        if (sorted == "htl") {
-          sortOrder = -1;
-        } else if (sorted == "lth") {
-          sortOrder = 1;
-        }
-
-        sort = { [sortField]: sortOrder };
-      }
-
-      req.filterData = filter;
-      console.log(req.filterData);
-      next();
-    } catch (err) {
-      console.error(err);
-      res.sendStatus(500);
-    }
-  },
-
-  postFilter: async (req, res, next) => {
-    console.log(req.body, "body");
-    try {
-      const { minPrice, maxPrice, sizes } = req.body;
-      const category = req.body["category[]"];
-      const colour = req.body["colour[]"];
-      const pattern = req.body["pattern[]"];
-      const genderType = req.body.genderType;
-      const sorted = req.body.sorted;
-
-      let sort = { createdAt: -1 };
-
-      if (sorted) {
-        let sortField = "ourPrice";
-        let sortOrder = 1;
-
-        if (sorted == "htl") {
-          sortOrder = -1;
-        } else if (sorted == "lth") {
-          sortOrder = 1;
-        } else if (sorted == "popularity") {
-          sortOrder = 1;
-        } else {
-          sortField = "createdAt";
-          sortOrder = -1;
-        }
-        sort = { [sortField]: sortOrder };
-      }
-      // Construct the filter object
-      req.sort = sort;
-      const filter = {};
-      if (minPrice && maxPrice) {
-        filter.ourPrice = {
-          $gte: parseInt(minPrice) * 100,
-          $lte: parseInt(maxPrice) * 100,
-        };
-      } else if (minPrice) {
-        filter.ourPrice = { $gte: parseInt(minPrice) };
-      } else if (maxPrice) {
-        filter.ourPrice = { $lte: parseInt(maxPrice) };
-      }
-
-      if (category) {
-        filter.category = { $in: category };
-      }
-
-      if (genderType) {
-        filter.genderType = genderType;
-      }
-
-      if (colour) {
-        filter.colour = { $in: colour };
-      }
-      if (pattern) {
-        filter.colour = { $in: pattern };
-      }
-
-      if (sizes) {
-        filter.sizes = { $in: sizes };
-      }
-
-      req.filterData = filter;
-      console.log(filter, "filter");
-      next();
-    } catch (err) {
-      console.error(err);
-      res.sendStatus(500);
-    }
-  },
   getCart: async (req, res, next) => {
     try {
       const count = 10;
@@ -642,6 +383,7 @@ module.exports = {
         cartList,
         productsList,
         userAddresses: req.userAddressess,
+        couponsList: req.couponsList,
         startIndex,
         endIndex,
         totalPages,
@@ -965,12 +707,6 @@ module.exports = {
 
       const startIndex = (page - 1) * count;
       const endIndex = Math.min(startIndex + count, totalCount);
-
-      let category = await filterproduct.find({ categoryname: "Category" });
-      let colour = await filterproduct.find({ categoryname: "Colour" });
-      let pattern = await filterproduct.find({ categoryname: "Pattern" });
-      let genderType = await filterproduct.find({ categoryname: "GenderType" });
-
       const pagination = {
         totalCount: totalCount,
         totalPages: totalPages,
@@ -988,10 +724,10 @@ module.exports = {
           cartItems: req.cartItems,
           pagination,
           banner: req.banner,
-          category,
-          colour,
-          pattern,
-          genderType,
+          category: req.category,
+          colour: req.colour,
+          pattern: req.pattern,
+          genderType: req.genderType,
         });
       } else {
         res.render("user/index", {
@@ -1001,10 +737,10 @@ module.exports = {
           cartItems: req.cartItems,
           pagination,
           banner: req.banner,
-          category,
-          colour,
-          pattern,
-          genderType,
+          category: req.category,
+          colour: req.colour,
+          pattern: req.pattern,
+          genderType: req.genderType,
         });
       }
     } catch (error) {
@@ -1124,18 +860,31 @@ module.exports = {
     var cartId = req.body.cartId;
     console.log(count, quantity, size, productId, cartId);
     try {
-      const sellcount = await orderControllers.productcount(productId, size);
-      console.log("Sell count:", sellcount);
-      const itemcount = await productController.productquantity(
-        productId,
-        size
+      // const sellcount = await orderControllers.productcount(productId, size);
+      // console.log("Sell count:", sellcount);
+      // const itemcount = await productController.productquantity(
+      //   productId,
+      //   size
+      // );
+      let sizes;
+      if (size === "S") {
+        sizes = "small";
+      } else if (size === "M") {
+        sizes = "medium";
+      } else if (size === "L") {
+        sizes = "large";
+      } else if (size === "XL") {
+        sizes = "extraLarge";
+      }
+
+      let k = await Products.find(
+        { _id: productId },
+        { [`Quantity.${sizes}`]: 1 }
       );
-      let balance = itemcount - sellcount;
+      let balance = k[0].Quantity[sizes];
+      console.log(balance);
       if (balance === 0) {
         res.status(200).json({ noStock: true });
-      }
-      if (balance <= quantity + 1) {
-        res.status(200).json({ maxLimitStock: true });
       }
       if (balance > quantity + 1) {
         await Cart.updateOne(

@@ -4,6 +4,9 @@ const userController = require("../controllers/userControllers");
 const otp = require("../controllers/otp");
 const addressControllers = require("../controllers/addressControllers");
 const orderControllers = require("../controllers/orderControllers");
+const filterController = require("../controllers/filterController");
+const couponController = require("../controllers/couponController");
+const productController = require("../controllers/productController");
 
 /* GET home page. */
 function userauth(req, res, next) {
@@ -29,46 +32,49 @@ function cart(req, res, next) {
 }
 router.get(
   "/",
-  userController.getFilter,
+  filterController.getFilter,
   cart,
   userController.banner,
+  filterController.getAllCategory,
   userController.productHome
 );
 
 router.get("/signup", userauth, cart, userController.getSignUp);
 
 router.get("/login", userauth, cart, userController.getSignIn);
-router.get(
-  "/home",
-  verify,
-  userController.getFilter,
-  cart,
-  userController.productFilterList
-);
+// router.get(
+//   "/home",
+//   verify,
+//   filterController.getFilter,
+//   cart,
+//   userController.productList
+// );
 router.post(
   "/postfilter",
-  userController.postFilter,
+  filterController.postFilter,
   userController.productFilterList
 );
 router.get(
   "/postfilter",
-  userController.getFilter,
+  filterController.getFilter,
   cart,
-  userController.productList
+  productController.productList
 );
 router.get(
   "/productlist",
-  userController.getFilter,
+  filterController.getAllCategory,
+  filterController.getFilter,
   cart,
-  userController.productList
+  productController.productList
 );
 router.get(
   "/cart",
   verify,
+  couponController.getCouponsList,
   addressControllers.getAddress,
   userController.getCart
 );
-router.get("/productview/:productId", cart, userController.getProductView);
+router.get("/productview/:productId", cart, productController.getProductView);
 router.get("/profile", verify, userController.getProfile);
 router.get("/editprofile", verify, userController.getEditProfile);
 router.get(
@@ -107,6 +113,7 @@ router.post(
   orderControllers.postOrder,
   orderControllers.payment
 ); //need to test after login
+router.post("/applyCoupon", verify, couponController.applyCoupon); //need to test after login
 
 router.post("/postFromCart", (req, res, next) => {
   req.session.userLoggedIn
@@ -129,12 +136,17 @@ router.get("/DUMY", function (req, res, next) {
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.post("/updateOrderStatus", verify, orderControllers.updateOrder);
 router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
-router.get("/paymentSuccess", verify, userController.getPaymentSucces);
-router.get("/returnCart", verify, orderControllers.returnCartItem);
+router.get(
+  "/paymentSuccess/:id",
+  verify,
+  orderControllers.removeCartItemAndQuantity,
+  userController.getPaymentSucces
+);
+router.get("/cancelledpayment/:id", verify, orderControllers.removeOrder);
 router.post("/changeQuantity", verify, userController.changeProductQuantity);
 router.post(
   "/searchItem",
-  userController.postFilter,
+  filterController.postFilter,
   userController.searchProductFilterList
 );
 

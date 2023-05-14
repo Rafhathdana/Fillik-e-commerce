@@ -8,6 +8,10 @@ const orderSchema = new Schema(
       ref: "users",
       required: true,
     },
+    orderCode: {
+      type: String,
+      required: true,
+    },
     products: [
       {
         productId: {
@@ -37,19 +41,19 @@ const orderSchema = new Schema(
           },
         ],
         sellRate: {
-          type: String,
+          type: Number,
           required: true,
         },
         actualRate: {
-          type: String,
+          type: Number,
           required: true,
         },
         mrp: {
-          type: String,
+          type: Number,
           required: true,
         },
         payableAmount: {
-          type: String,
+          type: Number,
           required: true,
         },
         status: [
@@ -93,7 +97,7 @@ const orderSchema = new Schema(
         required: true,
       },
       pinCode: {
-        type: String,
+        type: Number,
         required: true,
       },
     },

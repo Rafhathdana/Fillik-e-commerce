@@ -90,7 +90,7 @@
                     Cash on Delivery</label
                   >
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <input
                     type="radio"
                     id="paytm"
@@ -107,7 +107,7 @@
                     />
                     Paytm</label
                   >
-                </div>
+                </div> -->
                 <div class="form-group">
                   <input
                     type="radio"
@@ -144,7 +144,7 @@
                     />Razorpay</label
                   >
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <input
                     type="radio"
                     id="amazon-pay"
@@ -160,8 +160,8 @@
                       class="mr-5"
                     />Amazon Pay</label
                   >
-                </div>
-                <div class="form-group">
+                </div> -->
+                <!-- <div class="form-group">
                   <input
                     type="radio"
                     id="google-pay"
@@ -177,7 +177,7 @@
                       class="mr-5"
                     />Google Pay</label
                   >
-                </div>
+                </div> -->
                 <button class="btn btn-primary" onclick="checkout()">
                   Proceed
                 </button>
@@ -187,7 +187,7 @@
         </div>
 
         <div class="col-md-4 offset-xl-1">
-          <div class="py-4 d-flex justify-content-end">
+          <!-- <div class="py-4 d-flex justify-content-end">
             <h6><a href="">Cancel and return to website</a></h6>
           </div>
           <div
@@ -242,13 +242,13 @@
               <div class="ms-auto">
                 <b class="text-success">$85.00</b>
               </div>
-            </div>
-          </div>
+            </div> -->
         </div>
       </div>
     </div>
   </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -259,6 +259,7 @@
     );
     var addressSelect = document.querySelector("#address");
     var addressId = addressSelect.options[addressSelect.selectedIndex].value;
+    var couponCode = document.getElementById("couponapply").value;
 
     // Check that all required fields are filled out
     if (!paymentMethod) {
@@ -279,26 +280,31 @@
       body: JSON.stringify({
         paymentMethod: paymentMethod.value,
         addressId: addressId,
+        couponCode: couponCode,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.codStatus) {
-          swal("Order Success");
-          location.href = "/paymentSuccess";
+        console.log(data);
+        if (data.codStatus == true) {
+          console.log("dgf");
+          console.log(`/paymentSuccess/${data.orderId}`);
+          location.href = `/paymentSuccess/${data.orderId}`;
         } else if (data.paypal) {
           location.href = data.link;
         } else if (data.result) {
-          location.href = "/paymentSuccess";
+          location.href = `/paymentSuccess/${data.response.id}`;
         } else if (data.razorpay) {
-          razorpayPayment(data);
+          console.log(data.response.amount);
+          razorpayPayment(data.response);
+        } else {
+          location.href = `/cancelledpayment/${data.response.id}`;
         }
       })
       .catch((error) => {
         swal("Error adding product to cart: " + error);
       });
   }
-
   function razorpayPayment(order) {
     var options = {
       key: "rzp_test_xAQNIRBNlka1mN", // Enter the Key ID generated from the Dashboard
@@ -322,8 +328,23 @@
       theme: {
         color: "#3399cc",
       },
+      onpaymenterror: function (errorCode) {
+        location.href = `/cancelledpayment/${order.receipt}`;
+      },
+      cancel: function (response) {
+        location.href = `/cancelledpayment/${order.receipt}`;
+      },
+      oncancel: function (response) {
+        alert("Payment cancelled!");
+      },
     };
     var rzp1 = new Razorpay(options);
+
+    rzp1.on("payment.failed", function (response) {
+      alert("Payment failed, please try again later.");
+      window.location.href = "https://your-website.com/payment-failed";
+    });
+
     rzp1.open();
   }
 
@@ -341,40 +362,19 @@
       .then((response) => response.json())
       .then((data) => {
         if (data.status) {
-          location.href = "/paymentSuccess";
+          location.href = `/paymentSuccess/${order.receipt}`;
         } else {
+          location.href = `/cancelledpayment/${order.receipt}`;
           swal("payment failed");
-          returncart(payment, order);
         }
       })
       .catch((error) => {
+        location.href = `/cancelledpayment/${order.receipt}`;
+        swal("payment failed");
         console.log(error);
       });
   }
-  function returncart(payment, order) {
-    fetch("/returnCart", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        payment,
-        order,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status) {
-          location.href = "/paymentSuccess";
-        } else {
-          swal("payment failed");
-          returncart(payment, order);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+
   function toggle() {
     const list = document.getElementById("placeorder").classList;
     const list2 = document.getElementById("paypal-button-container").classList;

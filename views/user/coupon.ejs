@@ -1,0 +1,84 @@
+<head>
+  <style>
+    .coupon {
+      border-radius: 12px;
+      box-shadow: 5px 8px 10px #d6d5d533;
+    }
+    .code:hover {
+      background: green;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<div class="wrap-modal5 js-modal5 p-t-60 p-b-20">
+  <div class="overlay-modal5 js-hide-modal5"></div>
+
+  <div class="container">
+    <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent">
+      <button class="how-pos3 hov3 trans-04 js-hide-modal5">
+        <img src="/images/icons/icon-close.png" alt="CLOSE" />
+      </button>
+
+      <div class="row">
+        <div class="col-12 grid-margin">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-center row">
+                <% for(let i=0;i < Math.min(couponsList.length||10);i++){ %>
+                <div class="col-md-6">
+                  <div class="coupon p-3 bg-white">
+                    <div class="row no-gutters">
+                      <div class="col-md-4 border-right">
+                        <div class="d-flex flex-column align-items-center">
+                          <img src="https://i.imgur.com/XwBlVpS.png" /><span
+                            class="d-block"
+                            >Discount</span
+                          >
+                        </div>
+                      </div>
+                      <div class="col-md-8">
+                        <div>
+                          <% const expiryDate = new
+                          Date(couponsList[i].expiryDate); const formattedDate =
+                          expiryDate.toISOString().split('T')[0];%> expires
+                          on:<%=formattedDate%>
+                          <div class="d-flex flex-row justify-content-end off">
+                            <h1><%=couponsList[i].maxPercentage%>%</h1>
+                            <span>OFF</span>
+                          </div>
+                          <div
+                            class="d-flex flex-row justify-content-between off px-3 p-2"
+                          >
+                            <span>Promo code:</span>
+                            <span
+                              class="border border-success px-3 rounded code"
+                              ><%=couponsList[i].couponCode%></span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <small>
+                        <span class="text-black-20"
+                          >Min Amount: <%= couponsList[i].minRupees %>minimum
+                          amount needed to avail this offer</span
+                        ></small
+                      >
+                      <small>
+                        <span class="text-black-20"
+                          >Max Amount Dsscount: <%= couponsList[i].maxDiscount
+                          %>Maximum amount will get discount</span
+                        ></small
+                      >
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

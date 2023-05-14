@@ -50,35 +50,4 @@ module.exports = {
     }
   },
 
-  postAddCoupon: async (req, res, next) => {
-    try {
-      let categoryValuein = req.body.categoryvalue;
-      categoryValuein = categoryValuein
-        .toLowerCase()
-        .split(" ")
-        .map((word) => {
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(" ");
-      const newCategory = await filterproduct.findOne({
-        categoryname: req.body.categorytype,
-        values: categoryValuein,
-      });
-      if (!newCategory) {
-        const newData = new filterproduct({
-          categoryname: req.body.categorytype,
-          values: categoryValuein,
-        });
-        filterproduct.create(newData);
-        req.session.categoryout = "Added";
-        res.status(204).redirect("/admin/addcategory");
-      } else {
-        req.session.categoryout = "already value found";
-        res.status(400).redirect("/admin/addcategory");
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(400);
-    }
-  },
 };

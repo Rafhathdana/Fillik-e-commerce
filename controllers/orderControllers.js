@@ -8,6 +8,7 @@ var Order = require("../models/orderSchema");
 var coupon = require("../models/couponSchema");
 const otp = require("./otp");
 const razorPay = require("./payementController");
+var Product = require("../models/productSchema");
 
 const {
   Types: { ObjectId },
@@ -20,6 +21,7 @@ const { order } = require("paypal-rest-sdk");
 module.exports = {
   postOrder: async (req, res, next) => {
     const userId = req.session.user._id;
+    const ordercode = Date.now().toString();
     const cartList = await Cart.aggregate([
       {
         $match: {
@@ -35,11 +37,21 @@ module.exports = {
         },
       },
     ]);
-
+    const currentDateTime = new Date();
+    const code = await coupon.findOne({
+      couponCode: req.body.couponCode,
+      status: true,
+      expiryDate: { $gte: currentDateTime },
+    });
+    if (code) {
+      var userUsedCount = await Order.countDocuments({
+        userId: req.session.user._id,
+        "coupons.couponsId": code._id,
+      });
+    }
     const userAddress = await Address.findById(req.body.addressId);
     let total = 0;
-    const discountAmount = 0;
-    const discountper = discountAmount / 3;
+
     const products = [];
 
     cartList.forEach((cartItem) => {
@@ -60,7 +72,7 @@ module.exports = {
         sellRate: product.ourPrice,
         actualRate: product.sellerPrice,
         mrp: product.sellerPrice,
-        payableAmount: itemTotal - discountper,
+        payableAmount: itemTotal,
         status: [
           {
             currentStatus: "initiated",
@@ -70,10 +82,23 @@ module.exports = {
     });
 
     total = parseFloat(total.toFixed(2));
-    console.log(total + "hfgvb");
-    const gst = parseFloat(total * 18).toFixed(2);
-    console.log(total + "hfjogvb");
-    const deliveryCharge = 0;
+    let discountAmount = 0;
+    if (code) {
+      if (userUsedCount < code.countAccess) {
+        let percentageAmount = (total / 100) * code.maxPercentage;
+        if (total >= code.minRupees && percentageAmount > code.maxDiscount) {
+          discountAmount = code.maxDiscount;
+        } else if (
+          total >= code.minRupees &&
+          percentageAmount < code.maxDiscount
+        ) {
+          discountAmount = percentageAmount;
+        }
+      }
+    }
+
+    const gst = parseFloat((total / 100) * 18).toFixed(2);
+    const deliveryCharge = 40;
     total =
       parseFloat(total) +
       parseFloat(gst) +
@@ -83,6 +108,7 @@ module.exports = {
 
     const newOrder = new Order({
       userId: req.session.user._id,
+      orderCode: ordercode,
       products,
       address: {
         addressId: userAddress._id,
@@ -98,7 +124,11 @@ module.exports = {
       gst,
       deliveryCharge,
       coupons: {
-        couponsId: "fghvjcfgcncg",
+        couponsId: code
+          ? code._id
+            ? code._id
+            : "fghvjcfgcncg"
+          : "fghvjcfgcncg",
         discountAmount,
       },
       paymentMethod: req.body.paymentMethod,
@@ -109,18 +139,14 @@ module.exports = {
         },
       ],
     });
-
+    console.log(newOrder);
     try {
       const response = await newOrder.save();
       const orderId = response._id;
-
-      await Cart.deleteMany({ userId: new mongoose.Types.ObjectId(userId) });
-
       req.order = {
         _id: orderId,
         totalAmount: total,
-      }; // Add orderId and totalAmount to the request object
-
+      }; // Add orderId and totalAmount to the request object cons
       next();
     } catch (err) {
       res.status(400).send({ success: false });
@@ -129,11 +155,13 @@ module.exports = {
   },
 
   payment: async (req, res, next) => {
-    const total = req.order.totalAmount * 100; // Get total from the order object
+    let total = req.order.totalAmount; // Get total from the order object
+    total = parseInt(total);
     const orderId = req.order._id; // Get orderId from the order object
     console.log(total);
     if (req.body.paymentMethod === "COD") {
-      res.json({ codStatus: true });
+      console.log("done Upto here1");
+      res.json({ codStatus: true, orderId: orderId });
     } else if (req.body.paymentMethod === "paypal") {
       payementController.genaretePaypal(orderId, total).then((link) => {
         Order.findOneAndUpdate(
@@ -152,14 +180,68 @@ module.exports = {
       });
     } else if (req.body.paymentMethod === "razorpay") {
       console.log("Reached RazorPay");
-      payementController.generateRazorpay(orderId, total).then((response) => {
+      const strId = orderId.toString();
+      payementController.generateRazorpay(strId, total).then((response) => {
         console.log(response, "responsee");
-        console.log(orderId, "ordeereeee");
+        console.log(strId, "ordeereeee");
         res.json({ razorpay: true, response });
       });
     }
   },
-  returnCartItem: (req, res, next) => {},
+  removeCartItemAndQuantity: async (req, res, next) => {
+    console.log("done Upto here12");
+
+    const userId = req.session.user._id;
+    const orderId = req.params.id;
+    const orderDetails = await Order.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(orderId),
+          userId: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      { $unwind: "$products" },
+    ]);
+    console.log(orderDetails);
+
+    for (const product of orderDetails) {
+      const productId = product.products.productId;
+      let size = product.products.items[0].size;
+      let quantity = product.products.items[0].quantity;
+
+      if (size === "S") {
+        size = "small";
+      } else if (size === "M") {
+        size = "medium";
+      } else if (size === "L") {
+        size = "large";
+      } else if (size === "XL") {
+        size = "extraLarge";
+      }
+
+      console.log(size);
+      await Product.updateOne(
+        { _id: productId },
+        { $inc: { [`Quantity.${size}`]: -quantity } }
+      );
+      console.log("done Upto herew2");
+    }
+    console.log("done Upto here2");
+
+    await Cart.deleteMany({ userId: new mongoose.Types.ObjectId(userId) });
+    next();
+  },
+
+  removeOrder: async (req, res, next) => {
+    const userId = req.session.user._id;
+    const orderId = req.params.id;
+    await Order.deleteOne({
+      _id: new mongoose.Types.ObjectId(orderId),
+      userId: new mongoose.Types.ObjectId(userId),
+    });
+    res.redirect("/cart");
+  },
+
   verifyPaymentPost: (req, res) => {
     try {
       payementController
@@ -203,9 +285,18 @@ module.exports = {
             _id: new mongoose.Types.ObjectId(req.params.id),
           },
         },
+        {
+          $lookup: {
+            from: "products",
+            localField: "products.productId",
+            foreignField: "_id",
+            as: "productsdetail",
+          },
+        },
       ]);
 
       req.ordersList = userOrdersList;
+      console.log(req.ordersList.productsdetail, "radffgjimk");
       next();
     } catch (error) {
       console.log(error);

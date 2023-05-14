@@ -55,7 +55,8 @@ router.get(
   filterController.getAllCategory,
   couponController.getAddCoupon
 );
-
+router.get("/viewCoupon", adminVerify, couponController.getViewCoupon); //almost
+router.get("/editCoupon/:Id", adminVerify, couponController.getEditCoupon); //almost
 router.post("/login", adminAuth, adminController.postSignin); //almost
 router.get("/0124", adminAuth, adminController.getSignUp); //almost
 router.post("/0124", adminAuth, adminController.postSignup); //almost
@@ -68,10 +69,15 @@ router.post(
   adminVerify,
   adminController.statusUserUpdate
 );
-router.delete(
-  "/deleteCategory/:Id",
+router.post(
+  "/statusCodeUpdate/:userId",
   adminVerify,
-  filterController.deleteCategory
+  couponController.statusCodeUpdate
+);
+router.post(
+  "/statusCategoryUpdate/:userId",
+  adminVerify,
+  filterController.statusFilterUpdate
 );
 router.post(
   "/statusMerchantUpdate/:userId",
@@ -90,7 +96,12 @@ router.get(
   orderControllers.adminOrderList,
   adminController.orderList
 );
-router.get("/productList", adminVerify, productController.getAdminProductList);
+router.get(
+  "/productList",
+  adminVerify,
+  filterController.getAllCategory,
+  productController.getAdminProductList
+);
 router.get("/logout", adminController.logout);
 router.get("/addBanner", adminVerify, adminController.getAddBanner);
 router.post("/addBanner", adminVerify, adminController.postAddBanner);

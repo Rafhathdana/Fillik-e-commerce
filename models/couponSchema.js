@@ -7,33 +7,31 @@ const couponSchema = new Schema(
       type: String,
       required: true,
     },
-    category: [
-      {
-        type: Types.ObjectId,
-        ref: "filterdatas",
-      },
-    ],
-    colour: [
-      {
-        type: Types.ObjectId,
-        ref: "filterdatas",
-      },
-    ],
-    pattern: [
-      {
-        type: Types.ObjectId,
-        ref: "filterdatas",
-      },
-    ],
-    code: {
+    countAccess: {
+      type: Number,
+      required: true,
+    },
+    minRupees: {
+      type: Number,
+      required: true,
+    },
+    maxDiscount: {
+      type: Number,
+      required: true,
+    },
+    maxPercentage: {
+      type: Number,
+      required: true,
+    },
+    couponCode: {
       type: String,
       required: true,
     },
-    ExpireDate: {
+    expiryDate: {
       type: Date,
       required: true,
     },
-    Status: {
+    status: {
       type: Boolean,
       required: true,
     },

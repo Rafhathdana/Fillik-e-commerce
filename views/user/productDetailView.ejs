@@ -15,10 +15,10 @@
             <div class="col-lg-12 d-flex justify-content-center">
               <div class="images" style="width: 75px">
                 <div class="flex-colum">
-                  <% for (let i = 0; i < productItem.images.length; i++) { %>
+                  <% for (let i = 0; i < productItem[0].images.length; i++) { %>
                   <img
                     class="MagicZoom productsideImg"
-                    src="/images/productImages/<%= productItem.images[i] %>"
+                    src="/images/productImages/<%= productItem[0].images[i] %>"
                     id="imgView"
                   />
                   <% } %>
@@ -29,14 +29,14 @@
                 style="height: 450px; width: 300px"
               >
                 <a
-                  href="/images/productImages/<%= productItem.images[0] %>"
+                  href="/images/productImages/<%= productItem[0].images[0] %>"
                   class="MagicZoom"
                   data-options="zoomPosition: inner"
                 >
                   <img
                     style="height: 450px; width: 300px"
                     class="productImg"
-                    src="/images/productImages/<%= productItem.images[0] %>"
+                    src="/images/productImages/<%= productItem[0].images[0] %>"
                     alt=""
                 /></a>
               </div>
@@ -48,30 +48,30 @@
       <div class="col-md-6 col-lg-5 p-b-30">
         <div class="p-r-50 p-t-5 p-lr-0-lg">
           <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-            <%= productItem.name %>
+            <%= productItem[0].name %>
           </h4>
 
           <span class="mtext-106 cl2"> RS:</span>
           <span class="mtext-106 cl2 productOurPrice">
             <span class="productOrginalPrice">
-              <%= productItem.ourPrice %></span
+              <%= productItem[0].ourPrice %></span
             ></span
           ><br />
           <span class="mtext-106 cl2"> MRP:</span>
           <span class="mtext-106 cl2 productOrginalPrice">
-            <%= productItem.orginalPrice %></span
+            <%= productItem[0].orginalPrice %></span
           >
           <br />
-          <% let value = parseInt(productItem.orginalPrice) -
-          parseInt(productItem.ourPrice); let discount = (value /
-          parseInt(productItem.orginalPrice)) * 100; %>
+          <% let value = parseInt(productItem[0].orginalPrice) -
+          parseInt(productItem[0].ourPrice); let discount = (value /
+          parseInt(productItem[0].orginalPrice)) * 100; %>
           <span class="mtext-106 cl3"> Discount:</span>
           <span class="mtext-106 cl3 discoutPercentage">
             <%= discount.toFixed(0) %></span
           >
           <span class="mtext-106 cl3">%</span>
           <p class="stext-102 cl3 p-t-23 productDescription">
-            <%= productItem.description %>
+            <%= productItem[0].description %>
           </p>
 
           <!--  -->
@@ -86,9 +86,9 @@
             <div
               id="productDId"
               class="productDId d-none"
-              value="<%= productItem._id %>"
+              value="<%= productItem[0]._id %>"
             >
-              <%= productItem._id %>
+              <%= productItem[0]._id %>
             </div>
             <div class="notify"></div>
             <div class="flex-w flex-r-m p-b-10">
@@ -198,7 +198,7 @@
           <!-- - -->
           <div class="tab-pane fade show active" id="MoreInfo" role="tabpanel">
             <div class="how-pos2 p-lr-15-md">
-              <p class="stext-102 cl6"><%= productItem.moreinfo %></p>
+              <p class="stext-102 cl6"><%= productItem[0].moreinfo %></p>
             </div>
           </div>
 
@@ -361,9 +361,15 @@
   </div>
 
   <div class="bg6 flex-c-m flex-w size-302 m-t-73 p-tb-15">
-    <span class="stext-107 cl6 p-lr-25"> SKU: JAK-01 </span>
+    <span class="stext-107 cl6 p-lr-25">
+      SKU: <%= productItem[0].productcode %>
+    </span>
 
-    <span class="stext-107 cl6 p-lr-25"> Categories: Jacket, Men </span>
+    <span class="stext-107 cl6 p-lr-25">
+      Categories: <%= productItem[0].category[0].values%>, <%=
+      productItem[0].colour[0].values %>, <%= productItem[0].pattern[0].values
+      %>, <%= productItem[0].genderType[0].values %></span
+    >
   </div>
 </section>
 
@@ -378,36 +384,39 @@
     <div class="wrap-slick2">
       <div class="slick2">
         <% for (let i = locals.startIndex; i < locals.endIndex; i++) { %>
-        <div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+        <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
           <!-- Block2 -->
           <div class="block2">
             <div class="block2-pic hov-img0">
               <img
-                src="/images/productImages/<%= productsList[i].images[0] %>"
+                src="/images/productImages/<%=productsList[i].images[0]%>"
                 alt="IMG-PRODUCT"
+                style="height: 300px"
               />
               <% let productData=productsList[i] %>
               <a
                 href="#"
                 class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1"
-                data-product-data="<%= JSON.stringify(productData) %>"
+                data-product-data="<%=JSON.stringify(productData)%>"
               >
-                Quick View
+                > Quick View
               </a>
             </div>
 
             <div class="block2-txt flex-w flex-t p-t-14">
               <div class="block2-txt-child1 flex-col-l">
                 <a
-                  href="product-detail.html"
+                  href="/productview/<%= locals.productsList[i]._id %>"
                   class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
                 >
                   <%= locals.productsList[i].name %>
                 </a>
 
                 <span class="stext-105 cl3">
-                  RS.<%=((productsList[i].ourPrice)/100) %>
-                  <span>Rs<%= productsList[i].orginalPrice %></span></span
+                  RS.<%=(productsList[i].ourPrice)%>
+                  <span class="slinecross"
+                    >Rs<%= productsList[i].orginalPrice %></span
+                  ></span
                 >
               </div>
 
@@ -418,12 +427,12 @@
                 >
                   <img
                     class="icon-heart1 dis-block trans-04"
-                    src="images/icons/icon-heart-01.png"
+                    src="/images/icons/icon-heart-01.png"
                     alt="ICON"
                   />
                   <img
                     class="icon-heart2 dis-block trans-04 ab-t-l"
-                    src="images/icons/icon-heart-02.png"
+                    src="/images/icons/icon-heart-02.png"
                     alt="ICON"
                   />
                 </a>

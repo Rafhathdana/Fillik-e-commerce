@@ -228,28 +228,44 @@
               <i class="fa fa-angle-right" aria-hidden="true"></i>
             </span>
           </li>
-
+          <% if(locals.loggedin){ %>
           <li>
-            <a href="/productlist">Shop</a>
-          </li>
-
-          <!-- <li>
-            <a href="/shoping-cart.html" class="label1 rs1" data-label1="hot"
-              >Features</a
-            >
-          </li> -->
-
-          <li>
-            <a href="/blog">Blog</a>
+            <a href="/profile" class="stext-102 cl2 hov-cl1 trans-04">
+              My Account
+            </a>
           </li>
 
           <li>
-            <a href="/about">About</a>
+            <a href="/ordersList" class="stext-102 cl2 hov-cl1 trans-04">
+              Orders List
+            </a>
+          </li>
+          <li>
+            <a href="/couponsList" class="stext-102 cl2 hov-cl1 trans-04">
+              Coupons List
+            </a>
           </li>
 
           <li>
-            <a href="/contact">Contact</a>
+            <a href="/helpfaqs" class="stext-102 cl2 hov-cl1 trans-04">
+              Help & FAQs
+            </a>
           </li>
+          <li>
+            <a href="/logout" class="stext-102 cl2 hov-cl1 trans-04">
+              Logout
+            </a>
+          </li>
+          <% } else{ %>
+          <li>
+            <a href="/login" class="stext-102 cl2 hov-cl1 trans-04"> Login </a>
+          </li>
+          <li>
+            <a href="/signup" class="stext-102 cl2 hov-cl1 trans-04">
+              Sign UP
+            </a>
+          </li>
+          <% } %>
         </ul>
       </div>
 
@@ -304,7 +320,7 @@
             </li>
             <% if(locals.loggedin){ %>
             <li class="p-b-13">
-              <a href="/profie" class="stext-102 cl2 hov-cl1 trans-04">
+              <a href="/profile" class="stext-102 cl2 hov-cl1 trans-04">
                 My Account
               </a>
             </li>

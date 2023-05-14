@@ -24,8 +24,8 @@ module.exports = {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: "/paymentSuccess",
-          cancel_url: "/returnCart",
+          return_url: `http://localhost:3000/paymentSuccess/${orderId}`,
+          cancel_url: `http://localhost:3000/cancelledpayment/${orderId}`,
         },
         transactions: [
           {
@@ -34,7 +34,7 @@ module.exports = {
                 {
                   name: "item",
                   sku: "item",
-                  price: total,
+                  price: parseInt(total),
                   currency: "USD",
                   quantity: 1,
                 },
@@ -61,7 +61,8 @@ module.exports = {
     });
   },
   generateRazorpay: (orderId, total) => {
-    console.log(orderId, "ordreee");
+    console.log(orderId, total, "ordreee");
+    total = parseFloat(total);
     return new Promise((resolve, reject) => {
       var options = {
         amount: total * 100, // amount in the smallest currency unit
