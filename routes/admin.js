@@ -24,7 +24,15 @@ function adminVerify(req, res, next) {
   }
 }
 
-router.get("/", adminVerify, adminController.getHome);
+router.get(
+  "/",
+  adminVerify,
+  userControllers.adminUserDashboard,
+  merchantControllers.adminMerchantyDashboard,
+  orderControllers.adminDashboard,
+  productController.adminProductDashboard,
+  adminController.getHome
+);
 router.get("/login", adminAuth, adminController.getLogin); //almost
 router.get(
   "/home",
@@ -32,6 +40,7 @@ router.get(
   userControllers.adminUserDashboard,
   merchantControllers.adminMerchantyDashboard,
   orderControllers.adminDashboard,
+  productController.adminProductDashboard,
   adminController.getHome
 );
 router.get("/userList", adminVerify, adminController.getUser); //almost

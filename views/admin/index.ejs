@@ -2,114 +2,7 @@
 <div class="main-panel">
   <div class="content-wrapper">
     <div class="row">
-      <div class="col-xl-6 grid-margin stretch-card flex-column">
-        <h5 class="mb-2 text-titlecase mb-4">Status statistics</h5>
-        <div class="row">
-          <div class="col-md-6 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body d-flex flex-column justify-content-between">
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2"
-                >
-                  <p class="mb-0 text-muted">Transactions</p>
-                  <p class="mb-0 text-muted">+1.37%</p>
-                </div>
-                <h4>1352</h4>
-                <canvas
-                  id="transactions-chart"
-                  class="mt-auto"
-                  height="65"
-                ></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body d-flex flex-column justify-content-between">
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2"
-                >
-                  <div>
-                    <p class="mb-2 text-muted">Sales</p>
-                    <h6 class="mb-0">563</h6>
-                  </div>
-                  <div>
-                    <p class="mb-2 text-muted">Orders</p>
-                    <h6 class="mb-0">720</h6>
-                  </div>
-                  <div>
-                    <p class="mb-2 text-muted">Revenue</p>
-                    <h6 class="mb-0">5900</h6>
-                  </div>
-                </div>
-                <canvas id="sales-chart-a" class="mt-auto" height="65"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row h-100">
-          <div class="col-md-6 stretch-card grid-margin grid-margin-md-0">
-            <div class="card">
-              <div class="card-body d-flex flex-column justify-content-between">
-                <p class="text-muted">Sales Analytics</p>
-                <div
-                  class="d-flex justify-content-between align-items-center mb-2"
-                >
-                  <h3 class="mb-">27632</h3>
-                  <h3 class="mb-">78%</h3>
-                </div>
-                <canvas id="sales-chart-b" class="mt-auto" height="38"></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div class="row h-100">
-                  <div class="col-6 d-flex flex-column justify-content-between">
-                    <p class="text-muted">CPU</p>
-                    <h4>55%</h4>
-                    <canvas id="cpu-chart" class="mt-auto"></canvas>
-                  </div>
-                  <div class="col-6 d-flex flex-column justify-content-between">
-                    <p class="text-muted">Memory</p>
-                    <h4>123,65</h4>
-                    <canvas id="memory-chart" class="mt-auto"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-6 grid-margin stretch-card flex-column">
-        <h5 class="mb-2 text-titlecase mb-4">Income statistics</h5>
-        <div class="row h-100">
-          <div class="col-md-12 stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <div
-                  class="d-flex justify-content-between align-items-start flex-wrap"
-                >
-                  <div>
-                    <p class="mb-3">Monthly Increase</p>
-                    <h3>67842</h3>
-                  </div>
-                  <div
-                    id="income-chart-legend"
-                    class="d-flex flex-wrap mt-1 mt-md-0"
-                  ></div>
-                </div>
-                <canvas id="income-chart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-xl-4 grid-margin stretch-card">
+      <div class="col-md-6 col-xl-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body border-bottom">
             <div
@@ -118,35 +11,6 @@
               <h6 class="mb-2 mb-md-0 text-uppercase font-weight-medium">
                 Overall sales
               </h6>
-              <div class="dropdown">
-                <button
-                  class="btn bg-white p-0 pb-1 text-muted btn-sm dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuSizeButton3"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  Last 30 days
-                </button>
-                <div
-                  class="dropdown-menu"
-                  aria-labelledby="dropdownMenuSizeButton3"
-                >
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="javascript:;">Action</a>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Another action</a
-                  >
-                  <a class="dropdown-item" href="javascript:;"
-                    >Something else here</a
-                  >
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Separated link</a
-                  >
-                </div>
-              </div>
             </div>
           </div>
           <div class="card-body">
@@ -157,151 +21,129 @@
               <div
                 class="d-flex flex-column justify-content-center align-items-center"
               >
-                <p class="text-muted">Gross Sales</p>
-                <h5>492</h5>
-                <div class="d-flex align-items-baseline">
-                  <p class="text-success mb-0">0.5%</p>
-                  <i class="typcn typcn-arrow-up-thick text-success"></i>
-                </div>
+                <p class="text-muted">Total Sales</p>
+                <h5 id="totalCompletedSale">492</h5>
               </div>
               <div
                 class="d-flex flex-column justify-content-center align-items-center"
               >
-                <p class="text-muted">Purchases</p>
-                <h5>87k</h5>
-                <div class="d-flex align-items-baseline">
-                  <p class="text-success mb-0">0.8%</p>
-                  <i class="typcn typcn-arrow-up-thick text-success"></i>
-                </div>
+                <p class="text-muted">Profits</p>
+                <h5 id="totalCompletedProfits">87k</h5>
               </div>
               <div
                 class="d-flex flex-column justify-content-center align-items-center"
               >
-                <p class="text-muted">Tax Return</p>
-                <h5>882</h5>
-                <div class="d-flex align-items-baseline">
-                  <p class="text-danger mb-0">-04%</p>
-                  <i class="typcn typcn-arrow-down-thick text-danger"></i>
-                </div>
+                <p class="text-muted">Tax</p>
+                <h5 id="totalCompletedTax">882</h5>
               </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="dropdown">
-                <button
-                  class="btn bg-white p-0 pb-1 pt-1 text-muted btn-sm dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuSizeButton3"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  Last 7 days
-                </button>
-                <div
-                  class="dropdown-menu"
-                  aria-labelledby="dropdownMenuSizeButton3"
-                >
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="javascript:;">Action</a>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Another action</a
-                  >
-                  <a class="dropdown-item" href="javascript:;"
-                    >Something else here</a
-                  >
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Separated link</a
-                  >
-                </div>
-              </div>
-              <p class="mb-0">overview</p>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-6 col-xl-4 grid-margin stretch-card">
+      <div class="col-md-6 col-xl-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body border-bottom">
             <div
               class="d-flex justify-content-between align-items-center flex-wrap"
             >
               <h6 class="mb-2 mb-md-0 text-uppercase font-weight-medium">
-                User statistics
+                Merchant Statistics
               </h6>
               <div class="dropdown">
                 <button
                   class="btn bg-white p-0 pb-1 text-muted btn-sm dropdown-toggle"
                   type="button"
                   id="dropdownMenuSizeButton4"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
+                  data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Last 7 days
+                  Week Wise
                 </button>
-                <div
+                <ul
                   class="dropdown-menu"
                   aria-labelledby="dropdownMenuSizeButton4"
                 >
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="javascript:;">Action</a>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Another action</a
-                  >
-                  <a class="dropdown-item" href="javascript:;"
-                    >Something else here</a
-                  >
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Separated link</a
-                  >
-                </div>
+                  <li>
+                    <a
+                      class="dropdown-itemm"
+                      href="javascript:;"
+                      data-value="week"
+                      >Week Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemm"
+                      href="javascript:;"
+                      data-value="month"
+                      >Month Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemm"
+                      href="javascript:;"
+                      data-value="year"
+                      >Year Wise</a
+                    >
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
           <div class="card-body">
-            <canvas id="users-chart-d" height="320"></canvas>
+            <canvas id="sales-chart-k" height="320"></canvas>
           </div>
         </div>
       </div>
-      <div class="col-md-6 col-xl-4 grid-margin stretch-card">
+      <div class="col-md-6 col-xl-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body border-bottom">
             <div
               class="d-flex justify-content-between align-items-center flex-wrap"
             >
               <h6 class="mb-2 mb-md-0 text-uppercase font-weight-medium">
-                Merchant statistics
+                User Statistics
               </h6>
               <div class="dropdown">
                 <button
                   class="btn bg-white p-0 pb-1 text-muted btn-sm dropdown-toggle"
                   type="button"
-                  id="dropdownMenuSizeButton4"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
+                  id="dropdownMenuSizeButton445"
+                  data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Last 7 days
+                  Week Wise
                 </button>
-                <div
+                <ul
                   class="dropdown-menu"
-                  aria-labelledby="dropdownMenuSizeButton4"
+                  aria-labelledby="dropdownMenuSizeButton445"
                 >
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="javascript:;">Action</a>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Another action</a
-                  >
-                  <a class="dropdown-item" href="javascript:;"
-                    >Something else here</a
-                  >
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="javascript:;"
-                    >Separated link</a
-                  >
-                </div>
+                  <li>
+                    <a
+                      class="dropdown-itemr"
+                      href="javascript:;"
+                      data-value="week"
+                      >Week Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemr"
+                      href="javascript:;"
+                      data-value="month"
+                      >Month Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemr"
+                      href="javascript:;"
+                      data-value="year"
+                      >Year Wise</a
+                    >
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -310,224 +152,675 @@
           </div>
         </div>
       </div>
-    </div>
+      <div class="col-md-6 col-xl-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body border-bottom">
+            <div
+              class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+              <h6 class="mb-2 mb-md-0 text-uppercase font-weight-medium">
+                Product Statistics
+              </h6>
+              <div class="dropdown">
+                <button
+                  class="btn bg-white p-0 pb-1 text-muted btn-sm dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuSizeButton44"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Week Wise
+                </button>
+                <ul
+                  class="dropdown-menu"
+                  aria-labelledby="dropdownMenuSizeButton44"
+                >
+                  <li>
+                    <a
+                      class="dropdown-itemp"
+                      href="javascript:;"
+                      data-value="week"
+                      >Week Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemp"
+                      href="javascript:;"
+                      data-value="month"
+                      >Month Wise</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-itemp"
+                      href="javascript:;"
+                      data-value="year"
+                      >Year Wise</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="sales-chart-p" height="320"></canvas>
+          </div>
+        </div>
+      </div>
 
-    <div class="row">
-      <div class="col-md-4 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div
-              class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
-            >
-              <div>
-                <p class="mb-2 text-md-center text-lg-left">Total Expenses</p>
-                <h1 class="mb-0">8742</h1>
+      <div class="row">
+        <div class="col-md-4 col-lg-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
+              >
+                <div>
+                  <p class="mb-2 text-md-center text-lg-left">
+                    Total Completed
+                  </p>
+                  <h1 class="mb-0" id="totalComplete">8742</h1>
+                </div>
+                <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
               </div>
-              <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
             </div>
-            <canvas id="expense-chart" height="80"></canvas>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div
-              class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
-            >
-              <div>
-                <p class="mb-2 text-md-center text-lg-left">Total Budget</p>
-                <h1 class="mb-0">47,840</h1>
+        <div class="col-md-4 col-lg-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
+              >
+                <div>
+                  <p class="mb-2 text-md-center text-lg-left">
+                    Total Pending Amount
+                  </p>
+                  <h1 class="mb-0" id="totalPendingSale">8742</h1>
+                </div>
+                <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
               </div>
-              <i class="typcn typcn-chart-pie icon-xl text-secondary"></i>
             </div>
-            <canvas id="budget-chart" height="80"></canvas>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div
-              class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
-            >
-              <div>
-                <p class="mb-2 text-md-center text-lg-left">Total Balance</p>
-                <h1 class="mb-0">$7,243</h1>
+        <div class="col-md-4 col-lg-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
+              >
+                <div>
+                  <p class="mb-2 text-md-center text-lg-left">
+                    Total Cancelled Amount
+                  </p>
+                  <h1 class="mb-0" id="cancelledData">8742</h1>
+                </div>
+                <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
               </div>
-              <i class="typcn typcn-clipboard icon-xl text-secondary"></i>
             </div>
-            <canvas id="balance-chart" height="80"></canvas>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="table-responsive pt-3">
-            <table class="table table-striped project-orders-table">
-              <thead>
-                <tr>
-                  <th class="ml-5">ID</th>
-                  <th>Project name</th>
-                  <th>Customer</th>
-                  <th>Deadline</th>
-                  <th>Payouts</th>
-                  <th>Traffic</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>#D1</td>
-                  <td>Consectetur adipisicing elit</td>
-                  <td>Beulah Cummings</td>
-                  <td>03 Jan 2019</td>
-                  <td>$ 5235</td>
-                  <td>1.3K</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-sm btn-icon-text mr-3"
-                      >
-                        Edit
-                        <i class="typcn typcn-edit btn-icon-append"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm btn-icon-text"
-                      >
-                        Delete
-                        <i
-                          class="typcn typcn-delete-outline btn-icon-append"
-                        ></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#D2</td>
-                  <td>Correlation natural resources silo</td>
-                  <td>Mitchel Dunford</td>
-                  <td>09 Oct 2019</td>
-                  <td>$ 3233</td>
-                  <td>5.4K</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-sm btn-icon-text mr-3"
-                      >
-                        Edit
-                        <i class="typcn typcn-edit btn-icon-append"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm btn-icon-text"
-                      >
-                        Delete
-                        <i
-                          class="typcn typcn-delete-outline btn-icon-append"
-                        ></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#D3</td>
-                  <td>social capital compassion social</td>
-                  <td>Pei Canaday</td>
-                  <td>18 Jun 2019</td>
-                  <td>$ 4311</td>
-                  <td>2.1K</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-sm btn-icon-text mr-3"
-                      >
-                        Edit
-                        <i class="typcn typcn-edit btn-icon-append"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm btn-icon-text"
-                      >
-                        Delete
-                        <i
-                          class="typcn typcn-delete-outline btn-icon-append"
-                        ></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#D4</td>
-                  <td>empower communities thought</td>
-                  <td>Gaynell Sharpton</td>
-                  <td>23 Mar 2019</td>
-                  <td>$ 7743</td>
-                  <td>2.7K</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-sm btn-icon-text mr-3"
-                      >
-                        Edit
-                        <i class="typcn typcn-edit btn-icon-append"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm btn-icon-text"
-                      >
-                        Delete
-                        <i
-                          class="typcn typcn-delete-outline btn-icon-append"
-                        ></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#D5</td>
-                  <td>Targeted effective; mobilize</td>
-                  <td>Audrie Midyett</td>
-                  <td>22 Aug 2019</td>
-                  <td>$ 2455</td>
-                  <td>1.2K</td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-sm btn-icon-text mr-3"
-                      >
-                        Edit
-                        <i class="typcn typcn-edit btn-icon-append"></i>
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-sm btn-icon-text"
-                      >
-                        Delete
-                        <i
-                          class="typcn typcn-delete-outline btn-icon-append"
-                        ></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="col-md-4 col-lg-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
+              >
+                <div>
+                  <p class="mb-2 text-md-center text-lg-left">
+                    Total Returned Amount
+                  </p>
+                  <h1 class="mb-0" id="returnSuccess">8742</h1>
+                </div>
+                <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center justify-content-between justify-content-md-center justify-content-xl-between flex-wrap mb-4"
+              >
+                <div>
+                  <p class="mb-2 text-md-center text-lg-left">
+                    Total Returned PendingAmount
+                  </p>
+                  <h1 class="mb-0" id="returnedData">8742</h1>
+                </div>
+                <i class="typcn typcn-briefcase icon-xl text-secondary"></i>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </div>
 <script>
- 
+  const dropdownButton = document.getElementById("dropdownMenuSizeButton445");
+  const dropdownItems = document.querySelectorAll(".dropdown-itemr");
+
+  var weekUserDataIn = `<%- JSON.stringify(userReport[0]) %>`;
+  var weekUserData = JSON.parse(weekUserDataIn);
+
+  var monthUserDataIn = `<%- JSON.stringify(userReport[1]) %>`;
+  var monthUserData = JSON.parse(monthUserDataIn);
+
+  var yearUserDataIn = `<%- JSON.stringify(userReport[2]) %>`;
+  var yearUserData = JSON.parse(yearUserDataIn);
+
+  var label = [];
+  var data = [];
+
+  // Initialize chart outside of event listener
+  var SalesChartDCanvas = document
+    .getElementById("sales-chart-d")
+    .getContext("2d");
+
+  var SalesChartD = new Chart(SalesChartDCanvas, {
+    type: "bar",
+    data: {
+      labels: label,
+      datasets: [
+        {
+          label: "New Users",
+          data: data,
+          backgroundColor: "#a43cda",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
+      scales: {
+        y: {
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: true,
+            min: 0,
+            max: Math.max(...data) + 10,
+            stepSize: 10,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+        },
+        x: {
+          stacked: false,
+          ticks: {
+            beginAtZero: true,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0)",
+            display: false,
+          },
+          barPercentage: 0.3,
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+    },
+  });
+  label = weekUserData.map(
+    (data) => `Week ${data._id.week} - ${data._id.year}`
+  );
+  data = weekUserData.map((data) => data.count);
+
+  // Update chart with initial data
+  SalesChartD.data.labels = label;
+  SalesChartD.data.datasets[0].data = data;
+  SalesChartD.update();
+  dropdownItems.forEach((item) => {
+    item.addEventListener("click", (event) => {
+      const selectedValue = event.target.getAttribute("data-value");
+      dropdownButton.textContent =
+        selectedValue.charAt(0).toUpperCase() +
+        selectedValue.slice(1) +
+        " Wise";
+      if (selectedValue == "week") {
+        label = weekUserData.map(
+          (data) => `Week ${data._id.week} - ${data._id.year}`
+        );
+        data = weekUserData.map((data) => data.count);
+      } else if (selectedValue == "month") {
+        label = monthUserData.map(
+          (data) =>
+            `${new Date(data._id.year, data._id.month - 1).toLocaleString(
+              "default",
+              { month: "long" }
+            )} - ${data._id.year}`
+        );
+        data = monthUserData.map((data) => data.count);
+      } else if (selectedValue == "year") {
+        label = yearUserData.map(
+          (data) =>
+            `${new Intl.DateTimeFormat("default", { year: "numeric" }).format(
+              new Date(data._id.year, 0)
+            )} - ${data._id.year}`
+        );
+
+        data = yearUserData.map((data) => data.count);
+      }
+
+      // Update chart with new data and labels
+      SalesChartD.data.labels = label;
+      SalesChartD.data.datasets[0].data = data;
+      SalesChartD.update();
+    });
+  });
+</script>
+<script>
+  const dropdownButtonMerchant = document.getElementById(
+    "dropdownMenuSizeButton4"
+  );
+  const dropdownItemsMerchant = document.querySelectorAll(".dropdown-itemm");
+
+  var weekmerchantDataIn = `<%- JSON.stringify(merchantReport[0]) %>`;
+  var weekmerchantData = JSON.parse(weekmerchantDataIn);
+
+  var monthmerchantDataIn = `<%- JSON.stringify(merchantReport[1]) %>`;
+  var monthmerchantData = JSON.parse(monthmerchantDataIn);
+
+  var yearmerchantDataIn = `<%- JSON.stringify(merchantReport[2]) %>`;
+  var yearmerchantData = JSON.parse(yearmerchantDataIn);
+
+  var label = [];
+  var data = [];
+
+  // Initialize chart outside of event listener
+  var SalesChartKCanvas = document
+    .getElementById("sales-chart-k")
+    .getContext("2d");
+
+  var SalesChartK = new Chart(SalesChartKCanvas, {
+    type: "bar",
+    data: {
+      labels: label,
+      datasets: [
+        {
+          label: "New merchants",
+          data: data,
+          backgroundColor: "#a43cda",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
+      scales: {
+        y: {
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: true,
+            min: 0,
+            max: Math.max(...data) + 10,
+            stepSize: 10,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+        },
+        x: {
+          stacked: false,
+          ticks: {
+            beginAtZero: true,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0)",
+            display: false,
+          },
+          barPercentage: 0.3,
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+    },
+  });
+  label = weekmerchantData.map(
+    (data) => `Week ${data._id.week} - ${data._id.year}`
+  );
+  data = weekmerchantData.map((data) => data.count);
+
+  // Update chart with initial data
+  SalesChartK.data.labels = label;
+  SalesChartK.data.datasets[0].data = data;
+  SalesChartK.update();
+  dropdownItemsMerchant.forEach((item) => {
+    item.addEventListener("click", (event) => {
+      const selectedValue = event.target.getAttribute("data-value");
+      dropdownButtonMerchant.textContent =
+        selectedValue.charAt(0).toUpperCase() +
+        selectedValue.slice(1) +
+        " Wise";
+      if (selectedValue == "week") {
+        label = weekmerchantData.map(
+          (data) => `Week ${data._id.week} - ${data._id.year}`
+        );
+        data = weekmerchantData.map((data) => data.count);
+      } else if (selectedValue == "month") {
+        label = monthmerchantData.map(
+          (data) =>
+            `${new Date(data._id.year, data._id.month - 1).toLocaleString(
+              "default",
+              { month: "long" }
+            )} - ${data._id.year}`
+        );
+        data = monthmerchantData.map((data) => data.count);
+      } else if (selectedValue == "year") {
+        label = yearmerchantData.map(
+          (data) =>
+            `${new Intl.DateTimeFormat("default", { year: "numeric" }).format(
+              new Date(data._id.year, 0)
+            )} - ${data._id.year}`
+        );
+
+        data = yearmerchantData.map((data) => data.count);
+      }
+
+      // Update chart with new data and labels
+      SalesChartK.data.labels = label;
+      SalesChartK.data.datasets[0].data = data;
+      SalesChartK.update();
+    });
+  });
+</script>
+
+<script>
+  const dropdownButtonproduct = document.getElementById(
+    "dropdownMenuSizeButton44"
+  );
+  const dropdownItemsproduct = document.querySelectorAll(".dropdown-itemp");
+
+  var weekproductDataIn = `<%- JSON.stringify(productReport[0]) %>`;
+  var weekproductData = JSON.parse(weekproductDataIn);
+
+  var monthproductDataIn = `<%- JSON.stringify(productReport[1]) %>`;
+  var monthproductData = JSON.parse(monthproductDataIn);
+
+  var yearproductDataIn = `<%- JSON.stringify(productReport[2]) %>`;
+  var yearproductData = JSON.parse(yearproductDataIn);
+
+  var label = [];
+  var data = [];
+
+  // Initialize chart outside of event listener
+  var SalesChartPCanvas = document
+    .getElementById("sales-chart-p")
+    .getContext("2d");
+
+  var SalesChartP = new Chart(SalesChartPCanvas, {
+    type: "bar",
+    data: {
+      labels: label,
+      datasets: [
+        {
+          label: "New products",
+          data: data,
+          backgroundColor: "#a43cda",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
+      scales: {
+        y: {
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            display: true,
+            min: 0,
+            max: Math.max(...data) + 10,
+            stepSize: 10,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+        },
+        x: {
+          stacked: false,
+          ticks: {
+            beginAtZero: true,
+            color: "#001737",
+            font: {
+              size: 10,
+            },
+          },
+          grid: {
+            color: "rgba(0, 0, 0, 0)",
+            display: false,
+          },
+          barPercentage: 0.3,
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+    },
+  });
+  label = weekproductData.map(
+    (data) => `Week ${data._id.week} - ${data._id.year}`
+  );
+  data = weekproductData.map((data) => data.count);
+
+  // Update chart with initial data
+  SalesChartP.data.labels = label;
+  SalesChartP.data.datasets[0].data = data;
+  SalesChartP.update();
+  dropdownItemsproduct.forEach((item) => {
+    item.addEventListener("click", (event) => {
+      const selectedValue = event.target.getAttribute("data-value");
+      dropdownButtonproduct.textContent =
+        selectedValue.charAt(0).toUpperCase() +
+        selectedValue.slice(1) +
+        " Wise";
+      if (selectedValue == "week") {
+        label = weekproductData.map(
+          (data) => `Week ${data._id.week} - ${data._id.year}`
+        );
+        data = weekproductData.map((data) => data.count);
+      } else if (selectedValue == "month") {
+        label = monthproductData.map(
+          (data) =>
+            `${new Date(data._id.year, data._id.month - 1).toLocaleString(
+              "default",
+              { month: "long" }
+            )} - ${data._id.year}`
+        );
+        data = monthproductData.map((data) => data.count);
+      } else if (selectedValue == "year") {
+        label = yearproductData.map(
+          (data) =>
+            `${new Intl.DateTimeFormat("default", { year: "numeric" }).format(
+              new Date(data._id.year, 0)
+            )} - ${data._id.year}`
+        );
+
+        data = yearproductData.map((data) => data.count);
+      }
+
+      // Update chart with new data and labels
+      SalesChartP.data.labels = label;
+      SalesChartP.data.datasets[0].data = data;
+      SalesChartP.update();
+    });
+  });
+</script>
+<script>
+  const dropdownButtonSellCount = document.getElementById(
+    "dropdownMenuSizeButton478"
+  );
+  const dropdownItemsSellCount = document.querySelectorAll(".dropdown-itemp");
+  var resultSuccessIn = `<%- JSON.stringify(resultSellRate[0]) %>`;
+  var resultSuccess = JSON.parse(resultSuccessIn);
+  var resultSuccess = resultSuccess[0];
+  var resultPendingDataIn = `<%- JSON.stringify(resultSellRate[1]) %>`;
+  var resultPendingData = JSON.parse(resultPendingDataIn);
+  var resultPendingData = resultPendingData[0];
+  var resultReturnSucessDataIn = `<%- JSON.stringify(resultSellRate[2]) %>`;
+  var resultReturnSuccessData = JSON.parse(resultReturnSucessDataIn);
+  let returnSuccess = (
+    resultReturnSuccessData.length > 0
+      ? resultReturnSuccessData[resultReturnSuccessData.length - 1].total
+      : 0
+  ).toFixed(2);
+  document.getElementById("returnSuccess").innerText = returnSuccess;
+
+  var resultReturnedDataIn = `<%- JSON.stringify(resultSellRate[3]) %>`;
+  var resultReturnedData = JSON.parse(resultReturnedDataIn);
+  let returnedData = (
+    resultReturnedData.length > 0
+      ? resultReturnedData[resultReturnedData.length - 1].total
+      : 0
+  ).toFixed(2);
+  document.getElementById("returnedData").innerText = returnedData;
+
+  var resultCancelledDataIn = `<%- JSON.stringify(resultSellRate[4]) %>`;
+  var resultCancelledData = JSON.parse(resultCancelledDataIn);
+  let cancelledData = (
+    resultCancelledData.length > 0
+      ? resultCancelledData[resultCancelledData.length - 1].total
+      : 0
+  ).toFixed(2);
+  document.getElementById("cancelledData").innerText = cancelledData;
+
+  var label = [];
+  var data = [];
+  let actualrate = (
+    resultSuccess.payableAmount - resultSuccess.actualRate
+  ).toFixed(2);
+  console.log(actualrate);
+  document.getElementById("totalCompletedSale").innerText =
+    resultSuccess.total.toFixed(2);
+  document.getElementById("totalComplete").innerText =
+    resultSuccess.total.toFixed(2);
+  document.getElementById("totalPendingSale").innerText =
+    resultPendingData.total.toFixed(2);
+  document.getElementById("totalCompletedProfits").innerText = actualrate;
+  document.getElementById("totalCompletedTax").innerText =
+    resultSuccess.gst.toFixed(2);
+
+  var salesChartCCanvas = $("#sales-chart-c").get(0).getContext("2d");
+  var salesChartC = new Chart(salesChartCCanvas, {
+    type: "pie",
+    data: {
+      datasets: [
+        {
+          data: [
+            resultSuccess.gst,
+            resultSuccess.coupon,
+            resultSuccess.delivery,
+            resultSuccess.actualRate,
+            actualrate,
+          ],
+          backgroundColor: [
+            "#f39915",
+            "#21bf06",
+            "#a43cda",
+            "#f6e84e",
+            "#57c7d4",
+          ],
+          borderColor: ["#f39915", "#21bf06", "#a43cda", "#f6e84e", "#57c7d4"],
+        },
+      ],
+
+      // These labels appear in the legend and in the tooltips when hovering different arcs
+      labels: ["Gst", "Coupon", "Delivery", "Payable Amount", "profict"],
+    },
+    options: {
+      responsive: true,
+      animation: {
+        animateScale: true,
+        animateRotate: true,
+      },
+      legend: {
+        display: false,
+      },
+      legendCallback: function (chart) {
+        var text = [];
+        text.push('<ul class="legend' + chart.id + '">');
+        for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+          text.push(
+            '<li><span class="legend-dots" style="background-color:' +
+              chart.data.datasets[0].backgroundColor[i] +
+              '"></span>'
+          );
+          if (chart.data.labels[i]) {
+            text.push(chart.data.labels[i]);
+          }
+          text.push("</li>");
+        }
+        text.push("</ul>");
+        return text.join("");
+      },
+    },
+  });
 </script>

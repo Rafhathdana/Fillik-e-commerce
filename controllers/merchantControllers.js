@@ -390,12 +390,11 @@ module.exports = {
         $sort: { "_id.year": 1 },
       },
     ]);
-    req.MerchantReport = [
+    req.merchantReport = [
       weekMerchantData,
       monthMerchantData,
       yearMerchantData,
     ];
-    console.log(req.MerchantReport);
     next();
   },
 };

@@ -561,4 +561,53 @@ module.exports = {
       next(error);
     }
   },
+  adminProductDashboard: async (req, res, next) => {
+    const weekProductData = await Product.aggregate([
+      {
+        $group: {
+          _id: {
+            week: { $isoWeek: "$createdAt" },
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.week": 1 },
+      },
+    ]);
+    // Get month-wise new Products Productdata
+    const monthProductData = await Product.aggregate([
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    // Get year-wise new Products Productdata
+    const yearProductData = await Product.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+    req.productReport = [weekProductData, monthProductData, yearProductData];
+    next();
+  },
 };

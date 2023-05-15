@@ -47,7 +47,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <p class="lead fw-normal mb-0" style="color: #a8729a">Receipt</p>
           <p class="small text-muted mb-0">
-            Receipt Voucher : <%=ordersList._id%>
+            Receipt Voucher : <%=ordersList.orderCode%>
           </p>
         </div>
 
@@ -214,7 +214,7 @@
               <p class="lead fw-normal mb-0 ml-5" style="color: #a8729a"></p>
               <a
                 href="#"
-                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i]._id %>','return')"
+                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i]._id %>','return','<%= ordersList.products[j].productId %>','<%=ordersList.products[i].items[0].quantity%>')"
                 class="btn btn-primary"
                 >Return</a
               >
@@ -226,7 +226,7 @@
               <p class="lead fw-normal mb-0 ml-5" style="color: #a8729a"></p>
               <a
                 href="#"
-                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i].items[0].size %>','usercancel')"
+                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i].items[0].size %>','usercancel','<%= ordersList.products[i].productId %>','<%= ordersList.products[i].items[0].quantity%>')"
                 class="btn btn-primary"
                 >Cancel</a
               >
@@ -241,28 +241,28 @@
   <div class="d-flex justify-content-between pt-2">
     <p class="fw-bold mb-0">Order Details</p>
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">Total</span> $898.00
+      <% total=ordersList.totalAmount-ordersList.coupons.discountAmount-ordersList.gst-ordersList.deliveryCharge%>
+      <span class="fw-bold me-4">Total : </span> Rs. <%=total%>
     </p>
   </div>
 
   <div class="d-flex justify-content-between pt-2">
-    <p class="text-muted mb-0">Invoice Number : 788152</p>
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">Discount</span> $19.00
+      <span class="fw-bold me-4">Discount : </span> Rs. <%=ordersList.coupons.discountAmount%>
     </p>
   </div>
 
   <div class="d-flex justify-content-between">
     <p class="text-muted mb-0">Invoice Date : 22 Dec,2019</p>
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">GST 18%</span> 123
+      <span class="fw-bold me-4">GST (18%) : </span> <%=ordersList.gst%>
     </p>
   </div>
 
   <div class="d-flex justify-content-between mb-5">
-    <p class="text-muted mb-0">Recepits Voucher : 18KU-62IIK</p>
+    <p class="text-muted mb-0">Recepits Voucher : <%=ordersList.orderCode%></p>
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">Delivery Charges</span> Free
+      <span class="fw-bold me-4">Delivery Charges : </span> <%=ordersList.deliveryCharge%>
     </p>
   </div>
 </div>
@@ -277,12 +277,12 @@
   <h5
     class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"
   >
-    Total paid: <span class="h2 mb-0 ms-2">$1040</span>
+    Total paid: <span class="h2 mb-0 ms-2">Rs <%=ordersList.totalAmount%></span>
   </h5>
 </div>
 </div>
 <script>
-  function updateStatus(oid, pid, size, orderUpdate) {
+  function updateStatus(oid, pid, size, orderUpdate, pvd, qty) {
     swal("Are you sure to cancel?", {
       buttons: {
         yes: {
@@ -306,6 +306,8 @@
             pid: pid,
             size: size,
             orderStatus: orderUpdate,
+            pvd:pvd,
+            qty:qty,
           }),
         })
           .then((response) => {

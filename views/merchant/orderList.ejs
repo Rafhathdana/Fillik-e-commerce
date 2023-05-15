@@ -104,14 +104,14 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Accepted', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Accepted', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Accept</button
                 ><br /><br /><br />
                 <button
                   type="button"
                   class="btn btn-gradient-danger btn-rounded btn-fw"
-                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Cancel
                 </button>
@@ -119,7 +119,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-danger btn-rounded btn-fw"
-                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Cancel
                 </button>
@@ -127,7 +127,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Packed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Packed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Packed</button
                 ><br /><br /><br />
@@ -136,7 +136,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Sented', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Sented', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Sented
                 </button>
@@ -144,7 +144,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Completed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Completed', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Completed</button
                 ><br /><br /><br />
@@ -153,7 +153,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Returned', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('Returned', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   Returned</button
                 ><br /><br /><br />
@@ -161,7 +161,7 @@
                 <button
                   type="button"
                   class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('recievedBack', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>')"
+                  onclick="orderUpdate('recievedBack', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
                 >
                   recievedBack</button
                 ><br /><br /><br />
@@ -181,7 +181,7 @@
 
 <!-- At the bottom of the HTML body -->
 <script>
-  function orderUpdate(data, oid, pid, size) {
+  function orderUpdate(data, oid, pid, size, pvd) {
     console.log(data, oid, pid, size);
     swal(`Are you sure to ${data}?`, {
       buttons: {
@@ -205,6 +205,8 @@
             oid: oid,
             pid: pid,
             size: size,
+            pvd,
+            pvd,
             orderStatus: data,
           }),
         })

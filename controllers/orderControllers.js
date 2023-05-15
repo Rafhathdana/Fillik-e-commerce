@@ -18,6 +18,7 @@ const { response } = require("../app");
 const cartSchema = require("../models/cartSchema");
 const payementController = require("./payementController");
 const { order } = require("paypal-rest-sdk");
+const productSchema = require("../models/productSchema");
 module.exports = {
   postOrder: async (req, res, next) => {
     const userId = req.session.user._id;
@@ -54,38 +55,58 @@ module.exports = {
 
     const products = [];
 
-    cartList.forEach((cartItem) => {
+    for (const cartItem of cartList) {
       const product = cartItem.product[0];
       const itemTotal = product.ourPrice * cartItem.quantity;
       total += itemTotal;
+      let sizes;
+      if (cartItem.size === "S") {
+        sizes = "small";
+      } else if (cartItem.size === "M") {
+        sizes = "medium";
+      } else if (cartItem.size === "L") {
+        sizes = "large";
+      } else if (cartItem.size === "XL") {
+        sizes = "extraLarge";
+      }
 
-      products.push({
-        productId: product._id,
-        merchantId: product.merchantid,
-        name: product.name,
-        items: [
-          {
-            quantity: cartItem.quantity,
-            size: cartItem.size,
-          },
-        ],
-        sellRate: product.ourPrice,
-        actualRate: product.sellerPrice,
-        mrp: product.sellerPrice,
-        payableAmount: itemTotal,
-        status: [
-          {
-            currentStatus: "initiated",
-          },
-        ],
-      });
-    });
+      const k = await Product.find(
+        { _id: new mongoose.Types.ObjectId(product._id) },
+        { [`Quantity.${sizes}`]: 1 }
+      );
+      const balance = k[0].Quantity[sizes];
+      console.log(balance);
+      if (balance < cartItem.quantity) {
+        return res.status(200).json({ noStock: true });
+      } else {
+        products.push({
+          productId: product._id,
+          merchantId: product.merchantid,
+          name: product.name,
+          items: [
+            {
+              quantity: cartItem.quantity,
+              size: cartItem.size,
+            },
+          ],
+          sellRate: product.ourPrice,
+          actualRate: product.sellerPrice,
+          mrp: product.sellerPrice,
+          payableAmount: itemTotal,
+          status: [
+            {
+              currentStatus: "initiated",
+            },
+          ],
+        });
+      }
+    }
 
     total = parseFloat(total.toFixed(2));
     let discountAmount = 0;
     if (code) {
       if (userUsedCount < code.countAccess) {
-        let percentageAmount = (total / 100) * code.maxPercentage;
+        const percentageAmount = (total / 100) * code.maxPercentage;
         if (total >= code.minRupees && percentageAmount > code.maxDiscount) {
           discountAmount = code.maxDiscount;
         } else if (
@@ -96,7 +117,6 @@ module.exports = {
         }
       }
     }
-
     const gst = parseFloat((total / 100) * 18).toFixed(2);
     const deliveryCharge = 40;
     total =
@@ -160,8 +180,18 @@ module.exports = {
     const orderId = req.order._id; // Get orderId from the order object
     console.log(total);
     if (req.body.paymentMethod === "COD") {
-      console.log("done Upto here1");
-      res.json({ codStatus: true, orderId: orderId });
+      Order.findOneAndUpdate(
+        { _id: orderId },
+        {
+          $push: {
+            status: {
+              currentStatus: "placed",
+            },
+          },
+        }
+      ).then(() => {
+        res.json({ codStatus: true, orderId: orderId });
+      });
     } else if (req.body.paymentMethod === "paypal") {
       payementController.genaretePaypal(orderId, total).then((link) => {
         Order.findOneAndUpdate(
@@ -296,7 +326,6 @@ module.exports = {
       ]);
 
       req.ordersList = userOrdersList;
-      console.log(req.ordersList.productsdetail, "radffgjimk");
       next();
     } catch (error) {
       console.log(error);
@@ -353,20 +382,17 @@ module.exports = {
   },
   updateOrder: async (req, res, next) => {
     try {
-      const { oid, pid, size } = req.body;
-      console.log(oid, pid, size);
+      const { oid, pid, size, pvd, qty } = req.body;
 
       const order = await Order.findOne({
         _id: new mongoose.Types.ObjectId(oid),
         "products._id": new mongoose.Types.ObjectId(pid),
       });
-      console.log(order);
       // Check if the latest status is initiated
       const latestStatus = order.status[order.status.length - 1].currentStatus;
       if (latestStatus === "initiated") {
         throw new Error("Unable to update cart when the status is initiated");
       }
-      console.log(oid, pid, size, "rafhath");
 
       const updatedOrder = await Order.findOneAndUpdate(
         {
@@ -385,9 +411,28 @@ module.exports = {
           arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(pid) }],
         }
       );
-
-      console.log(oid, pid, size, "rafhath");
-
+      let sizee;
+      if (
+        req.body.orderStatus == "merchantCancel" ||
+        req.body.orderStatus == "adminCancel" ||
+        req.body.orderStatus == "usercancel" ||
+        req.body.orderStatus == "recievedBack"
+      ) {
+        if (size === "S") {
+          sizee = "small";
+        } else if (size === "M") {
+          sizee = "medium";
+        } else if (size === "L") {
+          sizee = "large";
+        } else if (size === "XL") {
+          sizee = "extraLarge";
+        }
+        var qtyr = parseInt(qty);
+        await Product.findOneAndUpdate(
+          { _id: new mongoose.Types.ObjectId(pvd) },
+          { $inc: { [`Quantity.${sizee}`]: qtyr } }
+        );
+      }
       console.log("Successfully updated order status");
       res.json({ status: true });
     } catch (error) {
@@ -1047,7 +1092,134 @@ module.exports = {
   adminDashboard: async (req, res, next) => {
     // Get week-wise new users data
     // First, get the monthly data from the server-side
-    const results = await Order.aggregate([
+    const resultSuccess = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $nin: ["usercancel", "merchantCancel", "adminCancel", "Returned"],
+          },
+        },
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $in: ["Completed"],
+          },
+        },
+      },
+      {
+        $project: {
+          status: "$products.status.currentStatus",
+          sellRate: "$products.sellRate",
+          actualRate: "$products.actualRate",
+          quantity: { $arrayElemAt: ["$products.items.quantity", 0] },
+          payableAmount: "$products.payableAmount",
+          gst: "$gst",
+          delivery: "$deliveryCharge",
+          coupon: "$coupons.discountAmount",
+          total: "$totalAmount",
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" } },
+          sellRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$sellRate" },
+                { $toDouble: "$quantity" },
+              ],
+            },
+          },
+          actualRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$actualRate" },
+                { $toDouble: "$quantity" },
+              ],
+            },
+          },
+          payableAmount: { $sum: { $toDouble: "$payableAmount" } },
+          productCount: { $sum: 1 },
+          gst: { $sum: { $toDouble: "$gst" } },
+          delivery: { $sum: { $toDouble: "$delivery" } },
+          coupon: { $sum: { $toDouble: "$coupon" } },
+          total: { $sum: { $toDouble: "$total" } },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+
+    const resultPending = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $nin: [
+              "usercancel",
+              "merchantCancel",
+              "adminCancel",
+              "Returned",
+              "Completed",
+              "recievedBack",
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          status: "$products.status.currentStatus",
+          sellRate: "$products.sellRate",
+          actualRate: "$products.actualRate",
+          quantity: { $arrayElemAt: ["$products.items.quantity", 0] },
+          payableAmount: "$products.payableAmount",
+          gst: "$gst",
+          delivery: "$deliveryCharge",
+          coupon: "$coupons.discountAmount",
+          total: "$totalAmount",
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" } },
+          sellRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$sellRate" },
+                { $toDouble: "$quantity" },
+              ],
+            },
+          },
+          actualRate: {
+            $sum: {
+              $multiply: [
+                { $toDouble: "$actualRate" },
+                { $toDouble: "$quantity" },
+              ],
+            },
+          },
+          payableAmount: { $sum: { $toDouble: "$payableAmount" } },
+          productCount: { $sum: 1 },
+          gst: { $sum: { $toDouble: "$gst" } },
+          delivery: { $sum: { $toDouble: "$delivery" } },
+          coupon: { $sum: { $toDouble: "$coupon" } },
+          total: { $sum: { $toDouble: "$total" } },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+    const resultCancelled = await Order.aggregate([
       {
         $unwind: "$products",
       },
@@ -1060,46 +1232,91 @@ module.exports = {
       },
       {
         $project: {
-          yearMonth: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
-          status: "$products.status.currentStatus",
-          sellRate: "$products.sellRate",
-          actualRate: "$products.actualRate",
-          quantity: { $arrayElemAt: ["$products.items.quantity", 0] }, // Accessing the first element of the array using $arrayElemAt operator
-          payableAmount: "$products.payableAmount",
+          total: "$totalAmount",
+          createdAt: 1,
         },
       },
       {
         $group: {
-          _id: {
-            yearMonth: "$yearMonth",
-          },
-          sellRate: {
-            $sum: {
-              $multiply: [
-                { $toDouble: "$sellRate" },
-                { $toDouble: "$quantity" }, // Removed [0] as we already extracted the first element using $arrayElemAt
-              ],
-            },
-          },
-          actualRate: {
-            $sum: {
-              $multiply: [
-                { $toDouble: "$actualRate" },
-                { $toDouble: "$quantity" }, // Removed [0] as we already extracted the first element using $arrayElemAt
-              ],
-            },
-          },
-          payableAmount: { $sum: { $toDouble: "$payableAmount" } },
-          productCount: { $sum: 1 },
+          _id: { year: { $year: "$createdAt" } },
+          total: { $sum: { $toDouble: "$total" } },
         },
       },
       {
-        $sort: { "_id.yearMonth": 1 },
+        $sort: { "_id.year": 1 },
       },
     ]);
 
-    console.log(results);
+    const resultReturned = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $nin: ["usercancel", "merchantCancel", "adminCancel"],
+          },
+        },
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $in: ["Returned"],
+          },
+        },
+      },
+      {
+        $project: {
+          total: "$totalAmount",
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" } },
+          total: { $sum: { $toDouble: "$total" } },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
 
+    const resultReturnSuccess = await Order.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status.currentStatus": {
+            $in: ["recievedBack"],
+          },
+        },
+      },
+      {
+        $project: {
+          total: "$totalAmount",
+          createdAt: 1,
+        },
+      },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" } },
+          total: { $sum: { $toDouble: "$total" } },
+        },
+      },
+      {
+        $sort: { "_id.year": 1 },
+      },
+    ]);
+    req.resultSellRate = [
+      resultSuccess,
+      resultPending,
+      resultReturnSuccess,
+      resultReturned,
+      resultCancelled,
+    ];
+    console.log(req.resultSellRate);
     next();
   },
 };

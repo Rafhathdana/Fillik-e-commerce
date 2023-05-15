@@ -33,7 +33,7 @@ module.exports = {
     });
     req.session.errmsg = null;
   },
-  
+
   getProductlist: async (req, res, next) => {
     try {
       const count = parseInt(req.query.count) || 10;
@@ -341,8 +341,6 @@ module.exports = {
     }
   },
 
- 
-
   getCart: async (req, res, next) => {
     try {
       const count = 10;
@@ -376,6 +374,7 @@ module.exports = {
           },
         },
       ]);
+
       res.render("user/cart", {
         title: "Users List",
         fullName: req.session.user.fullName,
@@ -845,7 +844,11 @@ module.exports = {
   },
 
   getPaymentSucces: (req, res) => {
-    res.render("user/paymentSuccess");
+    res.render("user/paymentSuccess", {
+      title: "Users List",
+      fullName: req.session.user.fullName,
+      loggedin: req.session.userLoggedIn,
+    });
   },
   changeProductQuantity: async (req, res, next) => {
     var count = req.body.count;
@@ -894,6 +897,15 @@ module.exports = {
             size: size,
           },
           { quantity: quantity + count }
+        );
+      } else {
+        await Cart.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(cartId),
+            productId: new mongoose.Types.ObjectId(productId),
+            size: size,
+          },
+          { quantity: balance }
         );
       }
       res.status(200).json({

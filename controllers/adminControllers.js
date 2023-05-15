@@ -20,6 +20,11 @@ module.exports = {
       adminLoggedin: req.session.adminLoggedIn,
       author: "Admin#1233!",
       userslist,
+      userReport: req.userReport,
+      merchantReport: req.merchantReport,
+      resultSellRate: req.resultSellRate,
+      merchantReport: req.merchantReport,
+      productReport: req.productReport,
     });
   },
   getUser: async (req, res, next) => {
