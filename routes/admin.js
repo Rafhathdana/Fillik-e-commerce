@@ -115,5 +115,17 @@ router.get("/logout", adminController.logout);
 router.get("/addBanner", adminVerify, adminController.getAddBanner);
 router.post("/addBanner", adminVerify, adminController.postAddBanner);
 router.get("/viewBanner", adminVerify, adminController.getBannerList);
-
+router.get(
+  "/salesMerchantReport",
+  adminVerify,
+  orderControllers.salesMerchantReport,
+  adminController.salesMerchantReport
+);
+router.get(
+  "/salesOrderReport",
+  adminVerify,
+  orderControllers.postSalesMerchant,
+  orderControllers.getsalesSalesReport,
+  adminController.salesSalesReport
+);
 module.exports = router;

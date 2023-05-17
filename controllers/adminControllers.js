@@ -31,29 +31,28 @@ module.exports = {
     try {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
-      const usersList = await users
-        .find()
-        .skip((page - 1) * count)
-        .limit(count)
-        .lean();
+      const startIndex = (page - 1) * count;
+      const usersList = await users.find().skip(startIndex).limit(count).lean();
 
       const totalUsers = await users.countDocuments();
       const totalPages = Math.ceil(totalUsers / count);
-      const startIndex = 0;
 
-      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
-
+      const endIndex = Math.min(count, totalUsers - startIndex);
+      req.pagination = {
+        totalCount: totalUsers,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       res.render("admin/users", {
         title: "Users List",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
         author: "Admin#1233!",
         usersList,
-        count,
-        page,
-        totalPages,
-        startIndex,
-        endIndex,
+        pagination: req.pagination,
       });
     } catch (error) {
       next(error);
@@ -63,28 +62,33 @@ module.exports = {
     try {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+
       const usersList = await users
         .find({ isActive: false })
-        .skip((page - 1) * count)
+        .skip(startIndex)
         .limit(count)
         .lean();
 
-      const totalUsers = await users.countDocuments();
+      const totalUsers = await users.countDocuments({ isActive: false });
       const totalPages = Math.ceil(totalUsers / count);
-      const startIndex = 0;
-      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
 
+      const endIndex = Math.min(count, totalUsers - startIndex);
+      req.pagination = {
+        totalCount: totalUsers,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       res.render("admin/users", {
         title: "Users List",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
         author: "Admin#1233!",
         usersList,
-        count,
-        page,
-        totalPages,
-        startIndex,
-        endIndex,
+        pagination: req.pagination,
       });
     } catch (error) {
       next(error);
@@ -94,28 +98,33 @@ module.exports = {
     try {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+
       const usersList = await users
         .find({ isActive: true })
-        .skip((page - 1) * count)
+        .skip(startIndex)
         .limit(count)
         .lean();
 
       const totalUsers = await users.countDocuments();
       const totalPages = Math.ceil(totalUsers / count);
-      const startIndex = 0;
-      const endIndex = Math.min(startIndex + usersList.length, totalUsers);
 
+      const endIndex = Math.min(count, totalUsers - startIndex);
+      req.pagination = {
+        totalCount: totalUsers,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
       res.render("admin/users", {
         title: "Users List",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
         author: "Admin#1233!",
         usersList,
-        count,
-        page,
-        totalPages,
-        startIndex,
-        endIndex,
+        pagination: req.pagination,
       });
     } catch (error) {
       next(error);
@@ -526,5 +535,25 @@ module.exports = {
     } catch (error) {
       console.log(error);
     }
+  },
+  salesMerchantReport: async (req, res, next) => {
+    res.render("admin/salesMerchantReport", {
+      title: "sales Report",
+      fullName: req.session.admin.fullName,
+      adminLoggedin: req.session.adminLoggedIn,
+      author: "Admin#1233!",
+      pagination: req.pagination,
+      salesMerchantList: req.salesMerchantList,
+    });
+  },
+  salesSalesReport: async (req, res, next) => {
+    res.render("admin/salesSalesReport", {
+      title: "Sales Report",
+      fullName: req.session.admin.fullName,
+      adminLoggedin: req.session.adminLoggedIn,
+      author: "Admin#1233!",
+      pagination: req.pagination,
+      salesSalesReport: req.salesSalesReport,
+    });
   },
 };

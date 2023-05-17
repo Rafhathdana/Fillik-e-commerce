@@ -1319,4 +1319,349 @@ module.exports = {
     console.log(req.resultSellRate);
     next();
   },
+
+  postSalesMerchant: async (req, res, next) => {
+    const filter = {};
+    var start, end;
+    const selector = req.body.selector || req.query.selector;
+    if (selector) {
+      // Extracting the relevant parts based on the selector
+      let year, month, weekStart, weekEnd, day;
+      if (selector.startsWith("year")) {
+        year = parseInt(selector.slice(5));
+      } else if (selector.startsWith("month")) {
+        const parts = selector.split("-");
+        year = parseInt(parts[1]);
+        month = parseInt(parts[2]);
+      } else if (selector.startsWith("week")) {
+        const today = new Date();
+        weekStart = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() - today.getDay()
+        );
+        weekEnd = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() - today.getDay() + 6
+        );
+        console.log(weekStart, "weekstart");
+        console.log(weekEnd, "weekEnd");
+      } else if (selector.startsWith("day")) {
+        day = new Date(selector.slice(4));
+        day.setHours(0, 0, 0, 0);
+      }
+
+      if (weekStart && weekEnd) {
+        start = weekStart;
+        end = weekEnd;
+      }
+
+      if (year && month) {
+        start = new Date(year, month - 1, 1);
+        end = new Date(year, month, 0, 23, 59, 59, 999);
+      }
+
+      if (day) {
+        start = new Date(day);
+        end = new Date(day);
+        end.setDate(end.getDate() + 1);
+        end.setSeconds(end.getSeconds() - 1);
+      }
+      if (year) {
+        start = new Date(year, 0, 1);
+        end = new Date(year, 11, 31, 23, 59, 59, 999);
+      }
+      filter.createdAt = {
+        $gte: start,
+        $lte: end,
+      };
+    }
+    req.filterData = filter;
+    next();
+  },
+  getSalesMerchant: async (req, res, next) => {
+    const mid = req.session.merchant._id;
+    const count = parseInt(req.query.count) || 50;
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * count;
+    const filter = req.filterData;
+    let match = { "products.merchantId": new mongoose.Types.ObjectId(mid) };
+    if (filter) {
+      match = { ...match, ...filter };
+    }
+    const [result] = await Order.aggregate([
+      {
+        $facet: {
+          orders: [
+            {
+              $match: match,
+            },
+            {
+              $project: {
+                _id: "$_id",
+                products: {
+                  $map: {
+                    input: {
+                      $filter: {
+                        input: "$products",
+                        as: "product",
+                        cond: {
+                          $eq: [
+                            "$$product.merchantId",
+                            new mongoose.Types.ObjectId(mid),
+                          ],
+                        },
+                      },
+                    },
+                    in: {
+                      id: "$$this._id",
+                      productId: "$$this.productId",
+                      items: "$$this.items",
+                      currentStatus: "$$this.status",
+                      status: "$status",
+                      amount: "$$this.actualRate",
+                      orderCode: "$orderCode",
+                      updatedAt: "$updatedAt",
+                    },
+                  },
+                },
+              },
+            },
+            { $skip: startIndex },
+            { $limit: count },
+            { $sort: { updatedAt: -1 } }, // Sort by the createdAt field in ascending order
+          ],
+          totalCount: [
+            {
+              $match: match,
+            },
+            {
+              $group: {
+                _id: "$_id",
+              },
+            },
+            {
+              $count: "totalCount",
+            },
+          ],
+        },
+      },
+    ]);
+
+    const salesList = result.orders;
+    const totalOrdersCount = result.totalCount[0]
+      ? result.totalCount[0].totalCount
+      : 0;
+
+    const totalPages = Math.ceil(totalOrdersCount / count);
+
+    const endIndex = Math.min(startIndex + count, totalOrdersCount);
+
+    req.salesList = salesList;
+    console.log(req.salesList[0], "rafhath", "rafees");
+    req.pagination = {
+      totalCount: totalOrdersCount,
+      totalPages: totalPages,
+      page: page,
+      count: count,
+      startIndex: startIndex,
+      endIndex: endIndex,
+    };
+    console.log(req.pagination);
+    next();
+  },
+  salesMerchantReport: async (req, res, next) => {
+    const count = parseInt(req.query.count) || 50;
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * count;
+
+    const pipeline = [
+      {
+        $unwind: "$products",
+      },
+      {
+        $addFields: {
+          lastStatus: { $arrayElemAt: ["$products.status", -1] },
+          quantityI: { $arrayElemAt: ["$products.items", 0] },
+        },
+      },
+      {
+        $lookup: {
+          from: "merchants",
+          localField: "products.merchantId",
+          foreignField: "_id",
+          as: "merchant",
+        },
+      },
+      {
+        $unwind: "$merchant",
+      },
+      {
+        $group: {
+          _id: "$merchant._id",
+          completedAmountCount: {
+            $sum: {
+              $cond: [
+                { $eq: ["$lastStatus.currentStatus", "Completed"] },
+                { $multiply: ["$products.actualRate", "$quantityI.quantity"] },
+                0,
+              ],
+            },
+          },
+          completedCount: {
+            $sum: {
+              $cond: [
+                { $eq: ["$lastStatus.currentStatus", "Completed"] },
+                1,
+                0,
+              ],
+            },
+          },
+          userCancelCount: {
+            $sum: {
+              $cond: [
+                {
+                  $in: [
+                    "$lastStatus.currentStatus",
+                    ["usercancel", "merchantcancel", "admincancel"],
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          pendingCount: {
+            $sum: {
+              $cond: [
+                {
+                  $not: {
+                    $in: [
+                      "$lastStatus.currentStatus",
+                      [
+                        "usercancel",
+                        "merchantcancel",
+                        "admincancel",
+                        "recievedBack",
+                        "Returned",
+                        "Completed",
+                      ],
+                    ],
+                  },
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          returnedCount: {
+            $sum: {
+              $cond: [{ $eq: ["$lastStatus.currentStatus", "Returned"] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalAmount: "$completedAmountCount",
+          completedCount: 1,
+          userCancelCount: 1,
+          merchantCancelCount: 1,
+          pendingCount: 1,
+          returnedCount: 1,
+        },
+      },
+      {
+        $facet: {
+          totalCount: [{ $count: "totalCount" }],
+          paginatedResults: [{ $skip: startIndex }, { $limit: count }],
+        },
+      },
+    ];
+
+    const result = await Order.aggregate(pipeline);
+    console.log(result);
+    const salesMerchantList = result[0].paginatedResults || [];
+    console.log(salesMerchantList);
+    const totalOrdersCount = result[0].totalCount[0]
+      ? result[0].totalCount[0].totalCount
+      : 0;
+
+    const totalPages = Math.ceil(totalOrdersCount / count);
+
+    const endIndex = Math.min(startIndex + count, totalOrdersCount);
+
+    req.salesMerchantList = salesMerchantList;
+    req.pagination = {
+      totalCount: totalOrdersCount,
+      totalPages: totalPages,
+      page: page,
+      count: count,
+      startIndex: startIndex,
+      endIndex: endIndex,
+    };
+
+    next();
+  },
+  getsalesSalesReport: async (req, res, next) => {
+    const count = parseInt(req.query.count) || 50;
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * count;
+    const filter = req.filterData;
+    let match = {}; // Initialize match object
+    if (filter) {
+      match = { ...match, ...filter };
+    }
+    const pipeline = [
+      {
+        $match: match, // Add $match stage to filter documents
+      },
+      {
+        $project: {
+          _id: 0, // Exclude _id field from the output
+          orderCode: 1,
+          totalAmount: 1,
+          gst: 1,
+          deliveryCharge: 1,
+          discountAmount: 1,
+          paymentMethod: 1,
+          paymentStatus: 1,
+          status: 1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "totalCount" }],
+          paginatedResults: [{ $skip: startIndex }, { $limit: count }],
+        },
+      },
+    ];
+
+    const result = await Order.aggregate(pipeline);
+    console.log(result);
+    const salesSalesReport = result[0].paginatedResults || [];
+    console.log(salesSalesReport);
+    const totalOrdersCount = result[0].metadata[0]
+      ? result[0].metadata[0].totalCount
+      : 0;
+
+    const totalPages = Math.ceil(totalOrdersCount / count);
+
+    const endIndex = Math.min(startIndex + count, totalOrdersCount);
+
+    req.salesSalesReport = salesSalesReport;
+    req.pagination = {
+      totalCount: totalOrdersCount,
+      totalPages: totalPages,
+      page: page,
+      count: count,
+      startIndex: startIndex,
+      endIndex: endIndex,
+    };
+
+    next();
+  },
 };

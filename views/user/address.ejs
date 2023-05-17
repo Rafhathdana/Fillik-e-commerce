@@ -221,7 +221,7 @@
                   <button
                     type="button"
                     class="btn btn-secondary btn-rounded btn-fw"
-                    onclick="addAddress()"
+                    onclick="addAddress(); this.disabled = true; this.innerHTML = 'Processing...'; setTimeout(function() { this.disabled = false; this.innerHTML = 'Add Address'; }, 5000);"
                   >
                     Add Address
                   </button>
@@ -332,7 +332,7 @@
         if (data.success) {
           swal("done");
         } else {
-          console.log("error");
+          swal("error");
         }
       })
       .catch((error) => {

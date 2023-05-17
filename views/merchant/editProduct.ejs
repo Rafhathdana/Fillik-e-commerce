@@ -22,7 +22,7 @@
       <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
+            <form id="myForm" method="POST">
               <p class="text-danger" id="message"></p>
               <div class="form-group">
                 <label for="name">Name of the Product</label>
@@ -367,3 +367,176 @@
     </div>
   </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $.validator.addMethod(
+      "noSpecialChars",
+      function (value, element) {
+        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+      },
+      "Special characters and spaces are not allowed"
+    );
+    $.validator.addMethod(
+      "number",
+      function (value, element) {
+        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
+      },
+      "Numbers only allowed"
+    );
+    $.validator.addMethod(
+      "price",
+      function (value, element) {
+        const sellerPrice = parseFloat(value);
+        const originalPrice = parseFloat($("#orginalPrice").val());
+        const maximumPrice = originalPrice * 0.952380952; // 95.2380952% of the original price
+
+        if (sellerPrice < maximumPrice) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      function (params, element) {
+        const originalPrice = parseFloat($("#originalPrice").val());
+        const maximumPrice = originalPrice * 0.952380952;
+        return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
+          2
+        )}`;
+      }
+    );
+
+    $("#myForm").validate({
+      rules: {
+        name: {
+          required: true,
+          noSpecialChars: true,
+        },
+        description: {
+          required: true,
+        },
+        genderType: {
+          required: true,
+        },
+        category: {
+          required: true,
+        },
+        colour: {
+          required: true,
+        },
+        pattern: {
+          required: true,
+        },
+        orginalPrice: {
+          required: true,
+          number: true,
+        },
+        sellerPrice: {
+          required: true,
+          number: true,
+          price: true,
+        },
+
+        small: {
+          required: true,
+          number: true,
+        },
+        medium: {
+          required: true,
+          number: true,
+        },
+        large: {
+          required: true,
+          number: true,
+        },
+        extraLarge: {
+          required: true,
+          number: true,
+        },
+        moreinfo: {
+          required: true,
+        },
+      },
+      messages: {
+        name: {
+          required: "Please enter the name of the product",
+          noSpecialChars: "Special characters and spaces are not allowed",
+        },
+        description: {
+          required: "Please enter the description",
+        },
+        genderType: {
+          required: "Please select the gender type",
+        },
+        category: {
+          required: "Please select the category",
+        },
+        colour: {
+          required: "Please select the color",
+        },
+        pattern: {
+          required: "Please select the pattern",
+        },
+        orginalPrice: {
+          required: "Please enter the original price",
+          number: "Please enter a valid number",
+        },
+        sellerPrice: {
+          required: "Please enter the seller price",
+          number: "Please enter a valid number",
+          price: function (params, element) {
+            const originalPrice = parseFloat($("#orginalPrice").val());
+            const maximumPrice = originalPrice * 0.952380952;
+            return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
+              2
+            )}`;
+          },
+        },
+        small: {
+          required: "Please enter the quantity for the small size",
+          number: "Please enter a valid number",
+        },
+        medium: {
+          required: "Please enter the quantity for the medium size",
+          number: "Please enter a valid number",
+        },
+        large: {
+          required: "Please enter the quantity for the large size",
+          number: "Please enter a valid number",
+        },
+        extraLarge: {
+          required: "Please enter the quantity for the extra-large size",
+          number: "Please enter a valid number",
+        },
+        moreinfo: {
+          required: "Please provide more information",
+        },
+      },
+      highlight: function (element) {
+        $(element).closest(".form-group").addClass("is-invalid");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-group").removeClass("is-invalid");
+      },
+      errorElement: "div",
+      errorClass: "invalid-feedback",
+      errorPlacement: function (error, element) {
+        if (element.parent(".input-group").length) {
+          error.insertAfter(element.parent());
+        } else if (element.hasClass("file-input")) {
+          error.insertAfter(element.closest(".custom-file"));
+        } else {
+          error.insertAfter(element);
+        }
+      },
+    });
+
+    $.validator.addMethod(
+      "required",
+      $.validator.methods.required,
+      "Please agree to the Terms & Conditions"
+    );
+  });
+</script>

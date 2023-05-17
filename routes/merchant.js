@@ -86,5 +86,19 @@ router.get(
   merchantverify,
   orderControllers.merchantProductOrder
 );
+router.get(
+  "/salesReport",
+  merchantverify,
+  orderControllers.postSalesMerchant,
+  orderControllers.getSalesMerchant,
+  merchantController.salesList
+);
+router.post(
+  "/salesReport",
+  merchantverify,
+  orderControllers.postSalesMerchant,
+  orderControllers.getSalesMerchant,
+  merchantController.salesList
+);
 router.post("/updateOrderStatus", merchantverify, orderControllers.updateOrder);
 module.exports = router;

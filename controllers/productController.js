@@ -251,15 +251,15 @@ module.exports = {
         category: req.body.category,
         colour: req.body.colour,
         pattern: req.body.pattern,
-        orginalPrice: req.body.orginalPrice,
-        sellerPrice: req.body.sellerPrice,
-        ourPrice: (req.body.sellerPrice / 100) * 105,
+        orginalPrice: parseInt(req.body.orginalPrice),
+        sellerPrice: parseInt(req.body.sellerPrice),
+        ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
         genderType: req.body.genderType,
         Quantity: {
-          small: req.body.small,
-          medium: req.body.medium,
-          large: req.body.large,
-          extraLarge: req.body.extraLarge,
+          small: parseInt(req.body.small),
+          medium: parseInt(req.body.medium),
+          large: parseInt(req.body.large),
+          extraLarge: parseInt(req.body.extraLarge),
         },
       };
 

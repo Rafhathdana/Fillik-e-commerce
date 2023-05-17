@@ -178,7 +178,10 @@
                     />Google Pay</label
                   >
                 </div> -->
-                <button class="btn btn-primary" onclick="checkout()">
+                <button
+                  class="btn btn-primary"
+                  onclick="checkout(); this.disabled = true; this.innerHTML = 'Processing...'; setTimeout(function() { this.disabled = false; this.innerHTML = 'Proceed'; }, 5000);"
+                >
                   Proceed
                 </button>
               </div>

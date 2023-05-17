@@ -42,7 +42,7 @@
           </tr>
         </thead>
         <tbody>
-          <% for (let i = locals.startIndex; i < locals.endIndex; i++) { %>
+          <% for (let i = 0; i < pagination.endIndex; i++) { %>
           <tr>
             <td><%= usersList[i].email %></td>
             <td><%= usersList[i].fullName %></td>
@@ -83,26 +83,8 @@
         </tbody>
       </table>
     </div>
-    <div class="pagenumbers">
-      <% for (let i = 1; i <= locals.totalPages; i++) { %>
-      <a
-        href="?count=<%= count %>&page=<%= i %>"
-        class="page<%= i === parseInt(page) ? ' active' : '' %>"
-        ><%= i %></a
-      >
-      <% } %>
-    </div>
-    <div class="nextprev">
-      <% if (locals.page > 1) { %>
-      <a href="?count=<%= count %>&page=<%= parseInt(page) - 1 %>" class="prev"
-        >Prev</a
-      >
-      <% } %> <% if (locals.page < locals.totalPages) { %>
-      <a href="?count=<%= count %>&page=<%= parseInt(page) + 1 %>" class="next"
-        >Next</a
-      >
-      <% } %>
-    </div>
+
+    <%- include('pagination')-%>
   </div>
 </div>
 <script>
