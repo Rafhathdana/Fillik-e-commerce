@@ -59,11 +59,12 @@
             <div class="row">
               <div class="col-md-2">
                 <img
-                  src="/images/productImages/<%=ordersList.productsdetail[i].images[0] %>"
+                  src="/images/productImages/<%=ordersList.productsdetail[i].images[0] %> "
                   class="img-fluid"
                   alt="Phonee"
                 />
               </div>
+
               <div
                 class="col-md-4 text-center d-flex justify-content-center align-items-center"
               >
@@ -129,7 +130,7 @@
             <div class="row">
               <div class="col-md-2">
                 <img
-                  src="/images/productImages/<%=ordersList.productsdetail[i]%>""
+                  src="/images/productImages/<%=ordersList.productsdetail[i].images[0] %> "
                   class="img-fluid"
                   alt="Phone"
                 />
@@ -162,18 +163,28 @@
                 </p>
               </div>
             </div>
+            <% let countOfItem=ordersList.products[i].status.length; let
+            countOfItemPercentage=(countOfItem/5)*100; const currentStatus =
+            ordersList.products[i].status[countOfItem - 1].currentStatus; const
+            purchaseDate = new
+            Date(ordersList.products[i].status[ordersList.products[i].status.length
+            - 1].dateTimeOn); const currentDate = new Date(); const daysPassed =
+            Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 * 24)); %>
             <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1" />
             <div class="row d-flex align-items-center">
+              <% let d= countOfItemPercentage > 100
+              ?(countOfItemPercentage>120?100:80):countOfItemPercentage %>
               <div class="col-md-2">
                 <p class="text-muted mb-0 small">Track Order</p>
               </div>
+
               <div class="col-md-10">
                 <div class="progress" style="height: 6px; border-radius: 16px">
                   <div
                     class="progress-bar"
                     role="progressbar"
                     style="
-                      width: 65%;
+                      width: <%=d%>%;
                       border-radius: 16px;
                       background-color: #a8729a;
                     "
@@ -184,21 +195,14 @@
                 </div>
                 <div class="d-flex justify-content-around mb-1">
                   <p class="text-muted mt-1 mb-0 small ms-xl-5">
-                    Out for delivary
+                    <%=currentStatus%>
                   </p>
                   <p class="text-muted mt-1 mb-0 small ms-xl-5">Delivered</p>
                 </div>
               </div>
             </div>
             <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1" />
-            <% const currentStatus =
-            ordersList.products[i].status[ordersList.products[i].status.length -
-            1].currentStatus; 
-            const purchaseDate = new Date(ordersList.products[i].status[ordersList.products[i].status.length
-            - 1].dateTimeOn); 
-            const currentDate = new Date(); const daysPassed =
-            Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 * 24)); if
-            (currentStatus === "usercancel" || currentStatus ===
+            <% if (currentStatus === "usercancel" || currentStatus ===
             "merchantCancel" || currentStatus === "adminCancel"||daysPassed >
             14) { %>
             <div
@@ -207,14 +211,15 @@
               <p class="lead fw-normal mb-0 ml-5" style="color: #a8729a"></p>
               <%= currentStatus %>
             </div>
-            <% } else if (currentStatus === "successful") { %>
+            <% } else if (currentStatus === "Completed") { %>
             <div
               class="d-flex justify-content-between align-items-center mb-4 mr-4 ml-4"
             >
               <p class="lead fw-normal mb-0 ml-5" style="color: #a8729a"></p>
+
               <a
                 href="#"
-                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i]._id %>','return','<%= ordersList.products[j].productId %>','<%=ordersList.products[i].items[0].quantity%>')"
+                onclick="updateStatus('<%= ordersList._id %>','<%= ordersList.products[i]._id %>','<%= ordersList.products[i].items[0].size %>','Returned','<%= ordersList.products[i].productId %>','<%= ordersList.products[i].items[0].quantity%>')"
                 class="btn btn-primary"
                 >Return</a
               >
@@ -241,19 +246,24 @@
   <div class="d-flex justify-content-between pt-2">
     <p class="fw-bold mb-0">Order Details</p>
     <p class="text-muted mb-0">
-      <% total=ordersList.totalAmount-ordersList.coupons.discountAmount-ordersList.gst-ordersList.deliveryCharge%>
+      <%
+      total=ordersList.totalAmount-ordersList.coupons.discountAmount-ordersList.gst-ordersList.deliveryCharge%>
       <span class="fw-bold me-4">Total : </span> Rs. <%=total%>
     </p>
   </div>
 
   <div class="d-flex justify-content-between pt-2">
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">Discount : </span> Rs. <%=ordersList.coupons.discountAmount%>
+      <span class="fw-bold me-4">Discount : </span> Rs.
+      <%=ordersList.coupons.discountAmount%>
     </p>
   </div>
 
   <div class="d-flex justify-content-between">
-    <p class="text-muted mb-0">Invoice Date : 22 Dec,2019</p>
+    <p class="text-muted mb-0">
+      Invoice Date : <%= new Date(ordersList.createdAt).toLocaleString('en-US',
+      { month: 'short' , day: 'numeric' , year: 'numeric' , hour12: true }) %>
+    </p>
     <p class="text-muted mb-0">
       <span class="fw-bold me-4">GST (18%) : </span> <%=ordersList.gst%>
     </p>
@@ -262,7 +272,8 @@
   <div class="d-flex justify-content-between mb-5">
     <p class="text-muted mb-0">Recepits Voucher : <%=ordersList.orderCode%></p>
     <p class="text-muted mb-0">
-      <span class="fw-bold me-4">Delivery Charges : </span> <%=ordersList.deliveryCharge%>
+      <span class="fw-bold me-4">Delivery Charges : </span>
+      <%=ordersList.deliveryCharge%>
     </p>
   </div>
 </div>
@@ -279,7 +290,6 @@
   >
     Total paid: <span class="h2 mb-0 ms-2">Rs <%=ordersList.totalAmount%></span>
   </h5>
-</div>
 </div>
 <script>
   function updateStatus(oid, pid, size, orderUpdate, pvd, qty) {
@@ -306,8 +316,8 @@
             pid: pid,
             size: size,
             orderStatus: orderUpdate,
-            pvd:pvd,
-            qty:qty,
+            pvd: pvd,
+            qty: qty,
           }),
         })
           .then((response) => {

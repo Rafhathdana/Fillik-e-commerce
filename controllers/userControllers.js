@@ -33,6 +33,16 @@ module.exports = {
     });
     req.session.errmsg = null;
   },
+  getSignOtpIn: (req, res, next) => {
+    res.render("user/otpLogin", {
+      title: "user",
+      err_msg: req.session.errmsg,
+      loggedin: false,
+      noShow: true,
+      cartItems: req.cartItems,
+    });
+    req.session.errmsg = null;
+  },
 
   getProductlist: async (req, res, next) => {
     try {
@@ -217,6 +227,33 @@ module.exports = {
       console.log(error);
     }
   },
+  verifyMobileOtp: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        const newUser = await User.findOne({ mobile: req.body.mobile });
+        if (newUser) {
+          if (newUser.isActive === true) {
+            console.log("user exists");
+            req.session.user = newUser;
+            req.session.userLoggedIn = true;
+            console.log(newUser);
+          } else {
+            req.session.errmsg = "Account was Blocked. Contact Us.";
+            res.status(402).redirect("/login");
+          }
+        } else {
+          req.session.errmsg = "Invalid Username or Password";
+          res.status(400).redirect("/login");
+        }
+      } else {
+        req.session.errmsg = "Invalid OTP";
+        res.status(500).send({ success: false, message: "Invalid OTP" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   logout: (req, res) => {
     req.session.destroy(function (err) {
       if (err) {
@@ -652,6 +689,7 @@ module.exports = {
       fullName: req.session.user.fullName,
       loggedin: req.session.userLoggedIn,
       userData: req.session.user,
+      userAddress: req.userAddressess,
     });
   },
   getEditProfile: async (req, res, next) => {
@@ -762,7 +800,7 @@ module.exports = {
   },
   OrdersList: async (req, res, next) => {
     try {
-      console.log(req.ordersList[0]);
+      console.log(req.ordersList[0].productsdetail[0].images[0], "rafeeq");
       res.render("user/ordersView", {
         title: "Users List",
         fullName: req.session.user.fullName,
@@ -965,5 +1003,20 @@ module.exports = {
     ]);
     req.userReport = [weekUserData, monthUserData, yearUserData];
     next();
+  },
+  editUserProfile: async (req, res, next) => {
+    console.log(req.body, "userr");
+    const userProfile = await User.findOneAndUpdate(
+      { _id: req.session.user._id }, // filter object
+      {
+        fullName: req.body.name,
+        email: req.body.email,
+        mobile: req.body.phone,
+      }, // update object
+      { new: true } // return the updated document
+    );
+    const newUser = await User.findOne({ _id: req.session.user._id });
+    req.session.user = newUser;
+    res.redirect("/profile");
   },
 };

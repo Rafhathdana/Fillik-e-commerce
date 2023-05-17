@@ -42,13 +42,8 @@ router.get(
 router.get("/signup", userauth, cart, userController.getSignUp);
 
 router.get("/login", userauth, cart, userController.getSignIn);
-// router.get(
-//   "/home",
-//   verify,
-//   filterController.getFilter,
-//   cart,
-//   userController.productList
-// );
+router.get("/otpLogin", userauth, cart, userController.getSignOtpIn);
+
 router.post(
   "/postfilter",
   filterController.postFilter,
@@ -75,7 +70,12 @@ router.get(
   userController.getCart
 );
 router.get("/productview/:productId", cart, productController.getProductView);
-router.get("/profile", verify, userController.getProfile);
+router.get(
+  "/profile",
+  verify,
+  addressControllers.getAddress,
+  userController.getProfile
+);
 router.get("/editprofile", verify, userController.getEditProfile);
 router.get(
   "/ordersList",
@@ -100,6 +100,13 @@ router.post(
 );
 router.post("/sendotp", userController.sendOtp);
 router.post("/verifyotp", userController.verifyOtp);
+router.post(
+  "/verifyotpLogin",
+  userauth,
+  cart,
+  userController.verifyMobileOtp,
+  userController.signinconvert
+);
 router.get("/logout", userController.logout);
 router.post("/addToCart", (req, res, next) => {
   req.session.userLoggedIn
@@ -107,6 +114,7 @@ router.post("/addToCart", (req, res, next) => {
     : userController.cachePostCart(req, res, next);
 }); //need to test after login
 router.post("/addAddress", verify, addressControllers.postAddress); //need to test after login
+router.delete("/deleteAddress", verify, addressControllers.deleteAddress); //need to test after login
 router.post(
   "/addOrder",
   verify,
@@ -130,9 +138,6 @@ router.post(
 
 router.get("/forgetPassword", userauth, userController.forgetPassword);
 router.post("/emailexists", userController.emailVerify);
-router.get("/DUMY", function (req, res, next) {
-  res.render("user/orderProductView", {});
-});
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.post("/updateOrderStatus", verify, orderControllers.updateOrder);
 router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
@@ -149,5 +154,5 @@ router.post(
   filterController.postFilter,
   userController.searchProductFilterList
 );
-
+router.post("/profile", verify, userController.editUserProfile);
 module.exports = router;

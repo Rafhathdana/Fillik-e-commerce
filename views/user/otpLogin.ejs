@@ -258,7 +258,7 @@
     );
   });
 </script>
- <script>
+<script>
   const inputs = document.querySelectorAll(".pin-box");
 
   inputs.forEach((input, index) => {
@@ -289,46 +289,17 @@
     const validator = $("#signin-form").validate();
     if (validator.form()) {
       const mobileInput = document.getElementById("mobile").value;
-      const emailInput = document.getElementById("email").value;
 
-      if (emailInput) {
-        checkEmailExists(emailInput);
+      if (mobileInput) {
+        sendOTP(mobileInput);
       } else {
         normalSection();
       }
     }
   });
 
-  async function checkEmailExists(email) {
-    console.log(email);
-    fetch("`/emailexists", {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        return response.json(); // get the response body
-      })
-      .then((data) => {
-        if (data.success) {
-          sendOTP(data.mobile);
-        } else {
-          swal("Email Not registered");
-          normalSection();
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        swal("Error verifying email");
-      });
-  }
-
   function sendOTP(mobile) {
-    fetch("`/sendotp", {
+    fetch("/sendotp", {
       method: "POST",
       body: JSON.stringify({
         mobile: mobile,
@@ -349,14 +320,12 @@
         } else {
           console.log(data);
           normalSection();
-          swal("OTP Not sended. Please try again.");
+          swal("OTP Not sent. Please try again.");
         }
       })
       .catch((error) => {
         console.error(error);
-        alert(
-          "An error occurred while sending verifying OTP. Please try again later."
-        );
+        alert("An error occurred while verifying OTP. Please try again later.");
       });
   }
 
@@ -365,19 +334,19 @@
     otpSection.classList.remove("d-none");
     present.classList.remove("d-none");
   }
+
   function normalSection() {
     otpSection.classList.add("d-none");
     signupForm.classList.remove("d-none");
     present.classList.add("d-none");
   }
+
   const verifyOTPButton = document.querySelector(".btn-verify-otp");
-  verifyOTPButton.addEventListener("click", () => {
-    let otp = document.getElementById("box1").value;
-    otp += document.getElementById("box2").value;
-    otp += document.getElementById("box3").value;
-    otp += document.getElementById("box4").value;
-    otp += document.getElementById("box5").value;
-    otp += document.getElementById("box6").value;
+  verifyOTPButton.addEventListener("click", async () => {
+    let otp = "";
+    for (let i = 1; i <= 6; i++) {
+      otp += document.getElementById(`box${i}`).value;
+    }
     console.log(otp);
     if (verifyOTP(otp)) {
       console.log("hai");
@@ -385,68 +354,34 @@
       swal("Invalid OTP!");
     }
   });
+
   async function verifyOTP(otp) {
-    var processing = "Please Wait";
-    $("#verifyOtp").text(processing).css("cursor", "None");
+    const processing = "Please Wait";
+    const mobileInput = document.getElementById("mobile").value;
+    $("#verifyOtp").text(processing).css("cursor", "none");
     console.log(otp);
     try {
-      const response = await fetch("`/verifyotp", {
+      const response = await fetch("/verifyotpLogin", {
         method: "POST",
         body: JSON.stringify({
           userOtp: otp,
+          mobile: mobileInput,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const data = await response.json();
-
-      console.log(data);
-
-      if (data.success) {
-        console.log(data);
-        // OTP verification successful, move to the signinUser()
-        signinUser();
-        // document.querySelector('form').submit();
+      if (response.ok) {
+        window.location.href = "/login";
       } else {
-        console.log(data);
-        // OTP verification failed, display an error message
-        swal("Invalid OTP!");
-        var processing = "Verify OTP";
-        $("#verifyOtp").text(processing).css("cursor", "Pointer");
-        showOTPSection();
+        swal("An error occurred. Please try again later.");
       }
     } catch (error) {
       console.error(error);
-      swal("An error occurred while verifying OTP. Please try again later.");
+      swal("An error occurred. Please try again later.");
     }
   }
+</script>
 
-  function signinUser() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    fetch("`/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          window.location.href = "`/login";
-        } else {
-          swal("An error occurred. Please try again later.");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        swal("An error occurred. Please try again later.");
-      });
-  }
-</script> 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

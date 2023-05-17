@@ -33,10 +33,10 @@ module.exports = {
       await Address.create(newAddress);
       req.session.Addresserrmsg = null;
       console.log(newAddress);
-      res.status(200).send((success = true));
+      res.status(200).send({ success: true });
     } catch (error) {
       console.log(error);
-      res.status(400).send((success = false));
+      res.status(400).send({ success: false });
     }
   },
   getAddress: async (req, res, next) => {
@@ -49,5 +49,16 @@ module.exports = {
       console.log(error);
     }
   },
-
+  deleteAddress: async (req, res, next) => {
+    try {
+      let id = req.body.id;
+      await Address.findOneAndDelete({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      res.status(200).send({ success: true }); // Assuming you want to redirect to the homepage after deleting the address
+    } catch (error) {
+      console.log(error);
+      next(error); // Pass the error to the error handling middleware
+    }
+  },
 };
