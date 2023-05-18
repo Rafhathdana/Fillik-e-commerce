@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const userController = require("../controllers/userControllers");
-const otp = require("../controllers/otp");
+const otp = require("../config/otp");
 const addressControllers = require("../controllers/addressControllers");
 const orderControllers = require("../controllers/orderControllers");
 const filterController = require("../controllers/filterController");
@@ -100,6 +100,8 @@ router.post(
 );
 router.post("/sendotp", userController.sendOtp);
 router.post("/verifyotp", userController.verifyOtp);
+router.post("/verifyedotp", userController.verifyedOtp);
+router.post("/updatePassword", userController.updatePassword);
 router.post(
   "/verifyotpLogin",
   userauth,
@@ -137,6 +139,8 @@ router.post(
 );
 
 router.get("/forgetPassword", userauth, userController.forgetPassword);
+router.post("/emailOtp", userauth, userController.sendOtpEmail);
+
 router.post("/emailexists", userController.emailVerify);
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.post("/updateOrderStatus", verify, orderControllers.updateOrder);

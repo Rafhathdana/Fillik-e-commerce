@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 var users = require("../models/userSchema");
 var Address = require("../models/addressSchema");
 var coupon = require("../models/couponSchema");
-const otp = require("./otp");
+const otp = require("../config/otp");
 
 const {
   Types: { ObjectId },

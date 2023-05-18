@@ -422,30 +422,6 @@
         });
       });
 
-      $(document).on("click", "#edit-button", function () {
-        // Get the current form data
-        var formData = $("#profile-form").serialize();
-
-        // Get the address ID from the hidden input field
-        var addressId = $("#address-id").val();
-
-        // Add the address ID to the form data
-        formData += "&addressId=" + addressId;
-
-        // Send a PATCH request to update the user's details
-        $.ajax({
-          url: "/addressEdit",
-          type: "PATCH",
-          data: formData,
-          success: function (data) {
-            // Handle the successful response
-          },
-          error: function (xhr, status, error) {
-            // Handle the error response
-          },
-        });
-      });
-
       // Disable right-click context menu
       document.addEventListener("contextmenu", function (event) {
         event.preventDefault();

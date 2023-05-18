@@ -82,6 +82,12 @@ router.get(
   merchantController.orderList
 );
 router.get(
+  "/orderList/:Data",
+  merchantverify,
+  orderControllers.merchantStatusOrderList,
+  merchantController.orderFilterList
+);
+router.get(
   "/orderedDetails/:id",
   merchantverify,
   orderControllers.merchantProductOrder

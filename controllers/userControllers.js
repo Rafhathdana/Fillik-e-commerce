@@ -6,12 +6,10 @@ var filterproduct = require("../models/filterSchema");
 var Cart = require("../models/cartSchema");
 const bcrypt = require("bcrypt");
 const { response } = require("../app");
-const otp = require("../controllers/otp");
+const otp = require("../config/otp");
 const mongoose = require("mongoose");
 const Banner = require("../models/bannersSchema");
-const orderControllers = require("./orderControllers");
-const productController = require("./productController");
-const moment = require("moment");
+const emailconnect = require("../config/emailconnect");
 module.exports = {
   getSignUp: (req, res, next) => {
     res.render("user/signup", {
@@ -227,6 +225,45 @@ module.exports = {
       console.log(error);
     }
   },
+  verifyedOtp: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        req.session.emailVerified = true;
+        req.session.emailname = req.body.email;
+        res.status(200).send({
+          success: true,
+          response,
+          message: "OTP verified successfully",
+        });
+      } else {
+        req.session.emailVerified = false;
+        req.session.errmsg = "Invalid Otp";
+        res.status(500).send({ success: false, message: "Invalid Otp" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  updatePassword: async (req, res, next) => {
+    try {
+      if (req.session.emailVerified) {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        await User.findOneAndUpdate(
+          { email: req.session.emailname },
+          { password: hashedPassword }
+        );
+        res.status(200).send({
+          success: true,
+        });
+      } else {
+        req.session.emailVerified = false;
+        res.status(500).send({ success: false });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   verifyMobileOtp: async (req, res, next) => {
     try {
       if (parseInt(req.body.userOtp) === req.session.otP) {
@@ -271,7 +308,7 @@ module.exports = {
       const filter = req.filterData || {};
       const sort = req.sort || { createdAt: -1 };
       console.log(count, page, filter, sort);
-      productsList = await Products.find(filter)
+      let productsList = await Products.find(filter)
         .sort(sort)
         .skip((page - 1) * count)
         .limit(count)
@@ -678,6 +715,7 @@ module.exports = {
   forgetPassword: async (req, res, next) => {
     res.render("user/forgetPassword", {
       title: "user",
+      noShow: true,
       err_msg: req.session.errmsg,
       loggedin: false,
     });
@@ -1018,5 +1056,57 @@ module.exports = {
     const newUser = await User.findOne({ _id: req.session.user._id });
     req.session.user = newUser;
     res.redirect("/profile");
+  },
+  sendOtpEmail: (req, res, next) => {
+    try {
+      const verifiedUser = User.findOne({
+        email: req.body.email,
+        isActive: true,
+      });
+
+      if (verifiedUser) {
+        const otp = Math.floor(100000 + Math.random() * 871037);
+        req.session.otP = otp;
+        emailconnect
+          .EMAILRESETOTP(req.body.email, req.session.otP)
+          .then((response) => {
+            response.Success = true;
+            res.status(200).send({
+              response,
+              Success: true,
+              message: "OTP Sent successfully",
+            });
+          })
+          .catch((error) => {
+            res
+              .status(500)
+              .send({ Success: false, message: "Error sending OTP" });
+          });
+      } else {
+        res.status(200).send({
+          Success: false,
+          noEmail: true,
+          message: "Enter proper Account",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  verifOtpEmail: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        res.status(200).send({
+          success: true,
+          response,
+          message: "OTP verified successfully",
+        });
+      } else {
+        req.session.errmsg = "Invalid Otp";
+        res.status(500).send({ success: false, message: "Invalid Otp" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   },
 };

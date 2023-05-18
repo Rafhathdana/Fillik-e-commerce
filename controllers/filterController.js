@@ -2,7 +2,7 @@ var Admin = require("../models/adminSchema");
 const mongoose = require("mongoose");
 var users = require("../models/userSchema");
 var merchants = require("../models/merchantSchema");
-const otp = require("../controllers/otp");
+const otp = require("../config/otp");
 var filterproduct = require("../models/filterSchema");
 const {
   Types: { ObjectId },

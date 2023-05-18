@@ -2,7 +2,7 @@ var Merchant = require("../models/merchantSchema");
 var Product = require("../models/productSchema");
 var filterproduct = require("../models/filterSchema");
 var Order = require("../models/orderSchema");
-const otp = require("../controllers/otp");
+const otp = require("../config/otp");
 const bcrypt = require("bcrypt");
 const { response } = require("../app");
 const multer = require("multer");
@@ -334,6 +334,17 @@ module.exports = {
   },
   orderList: async (req, res, next) => {
     res.render("merchant/orderList", {
+      title: "merchant",
+      brandName: req.session.merchant.brandName,
+      merchantLoggedin: req.session.merchantLoggedIn,
+      author: "Merchant#123!",
+      pagination: req.pagination,
+      merchantData: req.session.merchant,
+      orderList: req.orderList,
+    });
+  },
+  orderFilterList: async (req, res, next) => {
+    res.render("merchant/orderListFilter", {
       title: "merchant",
       brandName: req.session.merchant.brandName,
       merchantLoggedin: req.session.merchantLoggedIn,

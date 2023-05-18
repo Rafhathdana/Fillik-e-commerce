@@ -62,7 +62,7 @@
                 data-label="Order ID"
                 style="cursor: pointer"
               >
-                <%= orderList[i].orderCode %>
+                <%= orderList[i].products[j].orderCode %>
               </td>
               <td
                 onclick="window.location.href='/merchant/orderedDetails/<%= orderList[i].products[j].id %>'"
@@ -149,14 +149,6 @@
                   Completed</button
                 ><br /><br /><br />
 
-                <% } else if( currentStatus=="Completed"){ %>
-                <button
-                  type="button"
-                  class="btn btn-gradient-primary btn-rounded btn-fw"
-                  onclick="orderUpdate('Returned', '<%= orderList[i]._id %>', '<%= orderList[i].products[j].id %>', '<%= orderList[i].products[j].items[0].size %>', '<%= orderList[i].products[j].productId %>','<%=orderList[i].products[j].items[0].quantity%>')"
-                >
-                  Returned</button
-                ><br /><br /><br />
                 <% } else if( currentStatus=="Returned"){ %>
                 <button
                   type="button"

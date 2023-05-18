@@ -6,7 +6,7 @@ var Address = require("../models/addressSchema");
 var Cart = require("../models/cartSchema");
 var Order = require("../models/orderSchema");
 var coupon = require("../models/couponSchema");
-const otp = require("./otp");
+const otp = require("../config/otp");
 const razorPay = require("./payementController");
 var Product = require("../models/productSchema");
 
@@ -447,15 +447,19 @@ module.exports = {
     const count = parseInt(req.query.count) || 10;
     const page = parseInt(req.query.page) || 1;
     const startIndex = (page - 1) * count;
+    const data = req.params.Data;
+    let match = { "products.merchantId": new mongoose.Types.ObjectId(mid) };
+    if (data) {
+      const filter = { "products.status.currentStatus": data };
+      match = { ...match, ...filter };
+    }
 
     const [result] = await Order.aggregate([
       {
         $facet: {
           orders: [
             {
-              $match: {
-                "products.merchantId": new mongoose.Types.ObjectId(mid),
-              },
+              $match: match,
             },
             {
               $project: {
@@ -476,6 +480,7 @@ module.exports = {
                     },
                     in: {
                       id: "$$this._id",
+                      orderCode: "$orderCode",
                       productId: "$$this.productId",
                       items: "$$this.items",
                       currentStatus: "$$this.status",
@@ -510,6 +515,7 @@ module.exports = {
     ]);
 
     const orderList = result.orders;
+    console.log(orderList[0].products[0]);
     const totalOrdersCount = result.totalCount[0]
       ? result.totalCount[0].totalCount
       : 0;
@@ -531,6 +537,109 @@ module.exports = {
     console.log(req.pagination);
     next();
   },
+  //merchant
+
+  merchantStatusOrderList: async (req, res, next) => {
+    const mid = req.session.merchant._id;
+    const count = parseInt(req.query.count) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * count;
+    const data = req.params.Data;
+
+    try {
+      const result = await Order.aggregate([
+        {
+          $facet: {
+            orders: [
+              {
+                $match: {
+                  "products.merchantId": new mongoose.Types.ObjectId(mid),
+                },
+              },
+              {
+                $project: {
+                  _id: "$_id",
+                  products: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$products",
+                          as: "product",
+                          cond: {
+                            $eq: [
+                              "$$product.merchantId",
+                              new mongoose.Types.ObjectId(mid),
+                            ],
+                          },
+                        },
+                      },
+                      in: {
+                        id: "$$this._id",
+                        orderCode: "$orderCode",
+                        productId: "$$this.productId",
+                        items: "$$this.items",
+                        currentStatus: {
+                          $arrayElemAt: ["$$this.status", -1],
+                        },
+                        status: "$status",
+                        amount: "$$this.actualRate",
+                        name: "$$this.name",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+            totalCount: [
+              {
+                $count: "totalCount",
+              },
+            ],
+          },
+        },
+        {
+          $unwind: "$orders",
+        },
+        {
+          $unwind: "$orders.products",
+        },
+        {
+          $match: {
+            "orders.products.currentStatus.currentStatus": data,
+          },
+        },
+        { $sort: { _id: 1 } },
+        { $skip: startIndex },
+        { $limit: count },
+      ]);
+      const orderList = result;
+      console.log(orderList[0]);
+
+      const totalOrdersCount = orderList ? orderList.length : 0;
+
+      const totalPages = Math.ceil(totalOrdersCount / count);
+
+      const endIndex = Math.min(startIndex + count, totalOrdersCount);
+
+      req.orderList = orderList;
+
+      req.pagination = {
+        totalCount: totalOrdersCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      console.log(req.pagination);
+      next();
+    } catch (error) {
+      // Handle the error appropriately
+      console.error(error);
+      next(error);
+    }
+  },
+
   merchantProductOrder: async (req, res, next) => {
     const mid = req.session.merchant._id;
     const pid = req.params.id;
