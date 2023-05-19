@@ -51,6 +51,8 @@ router.post(
 );
 router.get(
   "/postfilter",
+
+  filterController.getAllCategory,
   filterController.getFilter,
   cart,
   productController.productList
@@ -159,4 +161,6 @@ router.post(
   userController.searchProductFilterList
 );
 router.post("/profile", verify, userController.editUserProfile);
+router.get("/about", userController.about);
+router.get("/contact", userController.contact);
 module.exports = router;

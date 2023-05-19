@@ -307,17 +307,18 @@ module.exports = {
       const page = parseInt(req.query.page) || 1;
       const filter = req.filterData || {};
       const sort = req.sort || { createdAt: -1 };
+      const startIndex = (page - 1) * count;
       console.log(count, page, filter, sort);
       let productsList = await Products.find(filter)
         .sort(sort)
-        .skip((page - 1) * count)
+        .skip(startIndex)
         .limit(count)
         .lean();
-      console.log(productsList);
       const totalCount = await Products.countDocuments(filter);
+      console.log(totalCount + "fsh");
       const totalPages = Math.ceil(totalCount / count);
-      const startIndex = (page - 1) * count;
-      const endIndex = Math.min(startIndex + count, totalCount);
+
+      const endIndex = Math.min(count, totalCount - startIndex);
 
       const categories = await filterproduct.aggregate([
         {
@@ -1108,5 +1109,28 @@ module.exports = {
     } catch (error) {
       console.log(error);
     }
+  },
+
+  about: async (req, res, next) => {
+    res.render("user/about", {
+      title: "About",
+      fullName: req.session
+        ? req.session.user
+          ? req.session.user.fullName
+          : false
+        : false,
+      loggedin: req.session ? req.session.userLoggedIn : false,
+    });
+  },
+  contact: async (req, res, next) => {
+    res.render("user/contact", {
+      title: "contact",
+      fullName: req.session
+        ? req.session.user
+          ? req.session.user.fullName
+          : false
+        : false,
+      loggedin: req.session ? req.session.userLoggedIn : false,
+    });
   },
 };

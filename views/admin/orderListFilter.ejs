@@ -1,0 +1,358 @@
+<head>
+  <style>
+    @media (max-width: 825px) {
+      .table-responsive table thead {
+        display: none;
+      }
+
+      .table-responsive table tbody tr {
+        display: block;
+        margin-bottom: 20px;
+        border: none;
+      }
+
+      .table-responsive table tbody td {
+        display: block;
+        text-align: right;
+        font-size: 13px;
+        border-bottom: 1px solid #e6e6e6;
+        position: relative;
+        padding-left: 50%;
+        width: 100%;
+      }
+
+      .table-responsive table tbody td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding-left: 15px;
+        font-size: 13px;
+        font-weight: bold;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<div class="col-lg-12 grid-margin stretch-card" style="width: 80%">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Order List</h4>
+      <div class="col-md-12 d-flex justify-content-end">
+        <div class="me-2">
+          <button
+            type="button"
+            onclick="salesReportPdf()"
+            class="btn btn-secondary btn-icon bg-dark"
+          >
+            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+          </button>
+
+          <button
+            type="button"
+            onclick="salesReportExcel()"
+            class="btn btn-secondary btn-icon bg-dark"
+          >
+            <i class="bi bi-file-earmark-excel-fill"></i> Excel
+          </button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table
+          id="datatables-reponsive"
+          class="table table-hover"
+          style="width: 100%"
+        >
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Product ID</th>
+              <th>Quantity</th>
+              <th>Size</th>
+              <th>Amount</th>
+              <th>Change Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 0; i < orderList.length; i++) { %>
+            <tr></tr>
+
+            <tr>
+              <td
+                onclick="window.location.href='/merchant/orderedDetails/<%= orderList[i].orders.products.id %>'"
+                data-label="Order ID"
+                style="cursor: pointer"
+              >
+                <%= orderList[i].orders.products.orderCode %>
+              </td>
+              <td
+                onclick="window.location.href='/merchant/orderedDetails/<%= orderList[i].orders.products.id %>'"
+                data-label="Product ID"
+                class="md-none"
+                style="cursor: pointer"
+              >
+                <%= orderList[i].orders.products.productId %>
+              </td>
+              <td data-label="Quantity" class="text-danger">
+                <%= orderList[i].orders.products.items[0].quantity %>
+              </td>
+              <td data-label="Size" class="text-danger">
+                <%= orderList[i].orders.products.items[0].size %>
+              </td>
+              <td data-label="Amount" class="text-danger">
+                <%=
+                orderList[i].orders.products.amount*orderList[i].orders.products.items[0].quantity
+                %>
+              </td>
+              <td data-label="Status">
+                <% let
+                currentStatus=orderList[i].orders.products.currentStatus.currentStatus;
+                console.log(currentStatus+"fgdxgf"); const purchaseDate = new
+                Date(orderList[i].orders.products.status[orderList[i].orders.products.status.length-1].dateTimeOn);
+                const currentDate = new Date(); const daysPassed =
+                Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 *
+                24)); if (currentStatus === "usercancel" || currentStatus ===
+                "merchantCancel" || currentStatus === "adminCancel"||daysPassed
+                > 14) { %> <%=currentStatus%> <br /><br /><br />
+                <%}else if(currentStatus =="initiated"){ %>
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                  onclick="orderUpdate('Accepted', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Accept</button
+                ><br /><br /><br />
+                <button
+                  type="button"
+                  class="btn btn-gradient-danger btn-rounded btn-fw"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Cancel
+                </button>
+                <% }else if( currentStatus=="Accepted"){ %>
+                <button
+                  type="button"
+                  class="btn btn-gradient-danger btn-rounded btn-fw"
+                  onclick="orderUpdate('merchantCancel', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Cancel
+                </button>
+                <br /><br /><br />
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                  onclick="orderUpdate('Packed', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Packed</button
+                ><br /><br /><br />
+
+                <% } else if( currentStatus=="Packed"){ %>
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                  onclick="orderUpdate('Sented', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Sented
+                </button>
+                <% } else if( currentStatus=="Sented"){ %>
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                  onclick="orderUpdate('Completed', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  Completed</button
+                ><br /><br /><br />
+                <% } else if( currentStatus=="Completed"){ %> Completed <% }
+                else if( currentStatus=="Returned"){ %>
+                <button
+                  type="button"
+                  class="btn btn-gradient-primary btn-rounded btn-fw"
+                  onclick="orderUpdate('recievedBack', '<%= orderList[i]._id %>', '<%= orderList[i].orders.products.id %>', '<%= orderList[i].orders.products.items[0].size %>', '<%= orderList[i].orders.products.productId %>','<%=orderList[i].orders.products.items[0].quantity%>')"
+                >
+                  recievedBack</button
+                ><br /><br /><br />
+
+                <% } %>
+              </td>
+            </tr>
+
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <%- include('pagination')-%>
+    </div>
+  </div>
+</div>
+
+<!-- At the bottom of the HTML body -->
+<script>
+  function orderUpdate(data, oid, pid, size, pvd) {
+    console.log(data, oid, pid, size);
+    swal(`Are you sure to ${data}?`, {
+      buttons: {
+        yes: {
+          text: "Yes",
+          value: true,
+        },
+        no: {
+          text: "No",
+          value: false,
+        },
+      },
+    }).then((value) => {
+      if (value) {
+        fetch("/merchant/updateOrderStatus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            oid: oid,
+            pid: pid,
+            size: size,
+            pvd,
+            pvd,
+            orderStatus: data,
+          }),
+        })
+          .then((response) => {
+            if (response.status) {
+              swal(`Order ${data} successfully.`).then(() => {
+                window.location.reload();
+              });
+            }
+          })
+          .catch((error) => {
+            swal("Some error occurred: " + error);
+          });
+      }
+    });
+  }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
+<script type="text/javascript" src="/javascripts/tableToExcel.js"></script>
+<script src="https://unpkg.com/html-to-text@8.0.0/html-to-text.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+<script>
+  function salesReportPdf() {
+    var doc = new jsPDF("p", "pt", "letter");
+    var htmlstring = "";
+    var tempVarToCheckPageHeight = 0;
+    var pageHeight = 0;
+    pageHeight = doc.internal.pageSize.height;
+    var specialElementHandlers = {
+      // element with id of "bypass" - jQuery style selector
+      "#bypassme": function (element, renderer) {
+        // true = "handled elsewhere, bypass text extraction"
+        return true;
+      },
+    };
+    var margins = {
+      top: 150,
+      bottom: 60,
+      left: 20,
+      right: 20,
+      width: 900,
+    };
+    var y = 20;
+
+    doc.setLineWidth(2);
+    doc.setFontSize(20);
+    doc.text(250, (y = y + 30), "Fillik - Orders");
+    doc.autoTable({
+      html: "#datatables-reponsive",
+      startY: 70,
+      theme: "grid",
+      columnStyles: {
+        0: {
+          cellWidth: 120,
+        },
+        1: {
+          cellWidth: 120,
+        },
+        2: {
+          cellWidth: 120,
+        },
+        3: {
+          cellWidth: 130,
+        },
+        4: {
+          cellWidth: 120,
+        },
+        5: {
+          cellWidth: 140,
+        },
+      },
+
+      styles: {
+        minCellHeight: 40,
+        cellPadding: 10,
+        fontSize: 12,
+        valign: "middle",
+        halign: "center",
+        overflow: "linebreak",
+        fillColor: "#f8f9fa",
+        textColor: "#333",
+        lineWidth: 0.5,
+        lineColor: "#ccc",
+      },
+      headStyles: {
+        fillColor: "#f1f1f1",
+        textColor: "#333",
+        lineWidth: 0.5,
+        lineColor: "#ccc",
+        fontStyle: "bold",
+        fontSize: 14,
+        halign: "center",
+        valign: "middle",
+      },
+      alternateRowStyles: {
+        fillColor: "#fff",
+      },
+      bodyStyles: {
+        lineWidth: 0.5,
+        lineColor: "#ccc",
+      },
+      columnStyles: {
+        0: {
+          fontStyle: "bold",
+        },
+      },
+      didParseCell: function (data) {
+        // Fix for empty cells causing the table to collapse
+        if (typeof data.cell.raw === "undefined") {
+          data.cell.raw = "";
+        }
+      },
+      specialElementHandlers: specialElementHandlers,
+    });
+
+    console.log("pdf");
+    doc.save("Orders.pdf");
+  }
+
+  function salesReportExcel() {
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.table_to_sheet(
+      document.querySelector("#datatables-reponsive")
+    );
+
+    // Adjust column widths
+    ws["!cols"] = [
+      { wch: 20 }, // Customer Name
+      { wch: 10 }, // Order ID
+      { wch: 20 }, // Product Name
+      { wch: 10 }, // Quantity
+      { wch: 15 }, // Unit Price
+      { wch: 15 }, // Total Price
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+
+    // Save the Excel file
+    XLSX.writeFile(wb, "Sales Report.xlsx");
+  }
+</script>

@@ -130,17 +130,116 @@ module.exports = {
       next(error);
     }
   },
-
   getMerchant: async (req, res, next) => {
-    const merchantslist = await merchants.find().limit(10);
-    res.render("admin/merchants", {
-      title: "admin",
-      fullName: req.session.admin.fullName,
-      adminLoggedin: req.session.adminLoggedIn,
-      merchantslist,
-      author: "Admin#1233!",
-    });
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+      const merchantslist = await users
+        .find()
+        .skip(startIndex)
+        .limit(count)
+        .lean();
+
+      const totalMerchants = await Merchants.countDocuments();
+      const totalPages = Math.ceil(totalMerchants / count);
+
+      const endIndex = Math.min(count, totalMerchants - startIndex);
+      req.pagination = {
+        totalCount: totalMerchants,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      res.render("admin/merchants", {
+        title: "Merchants List",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        merchantslist,
+        pagination: req.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
   },
+  getBlockMerchant: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+
+      const merchantslist = await merchants
+        .find({ isActive: false })
+        .skip(startIndex)
+        .limit(count)
+        .lean();
+
+      const totalMerchants = await merchants.countDocuments({
+        isActive: false,
+      });
+      const totalPages = Math.ceil(totalMerchants / count);
+
+      const endIndex = Math.min(count, totalMerchants - startIndex);
+      req.pagination = {
+        totalCount: totalMerchants,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      res.render("admin/merchants", {
+        title: "Merchant List",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        merchantslist,
+        pagination: req.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getActiveMerchant: async (req, res, next) => {
+    try {
+      const count = parseInt(req.query.count) || 10;
+      const page = parseInt(req.query.page) || 1;
+      const startIndex = (page - 1) * count;
+
+      const merchantslist = await merchants
+        .find({ isActive: true })
+        .skip(startIndex)
+        .limit(count)
+        .lean();
+
+      const totalMerchants = await merchants.countDocuments();
+      const totalPages = Math.ceil(totalMerchants / count);
+
+      const endIndex = Math.min(count, totalMerchants - startIndex);
+      req.pagination = {
+        totalCount: totalMerchants,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      res.render("admin/merchants", {
+        title: "Merchant List",
+        fullName: req.session.admin.fullName,
+        adminLoggedin: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        merchantslist,
+        pagination: req.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   getLogin: (req, res, next) => {
     res.render("admin/signin2", {
       title: "admin",
@@ -440,6 +539,17 @@ module.exports = {
       title: "admin",
       fullName: req.session.admin.fullName,
       adminLoggedin: req.session.adminLoggedIn,
+      pagination: req.pagination,
+      author: "Admin#1233!",
+      orderList: req.orderList,
+    });
+  },
+  orderFilterList: async (req, res, next) => {
+    res.render("admin/orderListFilter", {
+      title: "admin",
+      fullName: req.session.admin.fullName,
+      adminLoggedin: req.session.adminLoggedIn,
+      pagination: req.pagination,
       author: "Admin#1233!",
       orderList: req.orderList,
     });

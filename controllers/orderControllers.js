@@ -1773,4 +1773,85 @@ module.exports = {
 
     next();
   },
+  adminStatusOrderList: async (req, res, next) => {
+    const count = parseInt(req.query.count) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * count;
+    const data = req.params.Data;
+
+    try {
+      const result = await Order.aggregate([
+        {
+          $facet: {
+            orders: [
+              {
+                $project: {
+                  _id: "$_id",
+                  products: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$products",
+                          as: "product",
+                          cond: { $eq: ["$$product.status", data] },
+                        },
+                      },
+                      in: {
+                        id: "$$this._id",
+                        orderCode: "$orderCode",
+                        productId: "$$this.productId",
+                        items: "$$this.items",
+                        currentStatus: {
+                          $arrayElemAt: ["$$this.status", -1],
+                        },
+                        status: "$status",
+                        amount: "$$this.actualRate",
+                        name: "$$this.name",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+            totalCount: [
+              {
+                $count: "totalCount",
+              },
+            ],
+          },
+        },
+        { $sort: { _id: 1 } },
+        { $skip: startIndex },
+        { $limit: count },
+      ]);
+
+      console.log(result);
+
+      const orderList = result[0].orders;
+      console.log(orderList);
+
+      const totalOrdersCount = result[0].totalCount[0].totalCount;
+
+      const totalPages = Math.ceil(totalOrdersCount / count);
+
+      const endIndex = Math.min(startIndex + count, totalOrdersCount);
+
+      req.orderList = orderList;
+
+      req.pagination = {
+        totalCount: totalOrdersCount,
+        totalPages: totalPages,
+        page: page,
+        count: count,
+        startIndex: startIndex,
+        endIndex: endIndex,
+      };
+      console.log(req.pagination);
+      next();
+    } catch (error) {
+      // Handle the error appropriately
+      console.error(error);
+      next(error);
+    }
+  },
 };

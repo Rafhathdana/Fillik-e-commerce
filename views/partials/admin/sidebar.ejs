@@ -18,7 +18,7 @@
                 <li class="nav-item"> <a class="nav-link" href="/admin/merchantList">All Merchants</a></li>
                 <li class="nav-item"> <a class="nav-link" href="/admin/merchantBlockedList">blocked Merchant</a></li>
                 <li class="nav-item"> <a class="nav-link" href="/admin/merchantActiveList">Active Merchant</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/search/:merchantId">Search Merchants</a></li>
+                <!-- <li class="nav-item"> <a class="nav-link" href="/admin/search/:merchantId">Search Merchants</a></li> -->
               </ul>
             </div>
           </li>
@@ -33,7 +33,7 @@
                 <li class="nav-item"> <a class="nav-link" href="/admin/userList">All Users</a></li>
                 <li class="nav-item"> <a class="nav-link" href="/admin/userBlockList">blocked Users</a></li>
                 <li class="nav-item"> <a class="nav-link" href="/admin/userActiveList">Active Users</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/search/:userId">Search User</a></li>
+                <!-- <li class="nav-item"> <a class="nav-link" href="/admin/search/:userId">Search User</a></li> -->
               </ul>
             </div>
           </li>
@@ -46,9 +46,9 @@
             <div class="collapse" id="products">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="/admin/productList">All Products</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">Search Products</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/productActiveList">Active Products</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/productBlockList">Active Products</a></li>
+                <!-- <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">Search Products</a></li> -->
+                <li class="nav-item"> <a class="nav-link" href="/admin/productList/true">Active Products</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/productList/false">Blocked Products</a></li>
               </ul>
             </div>
           </li>
@@ -62,10 +62,11 @@
             <div class="collapse" id="orders">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="/admin/orderList">All Orders</a></li> 
-                <li class="nav-item"> <a class="nav-link" href="/admin/searchOrder">Search Orders</a></li> 
-                <li class="nav-item"> <a class="nav-link" href="/admin/pendingOrderList">Pending Orders</a></li> 
-                <li class="nav-item"> <a class="nav-link" href="/admin/successOrderList">Success Orders</a></li> 
-                <li class="nav-item"> <a class="nav-link" href="/admin/returnedOrderList">Returned Orders</a></li> 
+                <!-- <li class="nav-item"> <a class="nav-link" href="/admin/searchOrder">Search Orders</a></li> 
+                 <li class="nav-item"> <a class="nav-link" href="/admin/pendingOrderList">Pending Orders</a></li>  -->
+                <!-- <li class="nav-item"> <a class="nav-link" href="/admin/orderList/usercancel">Cancelled Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/orderList/Completed">Success Orders</a></li> 
+                <li class="nav-item"> <a class="nav-link" href="/admin/orderList/Returned">Returned Orders</a></li>   -->
               </ul>
             </div>
           </li>

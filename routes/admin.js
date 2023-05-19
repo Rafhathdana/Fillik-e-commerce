@@ -47,8 +47,16 @@ router.get("/userList", adminVerify, adminController.getUser); //almost
 router.get("/userBlockList", adminVerify, adminController.getBlockUser); //almost
 router.get("/userActiveList", adminVerify, adminController.getActiveUser); //almost
 router.get("/merchantList", adminVerify, adminController.getMerchant); //almost
-router.get("/merchantBlockedList", adminVerify, adminController.getMerchant); //almost
-router.get("/merchantActiveList", adminVerify, adminController.getMerchant); //almost
+router.get(
+  "/merchantBlockedList",
+  adminVerify,
+  adminController.getBlockMerchant
+); //almost
+router.get(
+  "/merchantActiveList",
+  adminVerify,
+  adminController.getActiveMerchant
+); //almost
 router.get("/addcategory", adminVerify, filterController.getAddCategory); //almost
 router.get(
   "/viewcategory",
@@ -106,11 +114,24 @@ router.get(
   adminController.orderList
 );
 router.get(
+  "/orderList/:Data",
+  adminVerify,
+  orderControllers.adminStatusOrderList,
+  adminController.orderFilterList
+);
+router.get(
   "/productList",
   adminVerify,
   filterController.getAllCategory,
   productController.getAdminProductList
 );
+router.get(
+  "/productList/:type",
+  adminVerify,
+  filterController.getAllCategory,
+  productController.getAdminFilterProductList
+);
+
 router.get("/logout", adminController.logout);
 router.get("/addBanner", adminVerify, adminController.getAddBanner);
 router.post("/addBanner", adminVerify, adminController.postAddBanner);
