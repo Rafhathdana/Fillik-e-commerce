@@ -38,6 +38,7 @@
             let k = m + response.discountAmount;
             $("#mainTotal").html(`${k}`);
             $("#discountarea").addClass("d-none");
+            $("#discountReport").addClass("d-none");
             swal({
               icon: "error",
               title: "Oops..You have a USed this Code Enough Time!",
@@ -46,6 +47,7 @@
               timer: 5000,
             });
           } else if (response.getCode) {
+            $("#discountReport").removeClass("d-none");
             $("#discountReport").html(
               `<i class="fa fa-check"></i> Coupon ${response.code.couponCode} applied. Discount: ${response.discountAmount}`
             );
@@ -55,15 +57,21 @@
             let k = m - response.discountAmount;
             $("#mainTotal").html(`${k}`);
           } else {
-            let m = parseInt($("#discountCoupon").text());
-            let k = m + response.discountAmount;
+            let m = parseInt($("#discountCoupon").text()) || 0;
+            console.log(m + "df");
+            let r = response.discountAmount
+              ? response.discountAmount
+              : document.getElementById("mainTotal").textContent;
+            console.log(r);
+            let k = m + parseInt(r);
+            console.log(k + "rgd");
             $("#mainTotal").html(`${k}`);
             $("#discountarea").addClass("d-none");
-            parseInt($("#mainTotal").text());
+            $("#discountReport").addClass("d-none");
             swal({
               icon: "error",
               title: "Oops..You Type a Wrong Code!",
-              text: "Out Of Stock!",
+              text: "please type correct code",
               showConfirmButton: false,
               timer: 5000,
             });

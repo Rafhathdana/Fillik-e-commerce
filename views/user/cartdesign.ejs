@@ -74,16 +74,17 @@
                 </div>
               </td>
               <td class="column-5">
-                <i
-                  class="zmdi zmdi-delete"
-                  style="
-                    font-size: 24px;
-                    margin-right: -31px;
-                    margin-top: -10px;
-                    cursor: pointer;
-                  "
-                  onclick="deleteItemMainCart('<%=item._id%>', '')"
-                ></i>
+                <i class="zmdi zmdi-delete"
+                style="
+                  font-size: 24px;
+                  margin-right: -31px;
+                  margin-top: -10px;
+                  z-index: 9999;
+                  cursor: pointer;
+                "
+                onclick="deleteItemMainCart('<%= item._id %>', '<%= item.size %>')"
+             ></i>
+             
                 <div>
                   Rs<span id="producttotal<%= item.productId %>"
                     ><%= sum.toFixed(2) %></span

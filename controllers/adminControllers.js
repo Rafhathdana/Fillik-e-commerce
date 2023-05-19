@@ -241,7 +241,7 @@ module.exports = {
   },
 
   getLogin: (req, res, next) => {
-    res.render("admin/signin2", {
+    res.render("admin/signin", {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,

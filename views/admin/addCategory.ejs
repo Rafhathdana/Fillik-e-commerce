@@ -32,7 +32,12 @@
         <button type="submit" class="btn btn-rounded btn-primary">Add</button>
       </div>
       <% if(locals.categoryout) { %>
-      <div class="alert alert-danger mt-2" role="alert" style="width: '87%'">
+      <div
+        class="alert alert-danger mt-2"
+        timeout="4000"
+        role="alert"
+        style="width: '87%'"
+      >
         <%=categoryout %>
       </div>
       <% } %>

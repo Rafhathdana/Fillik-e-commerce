@@ -185,6 +185,25 @@ module.exports = {
       res.status(500).send({ success: false, message: "Error verifying user" });
     }
   },
+  mobileVerify: async (req, res, next) => {
+    const response = {};
+    try {
+      const newUser = await User.findOne({ mobile: req.body.mobile });
+      if (newUser) {
+        response.success = true;
+        res.status(200).send({
+          response,
+          success: true,
+          message: "User found",
+        });
+      } else {
+        res.status(500).send({ success: false, message: "No user found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ success: false, message: "Error verifying user" });
+    }
+  },
 
   sendOtp: async (req, res, next) => {
     try {

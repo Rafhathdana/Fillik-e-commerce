@@ -144,6 +144,7 @@ router.get("/forgetPassword", userauth, userController.forgetPassword);
 router.post("/emailOtp", userauth, userController.sendOtpEmail);
 
 router.post("/emailexists", userController.emailVerify);
+router.post("/mobileexists", userController.mobileVerify);
 router.delete("/deleteFromCart", userController.deleteItemCrt);
 router.post("/updateOrderStatus", verify, orderControllers.updateOrder);
 router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
