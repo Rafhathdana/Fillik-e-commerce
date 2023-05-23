@@ -52,11 +52,7 @@ router.get(
   filterController.getAllCategory,
   productController.getEditProduct
 );
-router.post(
-  "/editproduct/:Id",
-  merchantverify,
-  productController.postEditProduct
-);
+router.post("/editproduct/:Id", productController.postEditProduct);
 router.get("/editprofile", merchantverify, merchantController.getEditProfile);
 router.post("/editprofile", merchantverify, merchantController.postEditProfile);
 router.get("/logout", merchantController.logout);

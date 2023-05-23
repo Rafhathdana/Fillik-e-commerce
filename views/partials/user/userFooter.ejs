@@ -8,24 +8,26 @@
 
         <ul>
           <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Women </a>
+            <a
+              href="/postfilter?genderType=Womens&sorted=popularity"
+              class="stext-107 cl7 hov-cl1 trans-04"
+            >
+              Women
+            </a>
           </li>
 
           <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Men </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Shoes </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> Watches </a>
+            <a
+              href="/postfilter?genderType=Mens&sorted=popularity"
+              class="stext-107 cl7 hov-cl1 trans-04"
+            >
+              Men
+            </a>
           </li>
         </ul>
       </div>
 
-      <div class="col-sm-6 col-lg-3 p-b-50">
+      <!-- <div class="col-sm-6 col-lg-3 p-b-50">
         <h4 class="stext-301 cl0 p-b-30">Help</h4>
 
         <ul>
@@ -45,14 +47,14 @@
             <a href="#" class="stext-107 cl7 hov-cl1 trans-04"> FAQs </a>
           </li>
         </ul>
-      </div>
+      </div> -->
 
       <div class="col-sm-6 col-lg-3 p-b-50">
         <h4 class="stext-301 cl0 p-b-30">GET IN TOUCH</h4>
 
         <p class="stext-107 cl7 size-201">
-          Any questions? Let us know in store at 8th floor, 379 Hudson St, New
-          York, NY 10018 or call us on (+1) 96 716 6879
+          Any questions? Let us know in store at Fillik , palarivattam ,kochi or
+          call us on +91 8606875131
         </p>
 
         <div class="p-t-27">
@@ -117,20 +119,6 @@
           <img src="/images/icons/icon-pay-05.png" alt="ICON-PAY" />
         </a>
       </div>
-
-      <p class="stext-107 cl6 txt-center">
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-        Copyright &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        All rights reserved | Made with
-        <i class="fa fa-heart-o" aria-hidden="true"></i> by
-        <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp;
-        distributed by
-        <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-      </p>
     </div>
   </div>
 </footer>
@@ -190,17 +178,54 @@
 <!--===============================================================================================-->
 <script src="/user/vendor/sweetalert/sweetalert.min.js"></script>
 <script>
-  $(".js-addwish-b2").on("click", function (e) {
+  $(document).on("click", ".js-addwish-b2", function (e) {
     e.preventDefault();
   });
 
-  $(".js-addwish-b2").each(function () {
-    var nameProduct = $(this).parent().parent().find(".js-name-b2").html();
-    $(this).on("click", function () {
-      swal(nameProduct, "is added to wishlist !", "success");
+  $(document).on("click", ".js-addwish-b2", function () {
+    let but = $(this);
+    var productId = but.data("product-id");
+    var dta = $("#wishlist").attr("data-notify");
 
-      $(this).addClass("js-addedwish-b2");
-      $(this).off("click");
+    console.log(productId);
+    $.ajax({
+      url: "/wishlist",
+      method: "POST",
+      data: { productId: productId, type: "add" },
+      success: function (response) {
+        but.removeClass("js-addwish-b2");
+        but.addClass("js-addedwish-b2");
+        $("#wishlist").attr("data-notify", parseInt(dta) + 1);
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  });
+
+  $(document).on("click", ".js-addedwish-b2", function (e) {
+    e.preventDefault();
+  });
+  $(document).on("click", ".js-addedwish-b2", function () {
+    let but = $(this);
+    var productId = but.data("product-id");
+    console.log(productId);
+
+    var dta = $("#wishlist").attr("data-notify");
+
+    $.ajax({
+      url: "/wishlist",
+      method: "POST",
+      data: { productId: productId, type: "remove" },
+      success: function (response) {
+        console.log("hjjs");
+        but.removeClass("js-addedwish-b2");
+        but.addClass("js-addwish-b2");
+        $("#wishlist").attr("data-notify", parseInt(dta) - 1);
+      },
+      error: function (error) {
+        console.log(error);
+      },
     });
   });
 
@@ -213,10 +238,53 @@
       .html();
 
     $(this).on("click", function () {
-      swal(nameProduct, "is added to wishlist !", "success");
+      let but = $(this);
+      var productId = but.data("product-id");
+      var dta = $("#wishlist").attr("data-notify");
+      console.log(productId);
+      $.ajax({
+        url: "/wishlist",
+        method: "POST",
+        data: { productId: productId, type: "add" },
+        success: function (response) {
+          but.removeClass("js-addwish-detail");
+          but.addClass("js-addedwish-detail");
+          $("#wishlist").attr("data-notify", parseInt(dta) + 1);
+          swal(nameProduct, "is added to wishlist !", "success");
+        },
+        error: function (error) {
+          console.log(error);
+        },
+      });
+    });
+  });
 
-      $(this).addClass("js-addedwish-detail");
-      $(this).off("click");
+  $(".js-addedwish-detail").each(function () {
+    var nameProduct = $(this)
+      .parent()
+      .parent()
+      .parent()
+      .find(".js-name-detail")
+      .html();
+
+    $(this).on("click", function () {
+      let but = $(this);
+      var productId = but.data("product-id");
+      var dta = $("#wishlist").attr("data-notify");
+      console.log(productId);
+      $.ajax({
+        url: "/wishlist",
+        method: "POST",
+        data: { productId: productId, type: "remove" },
+        success: function (response) {
+          but.addClass("js-addwish-detail");
+          but.removeClass("js-addedwish-detail");
+          $("#wishlist").attr("data-notify", parseInt(dta) - 1);
+        },
+        error: function (error) {
+          console.log(error);
+        },
+      });
     });
   });
 

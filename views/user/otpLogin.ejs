@@ -297,7 +297,7 @@
       const mobileInput = document.getElementById("mobile").value;
 
       if (mobileInput) {
-        validateMobile(mobileInput)
+        validateMobile(mobileInput);
       } else {
         const alertDiv = $("#raf");
         alertDiv.text("Mobile not exist");
@@ -328,7 +328,7 @@
         console.log(data);
 
         if (data.success) {
-          sendOTP(mobileInput);
+          sendOTP(mobile);
         } else {
           return false;
         }

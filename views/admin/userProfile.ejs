@@ -1,31 +1,377 @@
-<div class="userheading">
-  Profile <%= userData.fullName %>
-  <div class="main-div">
-    <!-- CATEGORY -->
-    <div class="category">
-      <div class="flex">
-        <h1 class="categoryname">
-          Email :
-          <h3 class="categoryname"><%= userData.email %></h3>
-        </h1>
-        <!-- HTML code using EJS syntax -->
-      </div>
-      <div class="flex">
-        <h1 class="categoryname">
-          Mobile Number :
-          <h3 class="categoryname"><%= userData.mobile %></h3>
-        </h1>
-        <!-- HTML code using EJS syntax -->
-      </div>
-      <div class="flex">
-        <h1 class="categoryname">Full Name :</h1>
-        <h3 class="categoryname"><%= userData.fullName %></h3>
-        <!-- HTML code using EJS syntax -->
-      </div>
+<head>
+  <style>
+    .bio-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
 
-      <div class="action-box1">
-        <a class="action-text" href="/editprofile">Edit</a>
+    .bio-table td,
+    .bio-table th {
+      padding: 0.75rem;
+      border-bottom: 1px solid #dee2e6;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .bio-table th {
+      font-weight: 600;
+      background-color: #f5f5f5;
+    }
+
+    .bio-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .bio-table td:last-child {
+      text-align: right;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .table thead th {
+      border-top: none;
+      background-color: #f8f9fa;
+      font-weight: 400;
+    }
+
+    .table td,
+    .table th {
+      border: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 0;
+    }
+
+    .table th,
+    .table td {
+      padding: 0.75rem;
+      vertical-align: top;
+      border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody + tbody {
+      border-top: 2px solid #dee2e6;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+      border: 1px solid #dee2e6;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .bg-primary {
+      background-color: #007bff !important;
+    }
+
+    .text-white {
+      color: #fff !important;
+    }
+
+    /* Remove scrollbar */
+    ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+  </style>
+</head>
+<section style="background-color: #eee; width: 100%">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              User Profile
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <form id="myForm">
+              <img
+                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                alt="avatar"
+                class="rounded-circle img-fluid"
+                style="width: 150px"
+              />
+            </form>
+            <h5 class="my-3"><%= userData.fullName %></h5>
+          </div>
+        </div>
+        <div class="card mb-4 mb-lg-0">
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush rounded-3" role="tablist">
+              <li
+                class="list-group-item d-flex justify-content-left align-items-center list-group-item-action"
+                data-bs-toggle="list"
+                href="#address"
+                id="addressTog"
+                onclick="passwordTog.classList.remove('active')"
+                role="tab"
+              >
+                <i class="fab fa-github fa-lg" style="color: #333333"></i>
+                <p class="ml-5">Saved Address</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Full Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= userData.fullName %></p>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= userData.email %></p>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Mobile</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><%= userData.mobile %></p>
+              </div>
+            </div>
+            <hr />
+          </div>
+        </div>
+        <div class="justify-content-end d-flex">
+          <button
+            type="button"
+            id="toggle-button-editProfile"
+            class="btn btn-primary justify-content-end mr-0"
+          >
+            Edit
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <div class="row">
+    <div class="col-md-12 col-xl-10">
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="account" role="tabpanel">
+          <div class="card" id="card-personalInfo" style="display: none">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Private info</h5>
+            </div>
+            <div class="card-body">
+              <form action="/profile" method="post">
+                <div class="row">
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for="inputFirstName">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      class="form-control"
+                      value="<%= userData.fullName %>"
+                    />
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for="inputLastName">Email</label>
+                    <input
+                      type="text"
+                      name="email"
+                      class="form-control"
+                      value="<%= userData.email %>"
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for=" inputemail4">Phone</label>
+                    <input
+                      type="text"
+                      name="phone"
+                      class="form-control"
+                      value="<%= userData.mobile %>"
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                  Save changes
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="address" role="tablepanel">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Address Book</h5>
+            </div>
+          </div>
+
+          <% for (let i=0;i< userAddress.length;i++) { %>
+          <div id="abc" class="col-md-12">
+            <div class="card mt-5 mb-5">
+              <div class="card-header">
+                <h5 class="card-title mb-0">Address</h5>
+              </div>
+
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="tab_default_1">
+                        <!-- <span class="text-right">
+                                  <%= userAddress.typeOfAddress%>
+                                </span> -->
+                        <address>
+                          <div><%= userAddress[i].name %></div>
+                          <div><%= userAddress[i].mobile %></div>
+                          <div>
+                            <%= userAddress[i].houseName%> (h), <%=
+                            userAddress[i].place%> , (po)<%=
+                            userAddress[i].postOffice%>
+                          </div>
+                          <div>
+                            (C)<%= userAddress[i].city %> ,(D) <%=
+                            userAddress[i].district %>
+                          </div>
+                          <div><%= userAddress[i].state %></div>
+                          <div><%= userAddress[i].pinCode %></div>
+                        </address>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    id="deleteButton"
+                    data-bs-target="#deleteModal<%=userAddress[i]._id%>"
+                    onclick="deleteAddress('<%=userAddress[i]._id%>')"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+              <div id="ds"></div>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- <h1 class="h3 mb-3">Settings</h1> -->
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $("#toggle-button-editProfile").click(function () {
+      $("#card-personalInfo").toggle();
+    });
+  });
+
+  $("#changePassword").submit((e) => {
+    e.preventDefault();
+    $.ajax({
+      url: "/update-user-password",
+      data: $("#changePassword").serialize(),
+      method: "post",
+      success: (response) => {
+        if (response.message) {
+          swal("Error", "password is invalid", "error");
+        } else {
+          swal("Password Changed Successfully");
+          location.href = "/";
+        }
+      },
+    });
+  });
+
+  // Disable right-click context menu
+  document.addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+  });
+</script>
+
+<script>
+  function deleteAddress(id) {
+    swal({
+      text: "Are you sure?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((confirmed) => {
+      if (confirmed) {
+        fetch("/deleteAddress", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: id,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              swal("Done").then(() => {
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+              });
+            } else {
+              swal("Error");
+            }
+          })
+          .catch((error) => {
+            swal("Error deleting address: " + error);
+          });
+      }
+    });
+  }
+</script>
+
+<link class="js-stylesheet" href="/user/css/light.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>

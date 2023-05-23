@@ -221,7 +221,7 @@
                   <button
                     type="button"
                     class="btn btn-secondary btn-rounded btn-fw"
-                    onclick="addAddress(); this.disabled = true; this.innerHTML = 'Processing...'; setTimeout(function() { this.disabled = false; this.innerHTML = 'Add Address'; }, 5000);"
+                    onclick="addAddress(); this.disabled = true; this.innerHTML = 'Processing...'; var button = this; setTimeout(function() { button.disabled = false; button.innerHTML = 'Add Address'; }, 2000);"
                   >
                     Add Address
                   </button>
@@ -238,107 +238,108 @@
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
 <script>
-  function addAddress() {
-    var name = document.querySelector("#name").value;
-    var mobile = document.querySelector("#mobile").value;
-    var hname = document.querySelector("#hname").value;
-    var place = document.querySelector("#place").value;
-    var landMark = document.querySelector("#landMark").value;
-    var postOffice = document.querySelector("#postOffice").value;
-    var city = document.querySelector("#city").value;
-    var district = document.querySelector("#district").value;
-    var state = document.querySelector("#state").value;
-    var country = document.querySelector("#country").value;
-    var pinNumber = parseInt(document.querySelector("#pinNumber").value);
-    var confirmPinCode = parseInt(
-      document.querySelector("#confirmPinCode").value
-    );
-    var termsCheckbox = document.querySelector("#termsCheckbox");
-    console.log(pinNumber);
-    // Check that all required fields are filled out
-    if (
-      !name ||
-      !mobile ||
-      !hname ||
-      !place ||
-      !postOffice ||
-      !city ||
-      !landMark ||
-      !district ||
-      !state ||
-      !country ||
-      !pinNumber ||
-      !confirmPinCode
-    ) {
-      swal("Please fill out all required fields.");
-      console.log(
-        name,
-        mobile,
-        hname,
-        landMark,
-        place,
-        postOffice,
-        city,
-        district,
-        state,
-        country,
-        pinNumber,
-        confirmPinCode
+    function addAddress() {
+      var name = document.querySelector("#name").value;
+      var mobile = document.querySelector("#mobile").value;
+      var hname = document.querySelector("#hname").value;
+      var place = document.querySelector("#place").value;
+      var landMark = document.querySelector("#landMark").value;
+      var postOffice = document.querySelector("#postOffice").value;
+      var city = document.querySelector("#city").value;
+      var district = document.querySelector("#district").value;
+      var state = document.querySelector("#state").value;
+      var country = document.querySelector("#country").value;
+      var pinNumber = parseInt(document.querySelector("#pinNumber").value);
+      var confirmPinCode = parseInt(
+        document.querySelector("#confirmPinCode").value
       );
-      return;
-    }
+      var termsCheckbox = document.querySelector("#termsCheckbox");
+      console.log(pinNumber);
+      // Check that all required fields are filled out
+      if (
+        !name ||
+        !mobile ||
+        !hname ||
+        !place ||
+        !postOffice ||
+        !city ||
+        !landMark ||
+        !district ||
+        !state ||
+        !country ||
+        !pinNumber ||
+        !confirmPinCode
+      ) {
+        swal("Please fill out all required fields.");
+        console.log(
+          name,
+          mobile,
+          hname,
+          landMark,
+          place,
+          postOffice,
+          city,
+          district,
+          state,
+          country,
+          pinNumber,
+          confirmPinCode
+        );
+        return;
+      }
 
-    // Check that the mobile number is valid
-    if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-      swal("Please enter a valid mobile number.");
-      return;
-    }
+      // Check that the mobile number is valid
+      if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
+        swal("Please enter a valid mobile number.");
+        return;
+      }
 
-    // Check that the pin code is valid and matches the confirmed pin code
+      // Check that the pin code is valid and matches the confirmed pin code
 
-    if (pinNumber !== confirmPinCode) {
-      console.log(pinNumber, confirmPinCode);
-      swal("The pin codes you entered do not match.");
-      return;
-    }
+      if (pinNumber !== confirmPinCode) {
+        console.log(pinNumber, confirmPinCode);
+        swal("The pin codes you entered do not match.");
+        return;
+      }
 
-    // Check that the terms checkbox is checked
-    if (!termsCheckbox.checked) {
-      swal("Please accept the terms and conditions.");
-      return;
-    }
+      // Check that the terms checkbox is checked
+      if (!termsCheckbox.checked) {
+        swal("Please accept the terms and conditions.");
+        return;
+      }
 
-    fetch("/addAddress", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        mobile: mobile,
-        houseName: hname,
-        place: place,
-        landMark: landMark,
-        postOffice: postOffice,
-        city: city,
-        district: district,
-        state: state,
-        country: country,
-        pinCode: pinNumber,
-      }),
+      fetch("/addAddress", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      mobile: mobile,
+      houseName: hname,
+      place: place,
+      landMark: landMark,
+      postOffice: postOffice,
+      city: city,
+      district: district,
+      state: state,
+      country: country,
+      pinCode: pinNumber,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        swal("done").then(() => {
+          window.location.reload();
+        });
+      } else {
+        swal("error");
+      }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          swal("done");
-        } else {
-          swal("error");
-        }
-      })
-      .catch((error) => {
-        swal("Error adding product to cart: " + error);
-      });
-  }
+    .catch((error) => {
+      swal("Error adding product to cart: " + error);
+    });
 </script>
 <script>
   $(document).ready(function () {

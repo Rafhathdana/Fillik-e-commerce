@@ -32,8 +32,8 @@
             <tr>
               <th>Email</th>
               <th>Full Name</th>
-              <th>No. of Orders</th>
-              <th>Complaints</th>
+              <th>Outlet Name</th>
+              <th>Reg N.O</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -42,12 +42,8 @@
             <tr>
               <td><%= merchantslist[i].email %></td>
               <td><%= merchantslist[i].brandName %></td>
-              <td>0</td>
-              <td>
-                <div class="complaint-box">
-                  <span class="complaint-number">2</span>
-                </div>
-              </td>
+              <td><%= merchantslist[i].outletName %></td>
+              <td><%= merchantslist[i].regNumber %></td>
               <td>
                 <div class="d-flex">
                   <% if(merchantslist[i].isActive){%>

@@ -7,7 +7,7 @@ const orderControllers = require("../controllers/orderControllers");
 const productController = require("../controllers/productController");
 const userControllers = require("../controllers/userControllers");
 const merchantControllers = require("../controllers/merchantControllers");
-
+const addressControllers = require("../controllers/addressControllers");
 function adminAuth(req, res, next) {
   if (req.session && req.session.admin && req.session.adminLoggedIn) {
     res.redirect("/admin/home");
@@ -101,7 +101,11 @@ router.post(
   adminVerify,
   adminController.statusMerchantUpdate
 );
-router.get("/userprofile/:userId", adminVerify, adminController.getUserProfile);
+router.get(
+  "/userprofile/:userId",
+  adminVerify,
+  adminController.getUserProfile
+);
 router.get(
   "/merchantprofile/:userId",
   adminVerify,

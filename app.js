@@ -3,7 +3,7 @@ var createError = require("http-errors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const session = require("express-session");
 const cache = require("node-cache");
 const mongoose = require("mongoose");
@@ -38,8 +38,8 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 app.use("/", usersRouter);
 app.use("/merchant/", merchantRouter);
 app.use("/admin/", adminRouter);

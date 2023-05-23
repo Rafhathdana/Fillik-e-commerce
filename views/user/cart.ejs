@@ -218,8 +218,6 @@
         method: "POST",
         success: function (response) {
           $("#fullCart").html(response);
-          var cartcount = parseInt($("#cartvalue").attr("data-notify")) - 1;
-          $(".cartvalue").attr("data-notify", cartcount);
         },
         error: function (xhr, status, error) {
           console.log(error);

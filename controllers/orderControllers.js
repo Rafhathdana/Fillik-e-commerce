@@ -305,25 +305,16 @@ module.exports = {
       res.redirect("/SomethingWentWrong");
     }
   },
-
   getOrdersList: async (req, res, next) => {
     try {
       console.log(req.params.id);
-      const userOrdersList = await Order.aggregate([
-        {
-          $match: {
-            _id: new mongoose.Types.ObjectId(req.params.id),
-          },
-        },
-        {
-          $lookup: {
-            from: "products",
-            localField: "products.productId",
-            foreignField: "_id",
-            as: "productsdetail",
-          },
-        },
-      ]);
+      const userOrdersList = await Order.findOne({
+        _id: new mongoose.Types.ObjectId(req.params.id),
+      }).populate({
+        path: "products.productId",
+        select: "images",
+        model: "Product",
+      });
 
       req.ordersList = userOrdersList;
       next();
@@ -332,6 +323,7 @@ module.exports = {
       res.status(500).json({ message: "Server error" });
     }
   },
+
   getUserOrdersList: async (req, res, next) => {
     try {
       const count = parseInt(req.query.count) || 10;

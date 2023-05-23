@@ -427,7 +427,7 @@
         event.preventDefault();
       });
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       function insertImage() {
         const input = document.createElement("input");
@@ -437,7 +437,7 @@
         input.addEventListener("change", handleFileSelection);
         input.click();
       }
-
+    
       function handleFileSelection(event) {
         const file = event.target.files[0];
         if (file) {
@@ -449,14 +449,35 @@
             cancelButtonText: "Cancel",
           }).then((result) => {
             if (result.isConfirmed) {
-              document.getElementById("myForm").submit();
+              const formData = new FormData();
+              formData.append("file", file);
+    
+              fetch("/changeprofile", {
+                method: "POST",
+                body: formData,
+              })
+                .then((response) => {
+                  // Handle the response from the server
+                  if (response.ok) {
+                    // Successful response
+                    // You can show a success message or perform any other action
+                    console.log("Image changed successfully");
+                  } else {
+                    // Error response
+                    console.log("Failed to change image");
+                  }
+                })
+                .catch((error) => {
+                  // Handle any errors that occur during the AJAX request
+                  console.log("An error occurred:", error);
+                });
             }
           });
         }
       }
-
+    
       function deleteAddress(id) {
-        swal({
+        Swal.fire({
           text: "Are you sure?",
           icon: "warning",
           buttons: true,
@@ -475,21 +496,22 @@
               .then((response) => response.json())
               .then((data) => {
                 if (data.success) {
-                  swal("Done").then(() => {
+                  Swal.fire("Done").then(() => {
                     setTimeout(() => {
                       window.location.reload();
                     }, 2000);
                   });
                 } else {
-                  swal("Error");
+                  Swal.fire("Error");
                 }
               })
               .catch((error) => {
-                swal("Error deleting address: " + error);
+                Swal.fire("Error deleting address: " + error);
               });
           }
         });
       }
     </script>
+    
   </main>
 </div>

@@ -20,6 +20,7 @@
                     class="MagicZoom productsideImg"
                     src="/images/productImages/<%= productItem[0].images[i] %>"
                     id="imgView"
+                    style="height: 100px; width: 50px"
                   />
                   <% } %>
                 </div>
@@ -29,14 +30,14 @@
                 style="height: 450px; width: 300px"
               >
                 <a
-                  href="/images/productImages/<%= productItem[0].images[0] %>"
+                  href="/images/productImages/<%= productItem[0].images[0]%>"
                   class="MagicZoom"
                   data-options="zoomPosition: inner"
                 >
                   <img
                     style="height: 450px; width: 300px"
                     class="productImg"
-                    src="/images/productImages/<%= productItem[0].images[0] %>"
+                    src="/images/productImages/<%= productItem[0].images[0]%>"
                     alt=""
                 /></a>
               </div>
@@ -124,15 +125,23 @@
               </div>
             </div>
           </div>
-
+      
           <!--  -->
           <div class="flex-w flex-m p-l-100 p-t-40 respon7">
             <div class="flex-m bor9 p-r-10 m-r-11">
-              <a
+           
+          <% if(wishlist[productItem[0]._id]){ %>
+            <a
                 href="#"
                 class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
+                data-product-id="<%= productItem[0]._id %>"
                 data-tooltip="Add to Wishlist"
-              >
+              > <% }else{ %>  <a
+                href="#"
+                class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addedwish-detail tooltip100"
+                data-product-id="<%= productItem[0]._id %>"
+                data-tooltip="Add to Wishlist"
+              >  <%   } %>
                 <i class="zmdi zmdi-favorite"></i>
               </a>
             </div>
@@ -383,7 +392,7 @@
     <!-- Slide2 -->
     <div class="wrap-slick2">
       <div class="slick2">
-        <% for (let i = locals.startIndex; i < locals.endIndex; i++) { %>
+        <% for (let i = 0; i < locals.endIndex; i++) { %>
         <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
           <!-- Block2 -->
           <div class="block2">

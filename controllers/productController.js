@@ -7,6 +7,9 @@ const bcrypt = require("bcrypt");
 const { response } = require("../app");
 const multer = require("multer");
 const mongoose = require("mongoose");
+const {
+  Types: { ObjectId },
+} = require("mongoose");
 module.exports = {
   getProductList: async (req, res, next) => {
     try {
@@ -241,41 +244,74 @@ module.exports = {
   },
   postEditProduct: async (req, res, next) => {
     try {
-      const { id } = req.query;
-      console.log(req.params.Id);
-      console.log(req.body.name);
-      console.log(req.body);
-      const updatedProduct = {
-        name: req.body.name,
-        description: req.body.description,
-        category: req.body.category,
-        colour: req.body.colour,
-        pattern: req.body.pattern,
-        orginalPrice: parseInt(req.body.orginalPrice),
-        sellerPrice: parseInt(req.body.sellerPrice),
-        ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
-        genderType: req.body.genderType,
-        Quantity: {
-          small: parseInt(req.body.small),
-          medium: parseInt(req.body.medium),
-          large: parseInt(req.body.large),
-          extraLarge: parseInt(req.body.extraLarge),
+      const id = req.params.Id;
+      console.log(id);
+      const images = [];
+      let inumb = 0;
+      const productcode = await Product.findById(id).select("productcode");
+      const filePath = `${__dirname}/../public/images/productImages/`;
+      console.log(filePath);
+      console.log(productcode);
+
+      var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, filePath);
         },
-      };
+        filename: function (req, file, cb) {
+          const originalName = file.originalname;
+          const fileNameParts = originalName.split(".");
+          const fileExtension = fileNameParts[fileNameParts.length - 1];
+          const fileName = `product-${productcode}-${inumb}.${fileExtension}`;
+          console.log(productcode);
+          images.push(fileName);
+          inumb++;
+          cb(null, fileName);
+        },
+      });
 
-      // update the product with the new data
-      const updatedProductDoc = await Product.findByIdAndUpdate(
-        req.params.Id,
-        updatedProduct
-      );
+      const upload = multer({ storage });
 
-      console.log(updatedProductDoc);
-      res.redirect("/merchant/home");
+      // use upload.array instead of upload.single
+      upload.array("images", 10)(req, res, async (err) => {
+        if (err) {
+          console.error(err);
+          res.redirect("/merchant/signup");
+          return;
+        }
+
+        console.log(req.body.name);
+        console.log(req.body);
+        const updatedProduct = {
+          name: req.body.name,
+          description: req.body.description,
+          category: req.body.category,
+          colour: req.body.colour,
+          pattern: req.body.pattern,
+          orginalPrice: parseInt(req.body.orginalPrice),
+          sellerPrice: parseInt(req.body.sellerPrice),
+          ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
+          genderType: req.body.genderType,
+          Quantity: {
+            small: parseInt(req.body.small),
+            medium: parseInt(req.body.medium),
+            large: parseInt(req.body.large),
+            extraLarge: parseInt(req.body.extraLarge),
+          },
+        };
+        console.log(id);
+        const updatedProductDoc = await Product.findByIdAndUpdate(
+          { _id: new mongoose.Types.ObjectId(id) },
+          updatedProduct
+        );
+        console.log(updatedProductDoc);
+        res.redirect("/merchant/login");
+      });
     } catch (error) {
-      console.log(error);
-      res.redirect("/merchant/editproduct/id");
+      console.log(error + "hai");
+      res.redirect("/merchant/signup");
     }
   },
+
   //admin
   getAdminProductList: async (req, res, next) => {
     try {
@@ -527,6 +563,7 @@ module.exports = {
           productsList,
           pagination,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           category: req.category,
           colour: req.colour,
           pattern: req.pattern,
@@ -538,6 +575,7 @@ module.exports = {
           loggedin: false,
           productsList,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           pagination, // add pagination to the render parameters
           category: req.category,
           colour: req.colour,
@@ -611,6 +649,7 @@ module.exports = {
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           productItem,
           productsList,
           count,
@@ -624,6 +663,7 @@ module.exports = {
           title: "Users List",
           loggedin: false,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           productItem,
           productsList,
           count,

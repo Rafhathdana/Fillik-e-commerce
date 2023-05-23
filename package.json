@@ -20,6 +20,7 @@
     "express-ejs-layouts": "^2.5.1",
     "express-fileupload": "^1.4.0",
     "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
     "http-errors": "~1.6.3",
     "moment": "^2.29.4",
     "mongoose": "^7.0.3",

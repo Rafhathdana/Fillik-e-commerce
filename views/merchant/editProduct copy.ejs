@@ -22,7 +22,7 @@
       <div class="col-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <form id="myForm" method="POST" enctype="multipart/form-data">
+            <form id="myForm" method="POST">
               <p class="text-danger" id="message"></p>
               <div class="form-group">
                 <label for="name">Name of the Product</label>
@@ -238,35 +238,119 @@
                   class="form-control"
                   id="moreinfo"
                   name="moreinfo"
+                  value="<%= productEdit[0].moreinfo %>"
                   rows="4"
-                >
- <%= productEdit[0].moreinfo %></textarea
-                >
+                ></textarea>
               </div>
               <div class="form-group">
-                <% for(let i=1;i<= productEdit[0].images.length;i++){%>
-                <label class="block mt-4 text-sm">
+                <!-- <label class="block mt-4 text-sm">
                   <img
-                    src="/images/productImages/<%=productEdit[0].images[i-1]%>"
+                    src="/images/upload-icon.png"
                     alt=""
                     style="width: 100px; height: auto"
-                    id="view<%=i%>"
+                    id="view1"
                   />
                   <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
                   <input
                     class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                    placeholder="image<%=i%>"
+                    placeholder="image1"
                     type="file"
                     name="images[]"
-                    id="image<%=i%>"
+                    id="image1"
                     required
-                    onchange="previewImage(event, 'view<%=i%>')"
+                  />
+                </label> -->
+                <!-- <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view2"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image2"
+                    type="file"
+                    name="images[]"
+                    id="image2"
+                    required
                   />
                 </label>
-                <% } %>
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view3"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image3"
+                    type="file"
+                    name="images[]"
+                    id="image3"
+                    required
+                  />
+                </label>
+                <label class="block mt-4 text-sm">
+                  <img
+                    src="/images/upload-icon.png"
+                    alt=""
+                    style="width: 100px; height: auto"
+                    id="view4"
+                  />
+                  <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
+                  <input
+                    class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                    placeholder="image4"
+                    type="file"
+                    name="images[]"
+                    id="image4"
+                    required
+                  />
+                </label> -->
               </div>
-              <!-- in case of file uploading use in above form as enctype="multipart/form-data" -->
-
+              <!-- in case of file uploading use in above form as enctype="multipart/form-data"
+                 <div class="form-group">
+                  <label class="form-label categoryname" for="image-input"
+                    >Main Image</label
+                  >
+                  <div class="form-file">
+                    <input
+                      type="file"
+                      class="form-file-input"
+                      id="images"
+                      name="images"
+                      accept="image/*"
+                      multiple
+                      onchange="previewImages(event)"
+                    />
+                    <label class="form-file-label" for="images">
+                      <span class="form-file-text">Choose a file...</span>
+                      <span class="form-file-button">Browse</span>
+                    </label>
+                  </div>
+                </div>
+  
+                <div id="preview-container" class="row gx-3 mt-5"></div>
+                <template id="image-preview-template">
+                  <div class="col-md-2">
+                    <div class="raf">
+                      <img class="raf-img-top" src="" alt="" />
+                      <div class="raf-body">
+                        <button
+                          type="button"
+                          class="btn1 btn-sm"
+                          onclick="removeImage(event)"
+                        >
+                          X
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </template> -->
               <button
                 type="submit"
                 id="button"
@@ -287,28 +371,6 @@
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
 <script>
-  function editProduct() {
-    let name = document.getElementById("name").value;
-    const formData = new FormData();
-    formData.append("name", name);
-    fetch("/merchant/editproduct/<%=productEdit[0]._id%>", {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((response) => {
-        alert("RES");
-        return response.json(); // get the response body
-      })
-      .then((data) => {
-        if (data.success) {
-          swal("done", success);
-        }
-      })
-      .catch((err) => alert(err));
-  }
   $(document).ready(function () {
     $.validator.addMethod(
       "noSpecialChars",
@@ -470,22 +532,11 @@
         }
       },
     });
-  });
-</script>
-<script>
-  function previewImage(event, viewId) {
-    const file = event.target.files[0];
-    const viewElement = document.getElementById(viewId);
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        viewElement.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // Reset the image source to the default icon
-      viewElement.src = "/images/upload-icon.png";
-    }
-  }
+    $.validator.addMethod(
+      "required",
+      $.validator.methods.required,
+      "Please agree to the Terms & Conditions"
+    );
+  });
 </script>

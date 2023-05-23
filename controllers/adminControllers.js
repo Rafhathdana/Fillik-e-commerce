@@ -2,6 +2,8 @@ var Admin = require("../models/adminSchema");
 const mongoose = require("mongoose");
 var users = require("../models/userSchema");
 var merchants = require("../models/merchantSchema");
+var Address = require("../models/addressSchema");
+const Order = require("../models/orderSchema");
 const otp = require("../config/otp");
 const multer = require("multer");
 const path = require("path");
@@ -32,12 +34,38 @@ module.exports = {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
       const startIndex = (page - 1) * count;
+
       const usersList = await users.find().skip(startIndex).limit(count).lean();
 
       const totalUsers = await users.countDocuments();
       const totalPages = Math.ceil(totalUsers / count);
 
+      const userIds = usersList.map((user) => user._id); // Get an array of user IDs
+
+      const orderCounts = await Order.aggregate([
+        {
+          $match: {
+            userId: { $in: userIds }, // Match orders with the user IDs
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            count: { $sum: 1 }, // Calculate the count of orders for each user
+          },
+        },
+      ]);
+
+      // Add the order count to each user in the usersList array
+      usersList.forEach((user) => {
+        const orderCount = orderCounts.find((count) =>
+          count._id.equals(user._id)
+        );
+        user.orderCount = orderCount ? orderCount.count : 0;
+      });
+
       const endIndex = Math.min(count, totalUsers - startIndex);
+
       req.pagination = {
         totalCount: totalUsers,
         totalPages: totalPages,
@@ -46,6 +74,7 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
+
       res.render("admin/users", {
         title: "Users List",
         fullName: req.session.admin.fullName,
@@ -58,6 +87,7 @@ module.exports = {
       next(error);
     }
   },
+
   getBlockUser: async (req, res, next) => {
     try {
       const count = parseInt(req.query.count) || 10;
@@ -72,6 +102,29 @@ module.exports = {
 
       const totalUsers = await users.countDocuments({ isActive: false });
       const totalPages = Math.ceil(totalUsers / count);
+      const userIds = usersList.map((user) => user._id); // Get an array of user IDs
+
+      const orderCounts = await Order.aggregate([
+        {
+          $match: {
+            userId: { $in: userIds }, // Match orders with the user IDs
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            count: { $sum: 1 }, // Calculate the count of orders for each user
+          },
+        },
+      ]);
+
+      // Add the order count to each user in the usersList array
+      usersList.forEach((user) => {
+        const orderCount = orderCounts.find((count) =>
+          count._id.equals(user._id)
+        );
+        user.orderCount = orderCount ? orderCount.count : 0;
+      });
 
       const endIndex = Math.min(count, totalUsers - startIndex);
       req.pagination = {
@@ -108,6 +161,29 @@ module.exports = {
 
       const totalUsers = await users.countDocuments();
       const totalPages = Math.ceil(totalUsers / count);
+      const userIds = usersList.map((user) => user._id); // Get an array of user IDs
+
+      const orderCounts = await Order.aggregate([
+        {
+          $match: {
+            userId: { $in: userIds }, // Match orders with the user IDs
+          },
+        },
+        {
+          $group: {
+            _id: "$userId",
+            count: { $sum: 1 }, // Calculate the count of orders for each user
+          },
+        },
+      ]);
+
+      // Add the order count to each user in the usersList array
+      usersList.forEach((user) => {
+        const orderCount = orderCounts.find((count) =>
+          count._id.equals(user._id)
+        );
+        user.orderCount = orderCount ? orderCount.count : 0;
+      });
 
       const endIndex = Math.min(count, totalUsers - startIndex);
       req.pagination = {
@@ -135,13 +211,13 @@ module.exports = {
       const count = parseInt(req.query.count) || 10;
       const page = parseInt(req.query.page) || 1;
       const startIndex = (page - 1) * count;
-      const merchantslist = await users
+      const merchantslist = await merchants
         .find()
         .skip(startIndex)
         .limit(count)
         .lean();
 
-      const totalMerchants = await Merchants.countDocuments();
+      const totalMerchants = await merchants.countDocuments();
       const totalPages = Math.ceil(totalMerchants / count);
 
       const endIndex = Math.min(count, totalMerchants - startIndex);
@@ -241,7 +317,7 @@ module.exports = {
   },
 
   getLogin: (req, res, next) => {
-    res.render("admin/signin", {
+    res.render("admin/signin2", {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,
@@ -500,12 +576,16 @@ module.exports = {
   getUserProfile: async (req, res, next) => {
     try {
       const datainuser = await users.findById(req.params.userId);
+      req.userAddressess = await Address.find({
+        userId: new mongoose.Types.ObjectId(req.params.userId),
+      });
       res.render("admin/userProfile", {
         title: "profile",
         fullName: req.session.admin.fullName,
         adminLoggedin: req.session.adminLoggedIn,
         author: "Admin#1233!",
         userData: datainuser,
+        userAddress: req.userAddressess,
       });
     } catch (err) {
       console.error(err);
@@ -625,7 +705,7 @@ module.exports = {
       const totalPages = Math.ceil((await Banner.countDocuments()) / count);
       const startIndex = (page - 1) * count;
       const totalCount = await Banner.countDocuments();
-      const endIndex = Math.min(startIndex + count, totalCount);
+      const endIndex = Math.min(count, totalCount - startIndex);
       const pagination = {
         totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
         totalPages: totalPages,

@@ -5,11 +5,14 @@ var Products = require("../models/productSchema");
 var filterproduct = require("../models/filterSchema");
 var Cart = require("../models/cartSchema");
 const bcrypt = require("bcrypt");
-const { response } = require("../app");
+const { response, map } = require("../app");
 const otp = require("../config/otp");
 const mongoose = require("mongoose");
 const Banner = require("../models/bannersSchema");
 const emailconnect = require("../config/emailconnect");
+const Wishlist = require("../models/wishlistSchema");
+const fs = require("fs");
+const { productList } = require("./productController");
 module.exports = {
   getSignUp: (req, res, next) => {
     res.render("user/signup", {
@@ -60,7 +63,7 @@ module.exports = {
         .limit(count)
         .lean();
 
-      const endIndex = Math.min(startIndex + count, totalCount);
+      const endIndex = Math.min(count, totalCount - startIndex);
       const pagination = {
         totalCount: totalCount, // change this to `totalCount` instead of `totalProductsCount`
         totalPages: totalPages,
@@ -76,6 +79,8 @@ module.exports = {
           loggedin: req.session.userLoggedIn,
           productsList,
           pagination, // add pagination to the render parameters
+          wishlist: req.wishlist,
+          cartItems: req.cartItems,
           category,
           colour,
           pattern,
@@ -87,6 +92,7 @@ module.exports = {
           loggedin: false,
           productsList,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           pagination, // add pagination to the render parameters
           category,
           colour,
@@ -395,7 +401,7 @@ module.exports = {
       const totalCount = await Products.countDocuments(filter);
       const totalPages = Math.ceil(totalCount / count);
       const startIndex = (page - 1) * count;
-      const endIndex = Math.min(startIndex + count, totalCount);
+      const endIndex = Math.min(count, totalCount - startIndex);
 
       const categories = await filterproduct.aggregate([
         {
@@ -486,40 +492,7 @@ module.exports = {
       next(error);
     }
   },
-  cachePostCart: async (req, res, next) => {
-    try {
-      const place = req.body.productId + req.body.size;
-      const placeData = cache.get(place) || {};
 
-      let cartItem;
-      if (!placeData.productId) {
-        cartItem = {
-          productId: req.body.productId,
-          quantity: req.body.quantity || 1,
-          size: req.body.size,
-        };
-        console.log(cartItem);
-        console.log(req.body.productId + " added to cart");
-      } else {
-        cartItem = placeData;
-        cartItem.quantity = req.body.quantity || cartItem.quantity + 1;
-        console.log(cartItem);
-        console.log(req.body.productId + " quantity increased in cart");
-      }
-
-      cache.set(place, cartItem);
-      console.log("Cart updated in cache");
-
-      res.status(200).send({
-        success: true,
-        message: " successfull",
-      });
-    } catch (error) {
-      console.error("Error updating cart in cache:", error);
-      res.sendStatus(500);
-      next(error);
-    }
-  },
   postAddCart: async (req, res, next) => {
     try {
       const userId = req.session.user._id;
@@ -546,6 +519,51 @@ module.exports = {
       return res.sendStatus(500);
     }
   },
+  postAddWishList: async (req, res, next) => {
+    try {
+      const userId = req.session.user._id;
+      const productId = req.body.productId;
+      const type = req.body.type;
+      console.log(productId);
+      console.log(type);
+      if (!productId || !type) {
+        throw new Error("Missing required parameters");
+      }
+
+      let wishlist;
+      const wishlistExists = await Wishlist.exists({
+        userId: userId,
+        productId: productId,
+      });
+      if (type === "add") {
+        if (!wishlistExists) {
+          wishlist = await Wishlist.create({
+            userId: userId,
+            productId: productId,
+          });
+          console.log("fesdcds");
+        }
+      } else if (type === "remove" && wishlistExists) {
+        wishlist = await Wishlist.findOneAndDelete({
+          userId: userId,
+          productId: productId,
+        }).exec();
+      }
+
+      if (wishlist) {
+        res.status(200).json({
+          success: true,
+          message: "Successfully updated wishlist",
+        });
+      } else {
+        throw new Error("Unable to update wishlist");
+      }
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  },
+
   getUserCart: async (req, res, next) => {
     try {
       let items = await Cart.aggregate([
@@ -581,49 +599,28 @@ module.exports = {
       next(error);
     }
   },
-  getCartLocal: async (req, res, next) => {
-    const cart = cache.mget(cache.keys()) || {};
-    const items = [];
-
-    for (const key in cart) {
-      const item = cart[key];
-      try {
-        console.log(item.productId);
-        console.log(item.quantity);
-        const product = await Products.findOne(
-          {
-            _id: new mongoose.Types.ObjectId(item.productId),
-          },
-          {
-            images: 1,
-            name: 1,
-            ourPrice: 1,
-            orginalPrice: 1,
-            _id: 0,
-          }
-        );
-        console.log(product);
-        if (product) {
-          items.push({
-            productId: item.productId,
-            images: product.images,
-            name: product.name,
-            ourPrice: product.ourPrice,
-            orginalPrice: product.orginalPrice,
-            size: item.size,
-            quantity: item.quantity,
-          });
-        }
-      } catch (error) {
-        console.log("error in finding product: ", error);
-      }
+  getUserWishlist: async (req, res, next) => {
+    try {
+      const userId = req.session.user._id;
+      const wishlist = await Wishlist.find({
+        userId: new mongoose.Types.ObjectId(userId),
+      });
+      console.log("hajiks");
+      const items = wishlist.reduce((acc, element) => {
+        acc[element.productId] = true;
+        return acc;
+      }, {});
+      console.log(items);
+      req.wishlist = items;
+      next();
+    } catch (error) {
+      next(error);
     }
-    req.cartItems = items;
-    next();
   },
   getCartVariableLocal: async (req, res, next) => {
-    const cart = cache.mget(cache.keys()) || {};
-    const items = [];
+    const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
+    const cart = cache.mget(cartKeys) || {};
+    const cartItems = [];
 
     for (const key in cart) {
       const item = cart[key];
@@ -642,7 +639,7 @@ module.exports = {
         );
         console.log(product);
         if (product) {
-          items.push({
+          cartItems.push({
             productId: item.productId,
             images: product.images,
             name: product.name,
@@ -657,8 +654,7 @@ module.exports = {
       }
     }
 
-    req.cartItems = items;
-    console.log(req.cartItems);
+    req.cartItems = cartItems;
 
     res.render("user/sidecart", {
       title: "cart List",
@@ -667,6 +663,7 @@ module.exports = {
       noShow: true,
     });
   },
+
   getVariableCart: async (req, res, next) => {
     let items = await Cart.aggregate([
       {
@@ -801,7 +798,7 @@ module.exports = {
       console.log(totalCount);
 
       const startIndex = (page - 1) * count;
-      const endIndex = Math.min(startIndex + count, totalCount);
+      const endIndex = Math.min(count, totalCount - startIndex);
       const pagination = {
         totalCount: totalCount,
         totalPages: totalPages,
@@ -817,6 +814,7 @@ module.exports = {
           loggedin: req.session.userLoggedIn,
           productsList,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           pagination,
           banner: req.banner,
           category: req.category,
@@ -830,6 +828,7 @@ module.exports = {
           loggedin: false,
           productsList,
           cartItems: req.cartItems,
+          wishlist: req.wishlist,
           pagination,
           banner: req.banner,
           category: req.category,
@@ -850,6 +849,8 @@ module.exports = {
         fullName: req.session.user.fullName,
         loggedin: req.session.userLoggedIn,
         ordersList: req.ordersList,
+        cartItems: req.cartItems,
+        wishlist: req.wishlist,
         pagination: req.pagination,
       });
     } catch (error) {
@@ -858,12 +859,14 @@ module.exports = {
   },
   OrdersList: async (req, res, next) => {
     try {
-      console.log(req.ordersList[0].productsdetail[0].images[0], "rafeeq");
+      console.log(req.ordersList, "rafeeq");
       res.render("user/ordersView", {
         title: "Users List",
         fullName: req.session.user.fullName,
         loggedin: req.session.userLoggedIn,
-        ordersList: req.ordersList[0],
+        ordersList: req.ordersList,
+        cartItems: req.cartItems,
+        wishlist: req.wishlist,
       });
     } catch (error) {
       next(error);
@@ -878,9 +881,8 @@ module.exports = {
         });
         console.log(`${result.deletedCount} item(s) deleted from cart`);
       } else {
-        console.log(req.body);
-        const place = req.body.id + req.body.size;
-        console.log(place);
+        console.log(req.body.id);
+        const place = "cart:" + req.body.id + req.body.size;
         cache.del(place);
         console.log(`Item at place ${place} deleted from cache`);
       }
@@ -889,28 +891,29 @@ module.exports = {
       });
     } catch (error) {
       next(error);
-      res.status(201).send({ success: false });
+      res.status(500).send({ success: false });
     }
   },
   signinconvert: async (req, res, next) => {
     try {
       const userId = req.session.user._id;
-      const cacheKeys = cache.keys();
+
+      // Add cart items to user's cart in the database
+      const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
+      const cart = cache.mget(cartKeys) || {};
       const cartItems = [];
 
-      // Get all cart items from cache
-      for (const key of cacheKeys) {
-        const cacheItem = cache.get(key);
-        if (cacheItem && cacheItem.productId && cacheItem.size) {
+      for (const key in cart) {
+        const cartItem = cart[key];
+        if (cartItem && cartItem.productId && cartItem.size) {
           cartItems.push({
-            productId: cacheItem.productId,
-            size: cacheItem.size,
-            quantity: cacheItem.quantity || 1,
+            productId: cartItem.productId,
+            size: cartItem.size,
+            quantity: cartItem.quantity || 1,
           });
         }
       }
 
-      // Add cart items to user's cart in the database
       for (const cartItem of cartItems) {
         const dbCartItem = await Cart.findOneAndUpdate(
           { userId, ...cartItem },
@@ -924,7 +927,36 @@ module.exports = {
         }
       }
 
-      // Clear cache after adding to user's cart in the database
+      // Add wishlist items to user's wishlist in the database
+      const wishlistKeys = cache
+        .keys()
+        .filter((key) => key.startsWith("wishlist:"));
+      const wishlist = cache.mget(wishlistKeys) || {};
+      const wishlistItems = [];
+
+      for (const key in wishlist) {
+        const wishlistItem = wishlist[key];
+        const wishlistExists = await Wishlist.exists({
+          userId: userId,
+          productId: wishlistItem,
+        });
+        if (!wishlistExists) {
+          const dbWishlistItem = await Wishlist.create({
+            userId: userId,
+            productId: wishlistItem,
+          });
+          if (!dbWishlistItem) {
+            console.log(
+              "Error adding wishlist item to database:",
+              wishlistItem
+            );
+          } else {
+            console.log("Wishlist item added to database:", dbWishlistItem);
+          }
+        }
+      }
+
+      // Clear cache after adding to user's cart and wishlist in the database
       if (cache.clear && typeof cache.clear === "function") {
         cache.clear();
       }
@@ -934,7 +966,7 @@ module.exports = {
       console.log(error);
       res.status(500).json({
         success: false,
-        message: "Error adding cart items to database",
+        message: "Error adding cart and wishlist items to database",
       });
     }
   },
@@ -1139,6 +1171,8 @@ module.exports = {
           : false
         : false,
       loggedin: req.session ? req.session.userLoggedIn : false,
+      cartItems: req.cartItems,
+      wishlist: req.wishlist,
     });
   },
   contact: async (req, res, next) => {
@@ -1150,6 +1184,256 @@ module.exports = {
           : false
         : false,
       loggedin: req.session ? req.session.userLoggedIn : false,
+      cartItems: req.cartItems,
+      wishlist: req.wishlist,
     });
+  },
+  getCartLocal: async (req, res, next) => {
+    const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
+    const cart = cache.mget(cartKeys) || {};
+    const items = [];
+
+    for (const key in cart) {
+      const item = cart[key];
+      try {
+        console.log(item.productId);
+        console.log(item.quantity);
+        const product = await Products.findOne(
+          {
+            _id: new mongoose.Types.ObjectId(item.productId),
+          },
+          {
+            images: 1,
+            name: 1,
+            ourPrice: 1,
+            orginalPrice: 1,
+            _id: 0,
+          }
+        );
+        console.log(product);
+        if (product) {
+          items.push({
+            productId: item.productId,
+            images: product.images,
+            name: product.name,
+            ourPrice: product.ourPrice,
+            orginalPrice: product.orginalPrice,
+            size: item.size,
+            quantity: item.quantity,
+          });
+        }
+      } catch (error) {
+        console.log("error in finding product: ", error);
+      }
+    }
+    req.cartItems = items;
+    next();
+  },
+
+  getUserLocalWishList: async (req, res, next) => {
+    const wishlistKeys = cache
+      .keys()
+      .filter((key) => key.startsWith("wishlist:"));
+    const wishlistData = cache.mget(wishlistKeys) || {};
+    const items = {};
+
+    for (const key in wishlistData) {
+      const wishlistItem = wishlistData[key];
+      try {
+        items[wishlistItem] = true;
+      } catch (error) {
+        console.log("error in finding product: ", error);
+      }
+    }
+    console.log(items);
+    req.wishlist = items;
+    next();
+  },
+
+  cachePostCart: async (req, res, next) => {
+    try {
+      const place = "cart:" + req.body.productId + req.body.size;
+      const placeData = cache.get(place) || {};
+
+      let cartItem;
+      if (!placeData.productId) {
+        cartItem = {
+          productId: req.body.productId,
+          quantity: req.body.quantity || 1,
+          size: req.body.size,
+        };
+        console.log(cartItem);
+        console.log(req.body.productId + " added to cart");
+      } else {
+        cartItem = placeData;
+        cartItem.quantity = req.body.quantity || cartItem.quantity + 1;
+        console.log(cartItem);
+        console.log(req.body.productId + " quantity increased in cart");
+      }
+
+      cache.set(place, cartItem);
+      console.log("Cart updated in cache");
+
+      res.status(200).send({
+        success: true,
+        message: "success",
+      });
+    } catch (error) {
+      console.error("Error updating cart in cache:", error);
+      res.sendStatus(500);
+      next(error);
+    }
+  },
+
+  cachePostWishList: async (req, res, next) => {
+    try {
+      const place = "wishlist:" + req.body.productId;
+      const type = req.body.type;
+      if (type === "add") {
+        cache.set(place, req.body.productId);
+        console.log("done");
+      } else if (type === "remove") {
+        cache.del(place);
+        console.log("done");
+      }
+      console.log("done");
+      res.status(200).send({
+        success: true,
+        message: "success",
+      });
+    } catch (error) {
+      console.error("Error updating wishlist in cache:", error);
+      res.sendStatus(500);
+      next(error);
+    }
+  },
+
+  WishListData: async (req, res, next) => {
+    if (req.session.userLoggedIn) {
+      try {
+        const items = await Wishlist.aggregate([
+          {
+            $match: {
+              userId: new mongoose.Types.ObjectId(req.session.user._id),
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productId",
+              foreignField: "_id",
+              as: "product",
+            },
+          },
+        ]);
+
+        const totalCount = items.length;
+
+        const pagination = {
+          totalCount: totalCount,
+          totalPages: 1, // Assuming no pagination is needed for the wish list
+          page: 1,
+          count: totalCount,
+          startIndex: 0,
+          endIndex: totalCount,
+        };
+        const productsList = items.flatMap((item) => item.product);
+
+        console.log(productsList);
+
+        res.render("user/productList", {
+          title: "Wish List",
+          fullName: req.session.user.fullName,
+          loggedin: req.session.userLoggedIn,
+          cartItems: req.cartItems,
+          productsList,
+          wishlist: req.wishlist,
+          pagination,
+          category: req.category,
+          colour: req.colour,
+          pattern: req.pattern,
+          genderType: req.genderType,
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+      }
+    } else {
+      const wishlistKeys = cache
+        .keys()
+        .filter((key) => key.startsWith("wishlist:"));
+      const wishlistData = cache.mget(wishlistKeys) || {};
+      let products = [];
+      for (const key in wishlistData) {
+        const wishlistItem = wishlistData[key];
+        try {
+          const product = await Products.findOne({
+            _id: new mongoose.Types.ObjectId(wishlistItem),
+          });
+          if (product) {
+            products.push(product);
+          }
+        } catch (error) {
+          console.log("error in finding product: ", error);
+        }
+      }
+      const totalCount = products.length;
+      const pagination = {
+        totalCount: totalCount,
+        totalPages: 1, // Assuming no pagination is needed for the wish list
+        page: 1,
+        count: totalCount,
+        startIndex: 0,
+        endIndex: totalCount,
+      };
+
+      const productsList = products;
+      res.render("user/productList", {
+        title: "Wish List",
+        loggedin: false,
+        cartItems: req.cartItems,
+        productsList,
+        wishlist: req.wishlist,
+        pagination,
+        category: req.category,
+        colour: req.colour,
+        pattern: req.pattern,
+        genderType: req.genderType,
+      });
+    }
+  },
+  changePhoto: async (req, res, next) => {
+    try {
+      const file = req.files && req.files.file; // Access the uploaded file using req.files
+      console.log(file);
+      if (file) {
+        const userId = req.session.user._id;
+        const filePath = `/images/userImages/${userId}`;
+        const fileName = `${userId}.${file.name.split(".").pop()}`;
+
+        // Check if the user has an existing image
+        const user = await User.findById(userId);
+        if (user.images) {
+          // Delete the existing image file
+          const existingImagePath = `${filePath}/${user.images}`;
+          if (fs.existsSync(existingImagePath)) {
+            fs.unlinkSync(existingImagePath);
+          }
+        }
+
+        // Upload the file to the specified path
+        await file.mv(`${filePath}/${fileName}`);
+
+        // Update the image path in the user's database record
+        user.images = `${userId}/${fileName}`;
+        await user.save();
+
+        req.session.user = user;
+      }
+
+      res.redirect("/profile");
+    } catch (error) {
+      next(error);
+    }
   },
 };
