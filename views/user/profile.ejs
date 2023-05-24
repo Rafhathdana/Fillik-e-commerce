@@ -462,11 +462,7 @@
             if (result.isConfirmed) {
               const formData = new FormData();
               formData.append("image", file);
-              // console.log("formaaa", formData);
-              // console.log("eee ", formData.get("image"));
-              let temp = {
-                name: "heheheh",
-              };
+          
               var xhr = new XMLHttpRequest();
               xhr.open("POST", "/changeprofile", true);
               xhr.onreadystatechange = function () {

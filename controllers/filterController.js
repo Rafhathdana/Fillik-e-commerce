@@ -113,7 +113,6 @@ module.exports = {
     }
   },
   getFilter: async (req, res, next) => {
-    console.log(req.body, "body");
     try {
       const { minPrice, maxPrice, sizes } = req.query;
       const genderType = req.query.genderType;
@@ -174,7 +173,6 @@ module.exports = {
       }
 
       req.filterData = filter;
-      console.log(filter, "filter");
       next();
     } catch (err) {
       console.error(err);
@@ -183,7 +181,6 @@ module.exports = {
   },
 
   postFilter: async (req, res, next) => {
-    console.log(req.body, "body");
     try {
       const { minPrice, maxPrice, sizes } = req.body;
       const category = req.body["category[]"];
@@ -244,7 +241,6 @@ module.exports = {
       }
 
       req.filterData = filter;
-      console.log(filter, "filter");
       next();
     } catch (err) {
       console.error(err);
@@ -254,8 +250,7 @@ module.exports = {
   statusFilterUpdate: async (req, res, next) => {
     try {
       const datainuser = await filterproduct.findById(req.params.userId);
-      console.log(datainuser); // Check if datainuser is being logged correctly
-
+    
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;

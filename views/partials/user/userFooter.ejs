@@ -187,7 +187,6 @@
     var productId = but.data("product-id");
     var dta = $("#wishlist").attr("data-notify");
 
-    console.log(productId);
     $.ajax({
       url: "/wishlist",
       method: "POST",
@@ -209,7 +208,6 @@
   $(document).on("click", ".js-addedwish-b2", function () {
     let but = $(this);
     var productId = but.data("product-id");
-    console.log(productId);
 
     var dta = $("#wishlist").attr("data-notify");
 
@@ -241,7 +239,6 @@
       let but = $(this);
       var productId = but.data("product-id");
       var dta = $("#wishlist").attr("data-notify");
-      console.log(productId);
       $.ajax({
         url: "/wishlist",
         method: "POST",
@@ -271,7 +268,6 @@
       let but = $(this);
       var productId = but.data("product-id");
       var dta = $("#wishlist").attr("data-notify");
-      console.log(productId);
       $.ajax({
         url: "/wishlist",
         method: "POST",
@@ -298,7 +294,6 @@
       .parent()
       .find(".js-name-detail")
       .html();
-    console.log(nameProduct);
     $(this).on("click", function () {
       swal(nameProduct, "is added to cart !", "success");
     });
@@ -330,7 +325,6 @@
 
   mainSearchInput.addEventListener("keyup", function (event) {
     const mainSearchQuery = event.target.value;
-    console.log(mainSearchQuery + " bnmb");
     // Build query string with updated filter values
     $.ajax({
       url: "/searchItem",
@@ -339,7 +333,6 @@
         value: mainSearchQuery,
       },
       success: function (response) {
-        console.log(response);
         $("#product").html(response);
       },
       error: function (xhr, status, error) {
@@ -351,7 +344,6 @@
 
 <script>
   function deleteItem(id, size) {
-    console.log(id, size);
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this item from your cart!",
@@ -390,7 +382,6 @@
       url: "/postFromCart",
       method: "POST",
       success: function (response) {
-        console.log(response);
         $("#sideCart").html(response);
         var cartcount = parseInt($("#cartvalue").attr("data-notify")) - 1;
         $(".cartvalue").attr("data-notify", cartcount);

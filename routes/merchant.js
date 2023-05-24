@@ -8,14 +8,12 @@ const filterController = require("../controllers/filterController");
 function merchantauth(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
     res.redirect("/merchant/");
-    console.log(req.session.merchantLoggedIn);
   } else {
     next();
   }
 }
 function merchantverify(req, res, next) {
   if (req.session && req.session.merchant && req.session.merchantLoggedIn) {
-    console.log(req.session.merchantLoggedIn);
     next();
   } else {
     res.redirect("/merchant/login");

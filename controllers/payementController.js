@@ -52,16 +52,12 @@ module.exports = {
         if (error) {
           throw error;
         } else {
-          console.log("Create Payment Response");
-          console.log(payment, "payment type");
-          console.log(payment.links[1].href);
           resolve(payment.links[1].href);
         }
       });
     });
   },
   generateRazorpay: (orderId, total) => {
-    console.log(orderId, total, "ordreee");
     total = parseFloat(total);
     return new Promise((resolve, reject) => {
       var options = {
@@ -73,13 +69,11 @@ module.exports = {
         if (err) {
           console.log(err, "is the err occured in the generate rzp");
         }
-        console.log("new", order);
         resolve(order);
       });
     });
   },
   verifyPayment: (details) => {
-    console.log(details, "deeeeeee");
     return new Promise((resolve, reject) => {
       try {
         const crypto = require("crypto");
@@ -90,8 +84,6 @@ module.exports = {
             details.payment.razorpay_payment_id
         );
         hmac = hmac.digest("hex");
-        console.log(details, "detailssssssssss");
-        console.log(hmac, "hmccccccc");
         if (hmac == details.payment.razorpay_signature) {
           resolve();
         } else {

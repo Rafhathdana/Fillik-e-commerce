@@ -4,7 +4,7 @@
     <li class="header-cart-item flex-w flex-t m-b-12">
       <div class="header-cart-item-img">
         <% let link=loggedin?(cartItems[i].images[0][0]
-        ):(cartItems[i].images[0]) ;console.log(link)%>
+        ):(cartItems[i].images[0]) ;%>
 
         <img src="/images/productImages/<%=link.split(',')[0] %>" alt="IMG" />
       </div>

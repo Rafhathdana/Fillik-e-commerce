@@ -288,20 +288,16 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.noStock == true) {
           swal("check cart item there is some stock is not available");
         }
         if (data.codStatus == true) {
-          console.log("dgf");
-          console.log(`/paymentSuccess/${data.orderId}`);
           location.href = `/paymentSuccess/${data.orderId}`;
         } else if (data.paypal) {
           location.href = data.link;
         } else if (data.result) {
           location.href = `/paymentSuccess/${data.response.id}`;
         } else if (data.razorpay) {
-          console.log(data.response.amount);
           razorpayPayment(data.response);
         } else {
           location.href = `/cancelledpayment/${data.response.id}`;

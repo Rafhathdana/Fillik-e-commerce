@@ -127,7 +127,6 @@ module.exports = {
 
         await User.create(newUser);
         req.session.errmsg = null;
-        console.log(newUser);
         res.redirect("/login");
       } else {
         // User exists
@@ -150,7 +149,6 @@ module.exports = {
               console.log("user exist");
               req.session.user = newUser;
               req.session.userLoggedIn = true;
-              console.log(newUser);
 
               next();
             } else {
@@ -300,7 +298,6 @@ module.exports = {
             console.log("user exists");
             req.session.user = newUser;
             req.session.userLoggedIn = true;
-            console.log(newUser);
           } else {
             req.session.errmsg = "Account was Blocked. Contact Us.";
             res.status(402).redirect("/login");
@@ -335,14 +332,12 @@ module.exports = {
       const filter = req.filterData || {};
       const sort = req.sort || { createdAt: -1 };
       const startIndex = (page - 1) * count;
-      console.log(count, page, filter, sort);
       let productsList = await Products.find(filter)
         .sort(sort)
         .skip(startIndex)
         .limit(count)
         .lean();
       const totalCount = await Products.countDocuments(filter);
-      console.log(totalCount + "fsh");
       const totalPages = Math.ceil(totalCount / count);
 
       const endIndex = Math.min(count, totalCount - startIndex);
@@ -392,14 +387,12 @@ module.exports = {
       const filter = req.filterData || {};
       const sort = req.sort || { createdAt: -1 };
       filter.name = { $regex: `.*${req.body.value}.*`, $options: "i" };
-      console.log(count, page, filter, sort);
 
       let productsList = await Products.find(filter)
         .sort(sort)
         .skip((page - 1) * count)
         .limit(count)
         .lean();
-      console.log(productsList);
       const totalCount = await Products.countDocuments(filter);
       const totalPages = Math.ceil(totalCount / count);
       const startIndex = (page - 1) * count;
@@ -526,8 +519,7 @@ module.exports = {
       const userId = req.session.user._id;
       const productId = req.body.productId;
       const type = req.body.type;
-      console.log(productId);
-      console.log(type);
+
       if (!productId || !type) {
         throw new Error("Missing required parameters");
       }
@@ -543,7 +535,6 @@ module.exports = {
             userId: userId,
             productId: productId,
           });
-          console.log("fesdcds");
         }
       } else if (type === "remove" && wishlistExists) {
         wishlist = await Wishlist.findOneAndDelete({
@@ -607,12 +598,10 @@ module.exports = {
       const wishlist = await Wishlist.find({
         userId: new mongoose.Types.ObjectId(userId),
       });
-      console.log("hajiks");
       const items = wishlist.reduce((acc, element) => {
         acc[element.productId] = true;
         return acc;
       }, {});
-      console.log(items);
       req.wishlist = items;
       next();
     } catch (error) {
@@ -639,7 +628,6 @@ module.exports = {
             _id: 0,
           }
         );
-        console.log(product);
         if (product) {
           cartItems.push({
             productId: item.productId,
@@ -695,7 +683,6 @@ module.exports = {
     ]);
 
     req.cartItems = items;
-    console.log(req.cartItems, "logged");
     res.render("user/sidecart", {
       title: "cart List",
       loggedin: req.session.userLoggedIn,
@@ -720,7 +707,6 @@ module.exports = {
         },
       },
     ]);
-    console.log(cartList);
     res.render("user/cartdesign", {
       title: "Users cartdesign",
       noShow: true,
@@ -770,7 +756,6 @@ module.exports = {
   productHome: async (req, res, next) => {
     try {
       const filter = req.filterData || {};
-      console.log(filter);
       const count = parseInt(req.query.count) || 20;
       const page = parseInt(req.query.page) || 1;
       const totalCount = await Products.countDocuments(filter);
@@ -796,8 +781,6 @@ module.exports = {
         .skip(safeSkip)
         .limit(count)
         .lean();
-
-      console.log(totalCount);
 
       const startIndex = (page - 1) * count;
       const endIndex = Math.min(count, totalCount - startIndex);
@@ -845,7 +828,6 @@ module.exports = {
   },
   userOrdersList: async (req, res, next) => {
     try {
-      console.log(req.ordersList);
       res.render("user/ordersList", {
         title: "Users List",
         fullName: req.session.user.fullName,
@@ -861,7 +843,6 @@ module.exports = {
   },
   OrdersList: async (req, res, next) => {
     try {
-      console.log(req.ordersList, "rafeeq");
       res.render("user/ordersView", {
         title: "Users List",
         fullName: req.session.user.fullName,
@@ -877,16 +858,12 @@ module.exports = {
   deleteItemCrt: async (req, res, next) => {
     try {
       if (req.session.userLoggedIn) {
-        console.log(req.body.id);
         const result = await Cart.deleteOne({
           _id: new mongoose.Types.ObjectId(req.body.id),
         });
-        console.log(`${result.deletedCount} item(s) deleted from cart`);
       } else {
-        console.log(req.body.id);
         const place = "cart:" + req.body.id + req.body.size;
         cache.del(place);
-        console.log(`Item at place ${place} deleted from cache`);
       }
       res.status(200).send({
         success: true,
@@ -923,9 +900,9 @@ module.exports = {
           { upsert: true, new: true }
         );
         if (!dbCartItem) {
-          console.log("Error adding cart item to database:", cartItem);
+          console.log("Error adding cart item to database:");
         } else {
-          console.log("Cart item added to database:", dbCartItem);
+          console.log("Cart item added to database:");
         }
       }
 
@@ -948,12 +925,9 @@ module.exports = {
             productId: wishlistItem,
           });
           if (!dbWishlistItem) {
-            console.log(
-              "Error adding wishlist item to database:",
-              wishlistItem
-            );
+            console.log("Error adding wishlist item to database:");
           } else {
-            console.log("Wishlist item added to database:", dbWishlistItem);
+            console.log("Wishlist item added to database:");
           }
         }
       }
@@ -991,7 +965,6 @@ module.exports = {
     var size = req.body.size;
     var productId = req.body.proId;
     var cartId = req.body.cartId;
-    console.log(count, quantity, size, productId, cartId);
     try {
       // const sellcount = await orderControllers.productcount(productId, size);
       // console.log("Sell count:", sellcount);
@@ -1015,7 +988,6 @@ module.exports = {
         { [`Quantity.${sizes}`]: 1 }
       );
       let balance = k[0].Quantity[sizes];
-      console.log(balance);
       if (balance === 0) {
         res.status(200).json({ noStock: true });
       }
@@ -1097,7 +1069,6 @@ module.exports = {
     next();
   },
   editUserProfile: async (req, res, next) => {
-    console.log(req.body, "userr");
     const userProfile = await User.findOneAndUpdate(
       { _id: req.session.user._id }, // filter object
       {
@@ -1182,8 +1153,6 @@ module.exports = {
     for (const key in cart) {
       const item = cart[key];
       try {
-        console.log(item.productId);
-        console.log(item.quantity);
         const product = await Products.findOne(
           {
             _id: new mongoose.Types.ObjectId(item.productId),
@@ -1196,7 +1165,6 @@ module.exports = {
             _id: 0,
           }
         );
-        console.log(product);
         if (product) {
           items.push({
             productId: item.productId,
@@ -1231,7 +1199,6 @@ module.exports = {
         console.log("error in finding product: ", error);
       }
     }
-    console.log(items);
     req.wishlist = items;
     next();
   },
@@ -1248,17 +1215,12 @@ module.exports = {
           quantity: req.body.quantity || 1,
           size: req.body.size,
         };
-        console.log(cartItem);
-        console.log(req.body.productId + " added to cart");
       } else {
         cartItem = placeData;
         cartItem.quantity = req.body.quantity || cartItem.quantity + 1;
-        console.log(cartItem);
-        console.log(req.body.productId + " quantity increased in cart");
       }
 
       cache.set(place, cartItem);
-      console.log("Cart updated in cache");
 
       res.status(200).send({
         success: true,
@@ -1325,8 +1287,6 @@ module.exports = {
         };
         const productsList = items.flatMap((item) => item.product);
 
-        console.log(productsList);
-
         res.render("user/productList", {
           title: "Wish List",
           fullName: req.session.user.fullName,
@@ -1389,18 +1349,13 @@ module.exports = {
     }
   },
   changePhoto: async (req, res, next) => {
-    console.log("heheheheh");
     try {
-      console.log(req.body, req.files);
       const userId = req.session.user._id;
 
       if (req.files && req.files.image) {
         const file = req.files.image;
         const filePath = `public/images/userImages/`;
         const fileName = `${userId}.${file.name.split(".").pop()}`;
-        console.log(fileName);
-        const existingImagePath = `${filePath}/${fileName}`;
-        console.log(existingImagePath);
 
         file.mv(filePath + fileName, async (err) => {
           if (err) {
@@ -1420,7 +1375,6 @@ module.exports = {
 
           updatedUser = await updatedUser.save();
 
-          console.log("Image path updated in the database", updatedUser);
           req.session.user = updatedUser;
           res.status(200).json({
             message: "Profile updated successfully",

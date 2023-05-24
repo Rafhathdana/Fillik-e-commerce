@@ -340,7 +340,7 @@ module.exports = {
   postSignin: async (req, res) => {
     try {
       const newAdmin = await Admin.findOne({ email: req.body.email });
-      console.log(req.body.email);
+  
       if (newAdmin) {
         if (newAdmin.isActive === true) {
           bcrypt
@@ -350,7 +350,6 @@ module.exports = {
                 console.log("user exist");
                 req.session.admin = newAdmin;
                 req.session.adminLoggedIn = true;
-                console.log(newAdmin);
                 res.redirect("/admin/home");
               } else {
                 console.log("password is not matching");
@@ -391,7 +390,6 @@ module.exports = {
 
         await Admin.create(newAdmin);
         req.session.adminerrmsg = null;
-        console.log(newAdmin);
         res.redirect("/admin/login");
       } else {
         // User exists
@@ -521,8 +519,7 @@ module.exports = {
   statusUserUpdate: async (req, res, next) => {
     try {
       const datainuser = await users.findById(req.params.userId);
-      console.log(datainuser); // Check if datainuser is being logged correctly
-
+   
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -549,8 +546,7 @@ module.exports = {
   statusMerchantUpdate: async (req, res, next) => {
     try {
       const datainuser = await merchants.findById(req.params.userId);
-      console.log(datainuser); // Check if datainuser is being logged correctly
-
+   
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -686,7 +682,7 @@ module.exports = {
 
         await newBanner.save();
 
-        console.log(newBanner);
+       
         res.redirect("/admin/login");
       });
     } catch (error) {

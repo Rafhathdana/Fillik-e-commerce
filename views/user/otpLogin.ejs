@@ -347,7 +347,6 @@
         return response.json(); // get the response body
       })
       .then((data) => {
-        console.log(data);
 
         if (data.success) {
           sendOTP(mobile);
@@ -374,13 +373,10 @@
         return response.json(); // get the response body
       })
       .then((data) => {
-        console.log(data);
 
         if (data.success) {
-          console.log(data);
           showOTPSection();
         } else {
-          console.log(data);
           normalSection();
           swal("OTP Not sent. Please try again.");
         }
@@ -409,9 +405,7 @@
     for (let i = 1; i <= 6; i++) {
       otp += document.getElementById(`box${i}`).value;
     }
-    console.log(otp);
     if (verifyOTP(otp)) {
-      console.log("hai");
     } else {
       swal("Invalid OTP!");
     }
@@ -421,7 +415,6 @@
     const processing = "Please Wait";
     const mobileInput = document.getElementById("mobile").value;
     $("#verifyOtp").text(processing).css("cursor", "none");
-    console.log(otp);
     try {
       const response = await fetch("/verifyotpLogin", {
         method: "POST",

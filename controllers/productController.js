@@ -78,7 +78,6 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
-      console.log(productList);
 
       res.render("merchant/viewProducts", {
         title: "product",
@@ -119,8 +118,6 @@ module.exports = {
       let inumb = 0;
       const productcode = Date.now().toString();
       const filePath = `${__dirname}/../public/images/productImages/`;
-      console.log(filePath);
-      console.log(productcode);
 
       var storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -131,7 +128,7 @@ module.exports = {
           const fileNameParts = originalName.split(".");
           const fileExtension = fileNameParts[fileNameParts.length - 1];
           const fileName = `product-${productcode}-${inumb}.${fileExtension}`;
-          console.log(productcode);
+
           images.push(fileName);
           inumb++;
           cb(null, fileName);
@@ -148,8 +145,6 @@ module.exports = {
           return;
         }
 
-        console.log(req.body.name);
-        console.log(req.body);
         const newProduct = new Product({
           productcode: productcode,
           merchantid: req.session.merchant._id,
@@ -176,7 +171,7 @@ module.exports = {
         // create new product after all data is available
         await newProduct.save();
 
-        console.log(newProduct);
+     
         res.redirect("/merchant/login");
       });
     } catch (error) {
@@ -245,13 +240,11 @@ module.exports = {
   postEditProduct: async (req, res, next) => {
     try {
       const id = req.params.Id;
-      console.log(id);
       const images = [];
       let inumb = 0;
       const productcode = await Product.findById(id).select("productcode");
       const filePath = `${__dirname}/../public/images/productImages/`;
-      console.log(filePath);
-      console.log(productcode);
+    
 
       var storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -262,7 +255,6 @@ module.exports = {
           const fileNameParts = originalName.split(".");
           const fileExtension = fileNameParts[fileNameParts.length - 1];
           const fileName = `product-${productcode}-${inumb}.${fileExtension}`;
-          console.log(productcode);
           images.push(fileName);
           inumb++;
           cb(null, fileName);
@@ -279,8 +271,7 @@ module.exports = {
           return;
         }
 
-        console.log(req.body.name);
-        console.log(req.body);
+   
         const updatedProduct = {
           name: req.body.name,
           description: req.body.description,
@@ -298,12 +289,10 @@ module.exports = {
             extraLarge: parseInt(req.body.extraLarge),
           },
         };
-        console.log(id);
         const updatedProductDoc = await Product.findByIdAndUpdate(
           { _id: new mongoose.Types.ObjectId(id) },
           updatedProduct
         );
-        console.log(updatedProductDoc);
         res.redirect("/merchant/login");
       });
     } catch (error) {
@@ -359,7 +348,6 @@ module.exports = {
         { $skip: startIndex },
         { $limit: count },
       ]);
-      console.log(productList);
       const totalProductsCount = await Product.countDocuments(match); // add match object to countDocuments method
       const totalPages = Math.ceil(totalProductsCount / count);
       const endIndex = Math.min(startIndex + count - 1, totalProductsCount - 1);
@@ -372,7 +360,6 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
-      console.log(pagination);
       res.render("admin/viewProducts", {
         title: "admin",
         fullName: req.session.admin.fullName,
@@ -396,11 +383,8 @@ module.exports = {
       const startIndex = (page - 1) * count;
       const orderBy = { $sort: { createdAt: -1 } };
       let tupe = req.params.type;
-      console.log(tupe);
       const isActive = tupe === "true"; // Convert tupe to boolean
-      console.log(isActive);
       const match = { isActive: isActive }; // Use isActive in the match object to filter products
-      console.log(match);
       const productList = await Product.aggregate([
         { $match: match },
         {
@@ -439,7 +423,6 @@ module.exports = {
         { $skip: startIndex },
         { $limit: count },
       ]);
-      console.log(productList);
       const totalProductsCount = await Product.countDocuments(match);
       const totalPages = Math.ceil(totalProductsCount / count);
       const endIndex = Math.min(startIndex + count - 1, totalProductsCount - 1);
@@ -452,7 +435,6 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
-      console.log(pagination);
       res.render("admin/viewProducts", {
         title: "admin",
         fullName: req.session.admin.fullName,
@@ -474,7 +456,6 @@ module.exports = {
     try {
       let canceled = "canceled";
       let sizeValue;
-      console.log("size count:", size);
 
       switch (size) {
         case "S":
@@ -492,7 +473,6 @@ module.exports = {
         default:
           throw new Error("Invalid size value");
       }
-      console.log(sizeValue);
       const itemCount = await Product.aggregate([
         {
           $match: {
@@ -506,7 +486,6 @@ module.exports = {
           },
         },
       ]);
-      console.log(itemCount);
       if (itemCount.length === 0) {
         return 0;
       }
@@ -542,7 +521,6 @@ module.exports = {
       }
 
       const totalCount = await Product.countDocuments(filter);
-      console.log(totalCount);
       const totalPages = Math.ceil(totalCount / count);
       const endIndex = Math.min(count, totalCount - startIndex);
 
@@ -642,7 +620,6 @@ module.exports = {
           },
         },
       ]);
-      console.log(productItem);
       if (req.session.userLoggedIn) {
         res.render("user/productDetailView", {
           title: "Users List",

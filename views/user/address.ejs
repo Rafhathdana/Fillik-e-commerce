@@ -254,7 +254,6 @@
         document.querySelector("#confirmPinCode").value
       );
       var termsCheckbox = document.querySelector("#termsCheckbox");
-      console.log(pinNumber);
       // Check that all required fields are filled out
       if (
         !name ||
@@ -271,20 +270,7 @@
         !confirmPinCode
       ) {
         swal("Please fill out all required fields.");
-        console.log(
-          name,
-          mobile,
-          hname,
-          landMark,
-          place,
-          postOffice,
-          city,
-          district,
-          state,
-          country,
-          pinNumber,
-          confirmPinCode
-        );
+
         return;
       }
 
@@ -297,7 +283,6 @@
       // Check that the pin code is valid and matches the confirmed pin code
 
       if (pinNumber !== confirmPinCode) {
-        console.log(pinNumber, confirmPinCode);
         swal("The pin codes you entered do not match.");
         return;
       }

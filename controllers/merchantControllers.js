@@ -62,7 +62,6 @@ module.exports = {
 
         await Merchant.create(newMerchant);
         req.session.merchanterrmsg = null;
-        console.log(newMerchant);
         res.redirect("/merchant/login");
       } else {
         // User exists
@@ -87,7 +86,7 @@ module.exports = {
   postSignin: async (req, res) => {
     try {
       const newMerchant = await Merchant.findOne({ email: req.body.email });
-      console.log(newMerchant);
+
       if (newMerchant) {
         if (newMerchant.isActive === true) {
           bcrypt
@@ -98,7 +97,6 @@ module.exports = {
                 console.log("user exist");
                 req.session.merchant = newMerchant;
                 req.session.merchantLoggedIn = true;
-                console.log(newMerchant);
                 res.redirect("/merchant/");
               } else {
                 console.log("password is not matching");
@@ -163,7 +161,6 @@ module.exports = {
             console.log("user exists");
             req.session.merchant = newUser;
             req.session.merchantLoggedIn = true;
-            console.log(newUser);
           } else {
             req.session.errmsg = "Account was Blocked. Contact Us.";
             res.status(402).redirect("/login");
@@ -268,8 +265,7 @@ module.exports = {
   statusProductUpdate: async (req, res, next) => {
     try {
       const datainuser = await Product.findById(req.params.userId);
-      console.log(datainuser); // Check if datainuser is being logged correctly
-
+ 
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -325,7 +321,6 @@ module.exports = {
         vMerchant.pin = req.body.pin;
         await vMerchant.save();
         req.session.merchanterrmsg = null;
-        console.log(vMerchant);
         res.redirect("/merchant/dashboard");
       } else {
         // User exists
@@ -560,7 +555,6 @@ module.exports = {
     next();
   },
   salesReport: async (req, res, next) => {
-    console.log(req.body.selector, "report body ");
     const selector = req.body.selector;
 
     // Extracting the relevant parts based on the selector
@@ -583,8 +577,7 @@ module.exports = {
         today.getMonth(),
         today.getDate() - today.getDay() + 6
       );
-      console.log(weekStart, "weekstart");
-      console.log(weekEnd, "weekEnd");
+    
     } else if (selector.startsWith("day")) {
       day = new Date(selector.slice(4));
       day.setHours(0, 0, 0, 0);
@@ -605,7 +598,6 @@ module.exports = {
         })
         .exec();
       req.session.admin.orderThisWeek = orderThisWeek;
-      console.log(orderThisWeek, "details of this week");
       return res.redirect("/admin/sales-report");
     }
 
@@ -626,7 +618,6 @@ module.exports = {
         })
         .exec();
       req.session.admin.orderThisMonth = orderThisMonth;
-      console.log(orderThisMonth, "details of this month");
       return res.redirect("/admin/sales-report");
     }
 
@@ -649,7 +640,6 @@ module.exports = {
         })
         .exec();
       req.session.admin.orderThisDay = orderThisDay;
-      console.log(orderThisDay, "details of this day");
       return res.redirect("/admin/sales-report");
     }
     if (year) {
@@ -670,7 +660,6 @@ module.exports = {
         })
         .exec();
       req.session.admin.orderThisYear = orderThisYear;
-      console.log(orderThisYear, "details of this year");
       return res.redirect("/admin/sales-report");
     }
   },
@@ -701,7 +690,6 @@ module.exports = {
 
           updatedUser = await updatedUser.save();
 
-          console.log("Image path updated in the database", updatedUser);
           req.session.user = updatedUser;
           res.status(200).json({
             message: "Profile updated successfully",

@@ -13,7 +13,6 @@ const { response } = require("../app");
 module.exports = {
   postAddress: async (req, res, next) => {
     try {
-      console.log(req.body);
       const newAddress = new Address({
         userId: req.session.user._id,
         name: req.body.name,
@@ -32,7 +31,6 @@ module.exports = {
 
       await Address.create(newAddress);
       req.session.Addresserrmsg = null;
-      console.log(newAddress);
       res.status(200).send({ success: true });
     } catch (error) {
       console.log(error);

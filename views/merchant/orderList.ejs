@@ -86,7 +86,7 @@
               <td data-label="Status">
                 <% let
                 currentStatus=orderList[i].products[j].currentStatus[orderList[i].products[j].currentStatus.length-1].currentStatus;
-                console.log(currentStatus+"fgdxgf"); const purchaseDate = new
+                const purchaseDate = new
                 Date(orderList[i].products[j].status[orderList[i].products[j].status.length-1].dateTimeOn);
                 const currentDate = new Date(); const daysPassed =
                 Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 *
@@ -174,7 +174,6 @@
 <!-- At the bottom of the HTML body -->
 <script>
   function orderUpdate(data, oid, pid, size, pvd) {
-    console.log(data, oid, pid, size);
     swal(`Are you sure to ${data}?`, {
       buttons: {
         yes: {

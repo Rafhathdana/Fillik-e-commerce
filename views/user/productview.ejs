@@ -153,7 +153,6 @@
     var selectedSizeBox = document.querySelector(".sizeBox.active")
       ? document.querySelector(".sizeBox.active").textContent
       : 0;
-    console.log(selectedSizeBox);
     if (selectedSizeBox == 0) {
       let message = $("<p>").text("Please select a size").css({
         color: "#ff0000",
@@ -207,7 +206,6 @@
     url: "/postFromCart",
     method: "POST",
     success: function (response) {
-      console.log(response);
       $("#sideCart").html(response);
       var cartcount = parseInt($("#cartvalue").attr("data-notify")) + 1;
       $(".cartvalue").attr("data-notify", cartcount);

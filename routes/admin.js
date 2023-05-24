@@ -17,7 +17,6 @@ function adminAuth(req, res, next) {
 }
 function adminVerify(req, res, next) {
   if (req.session && req.session.admin && req.session.adminLoggedIn) {
-    console.log(req.session.adminLoggedIn);
     next();
   } else {
     res.redirect("/admin/login");

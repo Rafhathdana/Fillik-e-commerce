@@ -310,7 +310,6 @@
   });
 
   async function checkEmailExists(email, password) {
-    console.log(email);
     fetch("/admin/emailpassexists", {
       method: "POST",
       body: JSON.stringify({
@@ -359,13 +358,9 @@
         return response.json(); // get the response body
       })
       .then((data) => {
-        console.log(data);
-
         if (data.success) {
-          console.log(data);
           showOTPSection();
         } else {
-          console.log(data);
           normalSection();
           swal("OTP Not sended. Please try again.");
         }
@@ -401,9 +396,7 @@
     otp += document.getElementById("box4").value;
     otp += document.getElementById("box5").value;
     otp += document.getElementById("box6").value;
-    console.log(otp);
     if (verifyOTP(otp)) {
-      console.log("hai");
     } else {
       swal("Invalid OTP!");
     }
@@ -414,7 +407,6 @@
       .prop("disabled", true)
       .text(processing)
       .css("cursor", "none");
-    console.log(otp);
     try {
       const response = await fetch("/admin/verifyotp", {
         method: "POST",
@@ -428,15 +420,11 @@
 
       const data = await response.json();
 
-      console.log(data);
-
       if (data.success) {
-        console.log(data);
         // OTP verification successful, move to the signinUser()
         signinUser();
         // document.querySelector('form').submit();
       } else {
-        console.log(data);
         // OTP verification failed, display an error message
         swal("Invalid OTP!");
         var processing = "Verify OTP";

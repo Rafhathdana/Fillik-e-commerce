@@ -421,7 +421,6 @@
     }
 
     toChangeFilter();
-    console.log(window[`selected${optionName}s`]); // log the selected options array
   }
 
   function singleChange(value, optionName) {
@@ -443,7 +442,6 @@
         minPrice: minPrice,
       },
       success: function (response) {
-        console.log(response);
         $("#product").html(response);
       },
       error: function (xhr, status, error) {
@@ -459,10 +457,10 @@
       if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
         if (e.target.className === "input-min") {
           rangeInput[0].value = minPrice;
-          range.style.left = (minPrice / rangeInput[0].max)+ "%";
+          range.style.left = minPrice / rangeInput[0].max + "%";
         } else {
           rangeInput[1].value = maxPrice;
-          range.style.right = 100 - (maxPrice / rangeInput[1].max) + "%";
+          range.style.right = 100 - maxPrice / rangeInput[1].max + "%";
         }
       }
     });
@@ -496,7 +494,6 @@
 
   searchInput.addEventListener("keyup", function (event) {
     const searchQuery = event.target.value;
-    console.log(searchQuery + " bnmb");
     // Build query string with updated filter values
     $.ajax({
       url: "/searchItem",
@@ -512,7 +509,6 @@
         minPrice: minPrice,
       },
       success: function (response) {
-        console.log(response);
         $("#product").html(response);
       },
       error: function (xhr, status, error) {

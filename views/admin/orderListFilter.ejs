@@ -107,7 +107,7 @@
               <td data-label="Status">
                 <% let
                 currentStatus=orderList[i].orders.products.currentStatus.currentStatus;
-                console.log(currentStatus+"fgdxgf"); const purchaseDate = new
+                const purchaseDate = new
                 Date(orderList[i].orders.products.status[orderList[i].orders.products.status.length-1].dateTimeOn);
                 const currentDate = new Date(); const daysPassed =
                 Math.floor((currentDate - purchaseDate) / (1000 * 60 * 60 *
@@ -188,7 +188,6 @@
 <!-- At the bottom of the HTML body -->
 <script>
   function orderUpdate(data, oid, pid, size, pvd) {
-    console.log(data, oid, pid, size);
     swal(`Are you sure to ${data}?`, {
       buttons: {
         yes: {
@@ -330,7 +329,6 @@
       specialElementHandlers: specialElementHandlers,
     });
 
-    console.log("pdf");
     doc.save("Orders.pdf");
   }
 

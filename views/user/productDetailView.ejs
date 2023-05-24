@@ -503,7 +503,6 @@
     var selectedSizeDBox = document.querySelector(".sizeDBox.active")
       ? document.querySelector(".sizeDBox.active").textContent
       : 0;
-    console.log(selectedSizeDBox);
     if (selectedSizeDBox == 0) {
       let message = $("<p>").text("Please select a size").css({
         color: "#ff0000",
@@ -527,9 +526,7 @@
       var quantity = document.querySelector("#quantityDnumber")
         ? document.querySelector("#quantityDnumber").value
         : 1;
-      console.log(productId);
-      console.log(selectedSizeDBox);
-      console.log(quantity);
+      
       // Send the data to the server
       fetch("/addToCart", {
         method: "POST",
@@ -560,7 +557,6 @@
       url: "/postFromCart",
       method: "POST",
       success: function (response) {
-        console.log(response);
         $("#sideCart").html(response);
         var cartcount = parseInt($("#cartvalue").attr("data-notify")) + 1;
         $(".cartvalue").attr("data-notify", cartcount);

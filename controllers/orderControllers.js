@@ -75,7 +75,6 @@ module.exports = {
         { [`Quantity.${sizes}`]: 1 }
       );
       const balance = k[0].Quantity[sizes];
-      console.log(balance);
       if (balance < cartItem.quantity) {
         return res.status(200).json({ noStock: true });
       } else {
@@ -159,7 +158,6 @@ module.exports = {
         },
       ],
     });
-    console.log(newOrder);
     try {
       const response = await newOrder.save();
       const orderId = response._id;
@@ -178,7 +176,6 @@ module.exports = {
     let total = req.order.totalAmount; // Get total from the order object
     total = parseInt(total);
     const orderId = req.order._id; // Get orderId from the order object
-    console.log(total);
     if (req.body.paymentMethod === "COD") {
       Order.findOneAndUpdate(
         { _id: orderId },
@@ -212,8 +209,6 @@ module.exports = {
       console.log("Reached RazorPay");
       const strId = orderId.toString();
       payementController.generateRazorpay(strId, total).then((response) => {
-        console.log(response, "responsee");
-        console.log(strId, "ordeereeee");
         res.json({ razorpay: true, response });
       });
     }
@@ -232,7 +227,6 @@ module.exports = {
       },
       { $unwind: "$products" },
     ]);
-    console.log(orderDetails);
 
     for (const product of orderDetails) {
       const productId = product.products.productId;
@@ -249,7 +243,6 @@ module.exports = {
         size = "extraLarge";
       }
 
-      console.log(size);
       await Product.updateOne(
         { _id: productId },
         { $inc: { [`Quantity.${size}`]: -quantity } }
@@ -277,7 +270,6 @@ module.exports = {
       payementController
         .verifyPayment(req.body)
         .then(() => {
-          console.log(req.body, "req.body");
           const orderId = req.body.order.receipt; // get the orderId from the request body
           Order.findOneAndUpdate(
             { _id: orderId },
@@ -307,7 +299,6 @@ module.exports = {
   },
   getOrdersList: async (req, res, next) => {
     try {
-      console.log(req.params.id);
       const userOrdersList = await Order.findOne({
         _id: new mongoose.Types.ObjectId(req.params.id),
       }).populate({
@@ -428,7 +419,6 @@ module.exports = {
       console.log("Successfully updated order status");
       res.json({ status: true });
     } catch (error) {
-      console.log(req.body);
       next(error);
     }
   },
@@ -507,7 +497,6 @@ module.exports = {
     ]);
 
     const orderList = result.orders;
-    console.log(orderList[0].products[0]);
     const totalOrdersCount = result.totalCount[0]
       ? result.totalCount[0].totalCount
       : 0;
@@ -526,7 +515,6 @@ module.exports = {
       startIndex: startIndex,
       endIndex: endIndex,
     };
-    console.log(req.pagination);
     next();
   },
   //merchant
@@ -605,7 +593,6 @@ module.exports = {
         { $limit: count },
       ]);
       const orderList = result;
-      console.log(orderList[0]);
 
       const totalOrdersCount = orderList ? orderList.length : 0;
 
@@ -623,7 +610,6 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
-      console.log(req.pagination);
       next();
     } catch (error) {
       // Handle the error appropriately
@@ -690,7 +676,6 @@ module.exports = {
       result && result.products && result.products.length > 0
         ? result.products[0]
         : [];
-    console.log(orderList);
     req.orderList = orderList;
     res.render("merchant/orderProductView", {
       title: "merchant",
@@ -713,7 +698,6 @@ module.exports = {
         { $set: { "products.$.status": req.body.data } },
         { new: true }
       );
-      console.log(updatedOrder);
       res.status(200).send({ success: true });
     } catch (error) {
       console.log(error);
@@ -753,7 +737,6 @@ module.exports = {
     const totalPages = Math.ceil(totalOrdersCount / count);
 
     const endIndex = Math.min(startIndex + count, totalOrdersCount);
-    console.log(orderList);
     req.orderList = orderList;
     req.pagination = {
       totalCount: totalOrdersCount,
@@ -769,7 +752,6 @@ module.exports = {
   productcount: async (productId, size) => {
     try {
       let canceled = "canceled"; // Replace with the actual value of the canceled status
-      console.log("productId:", productId, "size:", size);
       const saleCount = await Order.aggregate([
         { $unwind: "$products" },
         {
@@ -799,7 +781,6 @@ module.exports = {
         },
       ]);
 
-      console.log("saleCount:", saleCount); // Log the output to see if it contains any data
 
       if (saleCount && saleCount.length > 0) {
         return saleCount[0].totalQuantity;
@@ -890,9 +871,7 @@ module.exports = {
     let pendingOrder = 0;
     orderList.forEach((order) => {
       order.products.forEach((product) => {
-        console.log(
-          product.currentStatus[product.currentStatus.length - 1].currentStatus
-        );
+    
         if (
           product.currentStatus[product.currentStatus.length - 1]
             .currentStatus === "Completed"
@@ -901,7 +880,6 @@ module.exports = {
             totalCompleteAmount += item.quantity * product.amount;
           });
           totalCompleteOrder += 1;
-          console.log(totalCompleteAmount + "totalCompleteAmount");
         } else if (
           product.currentStatus[product.currentStatus.length - 1]
             .currentStatus === "adminCancel" ||
@@ -951,7 +929,6 @@ module.exports = {
       totalReturnedPendingOrder,
       pendingOrder,
     };
-    console.log(req.totalresult);
     const [resulte] = await Order.aggregate([
       {
         $match: {
@@ -1033,7 +1010,6 @@ module.exports = {
     ]);
 
     req.weekreport = resulte;
-    console.log(req.weekreport);
 
     next();
     // Get the orders with status 'Completed' and 'Returned' for a specific merchant
@@ -1185,7 +1161,6 @@ module.exports = {
 
     req.monthlyData = monthlyData;
     console.log("hhkj");
-    console.log(monthlyData);
     next();
   },
 
@@ -1417,7 +1392,6 @@ module.exports = {
       resultReturned,
       resultCancelled,
     ];
-    console.log(req.resultSellRate);
     next();
   },
 
@@ -1446,8 +1420,6 @@ module.exports = {
           today.getMonth(),
           today.getDate() - today.getDay() + 6
         );
-        console.log(weekStart, "weekstart");
-        console.log(weekEnd, "weekEnd");
       } else if (selector.startsWith("day")) {
         day = new Date(selector.slice(4));
         day.setHours(0, 0, 0, 0);
@@ -1560,7 +1532,6 @@ module.exports = {
     const endIndex = Math.min(startIndex + count, totalOrdersCount);
 
     req.salesList = salesList;
-    console.log(req.salesList[0], "rafhath", "rafees");
     req.pagination = {
       totalCount: totalOrdersCount,
       totalPages: totalPages,
@@ -1569,7 +1540,6 @@ module.exports = {
       startIndex: startIndex,
       endIndex: endIndex,
     };
-    console.log(req.pagination);
     next();
   },
   salesMerchantReport: async (req, res, next) => {
@@ -1683,9 +1653,7 @@ module.exports = {
     ];
 
     const result = await Order.aggregate(pipeline);
-    console.log(result);
     const salesMerchantList = result[0].paginatedResults || [];
-    console.log(salesMerchantList);
     const totalOrdersCount = result[0].totalCount[0]
       ? result[0].totalCount[0].totalCount
       : 0;
@@ -1742,9 +1710,7 @@ module.exports = {
     ];
 
     const result = await Order.aggregate(pipeline);
-    console.log(result);
     const salesSalesReport = result[0].paginatedResults || [];
-    console.log(salesSalesReport);
     const totalOrdersCount = result[0].metadata[0]
       ? result[0].metadata[0].totalCount
       : 0;
@@ -1817,10 +1783,8 @@ module.exports = {
         { $limit: count },
       ]);
 
-      console.log(result);
 
       const orderList = result[0].orders;
-      console.log(orderList);
 
       const totalOrdersCount = result[0].totalCount[0].totalCount;
 
@@ -1838,7 +1802,6 @@ module.exports = {
         startIndex: startIndex,
         endIndex: endIndex,
       };
-      console.log(req.pagination);
       next();
     } catch (error) {
       // Handle the error appropriately

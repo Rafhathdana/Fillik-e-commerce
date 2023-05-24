@@ -93,8 +93,7 @@ module.exports = {
   statusCodeUpdate: async (req, res, next) => {
     try {
       const datainuser = await coupon.findById(req.params.userId);
-      console.log(datainuser); // Check if datainuser is being logged correctly
-
+  
       let value;
       if (datainuser && datainuser.status) {
         value = false;
@@ -139,7 +138,6 @@ module.exports = {
         status: true,
         expiryDate: { $gte: currentDateTime },
       });
-      console.log(code);
       if (code) {
         const userUsedCount = await order.countDocuments({
           userId: req.session.user._id,
