@@ -94,25 +94,15 @@
           <form id="signin-form" method="post">
             <div class="form-floating mb-3">
               <input
-                type="email"
+                type="mobile"
                 class="form-control"
-                id="email"
-                name="email"
-                placeholder="name@example.com"
+                id="mobile"
+                name="mobile"
+                placeholder="Mobile Number"
               />
-              <label for="email">Email address</label>
+              <label for="email">Mobile Number</label>
             </div>
 
-            <div class="form-floating mb-3">
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                name="password"
-                placeholder="Password"
-              />
-              <label for="password">Password</label>
-            </div>
             <div class="mb-4">
               <div class="form-check">
                 <label
@@ -129,11 +119,17 @@
               </div>
             </div>
             <% if(locals.err_msg) { %>
-            <div class="alert alert-danger mt-2" timeout="4000" role="alert" }>
-              <%=err_msg %>
+            <div class="alert alert-danger mt-2" timeout="4000" role="alert">
+              <%= err_msg %>
             </div>
-            <% } %>
 
+            <% } %>
+            <div
+              class="alert alert-danger mt-2 d-none"
+              timeout="4000"
+              role="alert"
+              id="raf"
+            ></div>
             <div class="d-grid justify-content-center">
               <button
                 class="btn btn-signin btn-lg mt-3"
@@ -161,12 +157,12 @@
             <a href="/merchant/signup" class="text-white">Create New User</a>
           </div>
           <div class="d-flex justify-content-between links">
-            <a href="/merchant/otpLogin" class="text-white" id="forget"
-              >Login with Otp</a
-            >
+            <a href="/merchant/login" class="text-white" id="forget"
+              >Nromal Login
+            </a>
             <!-- <a href="/signup" class="text-white">Create New User</a> -->
           </div>
-          <!-- <div id="otp-section" class="d-none">
+          <div id="otp-section" class="d-none">
             <form>
               <h6>OTP</h6>
               <div class="pin-input">
@@ -207,7 +203,12 @@
                 >back</a
               >
             </div>
-          </div> -->
+            <div class="d-flex justify-content-between links">
+              <a onclick="resend()" class="text-white d-none" id="present"
+                >resend Otp</a
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -218,38 +219,33 @@
 <script>
   $(document).ready(function () {
     $.validator.addMethod(
-      "email",
+      "number",
       function (value, element) {
-        return (
-          this.optional(element) ||
-          /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(value)
-        );
+        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
       },
-      "Please enter a valid email address"
+      "numbers only allowed"
     );
+
     $("#signin-form").validate({
       rules: {
-        email: {
+        mobile: {
           required: true,
-          email: true,
-        },
-        password: {
-          required: true,
-          minlength: 8,
+          maxlength: 10,
+          minlength: 10,
+          number: true,
         },
         termsCheckbox: {
           required: true,
         },
       },
       messages: {
-        email: {
-          required: "Please enter your email address",
-          email: "Please enter a valid email address",
+        mobile: {
+          required: "Please enter Mobile Number",
+          minlength: "10 digit indian number should be there",
+          maxlength: "maximum 10 digit allowed in indian number",
+          number: "only numbers allowed",
         },
-        password: {
-          required: "Please enter a password",
-          minlength: "Your password must be at least 8 characters long",
-        },
+
         termsCheckbox: {
           required: "Please agree to the Terms & Conditions",
         },
@@ -277,7 +273,7 @@
     );
   });
 </script>
-<!-- <script>
+<script>
   const inputs = document.querySelectorAll(".pin-box");
 
   inputs.forEach((input, index) => {
@@ -298,8 +294,7 @@
       }
     });
   });
-</script> -->
-<!-- 
+</script>
 <script>
   const signupForm = document.getElementById("signin-form");
   const otpSection = document.getElementById("otp-section");
@@ -309,22 +304,33 @@
     const validator = $("#signin-form").validate();
     if (validator.form()) {
       const mobileInput = document.getElementById("mobile").value;
-      const emailInput = document.getElementById("email").value;
 
-      if (emailInput) {
-        checkEmailExists(emailInput);
+      if (mobileInput) {
+        validateMobile(mobileInput);
       } else {
+        const alertDiv = $("#raf");
+        alertDiv.text("Mobile not exist");
+        alertDiv.removeClass("d-none");
+        alertDiv.addClass("alert-success");
+
+        setTimeout(function () {
+          alertDiv.addClass("d-none");
+        }, 4000);
         normalSection();
       }
     }
   });
-
-  async function checkEmailExists(email) {
-    console.log(email);
-    fetch("`/emailexists", {
+  function resend() {
+    const mobileInput = document.getElementById("mobile").value;
+    if (mobileInput) {
+      validateMobile(mobileInput);
+    }
+  }
+  function validateMobile(mobile) {
+    fetch("/mobileexists", {
       method: "POST",
       body: JSON.stringify({
-        email: email,
+        mobile: mobile,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -334,21 +340,21 @@
         return response.json(); // get the response body
       })
       .then((data) => {
+        console.log(data);
+
         if (data.success) {
-          sendOTP(data.mobile);
+          sendOTP(mobile);
         } else {
-          swal("Email Not registered");
-          normalSection();
+          return false;
         }
       })
       .catch((error) => {
         console.error(error);
-        swal("Error verifying email");
+        alert("An error occurred while verifying OTP. Please try again later.");
       });
   }
-
   function sendOTP(mobile) {
-    fetch("`/sendotp", {
+    fetch("/sendotp", {
       method: "POST",
       body: JSON.stringify({
         mobile: mobile,
@@ -369,14 +375,12 @@
         } else {
           console.log(data);
           normalSection();
-          swal("OTP Not sended. Please try again.");
+          swal("OTP Not sent. Please try again.");
         }
       })
       .catch((error) => {
         console.error(error);
-        alert(
-          "An error occurred while sending verifying OTP. Please try again later."
-        );
+        alert("An error occurred while verifying OTP. Please try again later.");
       });
   }
 
@@ -385,19 +389,19 @@
     otpSection.classList.remove("d-none");
     present.classList.remove("d-none");
   }
+
   function normalSection() {
     otpSection.classList.add("d-none");
     signupForm.classList.remove("d-none");
     present.classList.add("d-none");
   }
+
   const verifyOTPButton = document.querySelector(".btn-verify-otp");
-  verifyOTPButton.addEventListener("click", () => {
-    let otp = document.getElementById("box1").value;
-    otp += document.getElementById("box2").value;
-    otp += document.getElementById("box3").value;
-    otp += document.getElementById("box4").value;
-    otp += document.getElementById("box5").value;
-    otp += document.getElementById("box6").value;
+  verifyOTPButton.addEventListener("click", async () => {
+    let otp = "";
+    for (let i = 1; i <= 6; i++) {
+      otp += document.getElementById(`box${i}`).value;
+    }
     console.log(otp);
     if (verifyOTP(otp)) {
       console.log("hai");
@@ -405,68 +409,34 @@
       swal("Invalid OTP!");
     }
   });
+
   async function verifyOTP(otp) {
-    var processing = "Please Wait";
-    $("#verifyOtp").text(processing).css("cursor", "None");
+    const processing = "Please Wait";
+    const mobileInput = document.getElementById("mobile").value;
+    $("#verifyOtp").text(processing).css("cursor", "none");
     console.log(otp);
     try {
-      const response = await fetch("`/verifyotp", {
+      const response = await fetch("/verifyotpLogin", {
         method: "POST",
         body: JSON.stringify({
           userOtp: otp,
+          mobile: mobileInput,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const data = await response.json();
-
-      console.log(data);
-
-      if (data.success) {
-        console.log(data);
-        // OTP verification successful, move to the signinUser()
-        signinUser();
-        // document.querySelector('form').submit();
+      if (response.ok) {
+        window.location.href = "/login";
       } else {
-        console.log(data);
-        // OTP verification failed, display an error message
-        swal("Invalid OTP!");
-        var processing = "Verify OTP";
-        $("#verifyOtp").text(processing).css("cursor", "Pointer");
-        showOTPSection();
+        swal("An error occurred. Please try again later.");
       }
     } catch (error) {
       console.error(error);
-      swal("An error occurred while verifying OTP. Please try again later.");
+      swal("An error occurred. Please try again later.");
     }
   }
+</script>
 
-  function signinUser() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    fetch("`/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          window.location.href = "`/login";
-        } else {
-          swal("An error occurred. Please try again later.");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        swal("An error occurred. Please try again later.");
-      });
-  }
-</script> -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

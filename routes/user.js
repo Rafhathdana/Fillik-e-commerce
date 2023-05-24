@@ -215,6 +215,6 @@ router.get("/about", cart, wish, userController.about);
 router.get("/contact", cart, wish, userController.contact);
 router.post("/contact", verify, contactController.addUserComplaint);
 router.post("/contactguest", contactController.addGuestComplaint);
-router.post("/changeprofile", verify, userController.changePhoto);
+router.post("/changeprofile", userController.changePhoto);
 
 module.exports = router;

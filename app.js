@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const expresslayout = require("express-ejs-layouts");
 var db = require("./config/connection");
+const fileUpload = require("express-fileupload");
 
 var usersRouter = require("./routes/user");
 var merchantRouter = require("./routes/merchant");
@@ -24,6 +25,7 @@ app.set("layout", "./layout/layout");
 app.use(expresslayout);
 app.use(logger("dev"));
 app.use(express.json());
+app.use(fileUpload());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));

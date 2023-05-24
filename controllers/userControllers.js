@@ -13,6 +13,8 @@ const emailconnect = require("../config/emailconnect");
 const Wishlist = require("../models/wishlistSchema");
 const fs = require("fs");
 const { productList } = require("./productController");
+const multer = require("multer");
+var path = require("path");
 module.exports = {
   getSignUp: (req, res, next) => {
     res.render("user/signup", {
@@ -1145,22 +1147,6 @@ module.exports = {
       console.log(error);
     }
   },
-  verifOtpEmail: async (req, res, next) => {
-    try {
-      if (parseInt(req.body.userOtp) === req.session.otP) {
-        res.status(200).send({
-          success: true,
-          response,
-          message: "OTP verified successfully",
-        });
-      } else {
-        req.session.errmsg = "Invalid Otp";
-        res.status(500).send({ success: false, message: "Invalid Otp" });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  },
 
   about: async (req, res, next) => {
     res.render("user/about", {
@@ -1403,35 +1389,45 @@ module.exports = {
     }
   },
   changePhoto: async (req, res, next) => {
+    console.log("heheheheh");
     try {
-      const file = req.files && req.files.file; // Access the uploaded file using req.files
-      console.log(file);
-      if (file) {
-        const userId = req.session.user._id;
-        const filePath = `/images/userImages/${userId}`;
+      console.log(req.body, req.files);
+      const userId = req.session.user._id;
+
+      if (req.files && req.files.image) {
+        const file = req.files.image;
+        const filePath = `public/images/userImages/`;
         const fileName = `${userId}.${file.name.split(".").pop()}`;
+        console.log(fileName);
+        const existingImagePath = `${filePath}/${fileName}`;
+        console.log(existingImagePath);
 
-        // Check if the user has an existing image
-        const user = await User.findById(userId);
-        if (user.images) {
-          // Delete the existing image file
-          const existingImagePath = `${filePath}/${user.images}`;
-          if (fs.existsSync(existingImagePath)) {
-            fs.unlinkSync(existingImagePath);
+        file.mv(filePath + fileName, async (err) => {
+          if (err) {
+            throw err;
           }
-        }
+          console.log("File moved to the destination");
 
-        // Upload the file to the specified path
-        await file.mv(`${filePath}/${fileName}`);
+          let updatedUser = await User.findById(userId);
 
-        // Update the image path in the user's database record
-        user.images = `${userId}/${fileName}`;
-        await user.save();
+          if (!updatedUser.image) {
+            // If the field doesn't exist, create it
+            updatedUser.image = fileName;
+          } else {
+            // If the field exists, update it
+            updatedUser.image = fileName;
+          }
 
-        req.session.user = user;
+          updatedUser = await updatedUser.save();
+
+          console.log("Image path updated in the database", updatedUser);
+          req.session.user = updatedUser;
+          res.status(200).json({
+            message: "Profile updated successfully",
+            status: 200,
+          });
+        });
       }
-
-      res.redirect("/profile");
     } catch (error) {
       next(error);
     }

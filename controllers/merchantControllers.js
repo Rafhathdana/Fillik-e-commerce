@@ -7,9 +7,10 @@ const bcrypt = require("bcrypt");
 const { response } = require("../app");
 const multer = require("multer");
 const mongoose = require("mongoose");
+const emailconnect = require("../config/emailconnect");
 module.exports = {
   getLogin: (req, res, next) => {
-    res.render("merchant/signin2", {
+    res.render("merchant/signin", {
       title: "merchant",
       merchantLoggedin: null,
       noShow: true,
@@ -73,6 +74,16 @@ module.exports = {
       res.redirect("/merchant/signup");
     }
   },
+  getSignOtpIn: (req, res, next) => {
+    res.render("merchant/otpLogin", {
+      title: "user",
+      err_msg: req.session.errmsg,
+      loggedin: false,
+      noShow: true,
+    });
+    req.session.errmsg = null;
+  },
+
   postSignin: async (req, res) => {
     try {
       const newMerchant = await Merchant.findOne({ email: req.body.email });
@@ -143,6 +154,117 @@ module.exports = {
       console.log(error);
     }
   },
+  verifyMobileOtp: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        const newUser = await Merchant.findOne({ mobile: req.body.mobile });
+        if (newUser) {
+          if (newUser.isActive === true) {
+            console.log("user exists");
+            req.session.merchant = newUser;
+            req.session.merchantLoggedIn = true;
+            console.log(newUser);
+          } else {
+            req.session.errmsg = "Account was Blocked. Contact Us.";
+            res.status(402).redirect("/login");
+          }
+        } else {
+          req.session.errmsg = "Invalid Username or Password";
+          res.status(400).redirect("/login");
+        }
+      } else {
+        req.session.errmsg = "Invalid OTP";
+        res.status(500).send({ success: false, message: "Invalid OTP" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  forgetPassword: async (req, res, next) => {
+    res.render("merchant/forgetPassword", {
+      title: "merchant",
+      noShow: true,
+      err_msg: req.session.errmsg,
+      loggedin: false,
+    });
+    req.session.errmsg = null;
+  },
+  sendOtpEmail: (req, res, next) => {
+    try {
+      const verifiedUser = Merchant.findOne({
+        email: req.body.email,
+        isActive: true,
+      });
+
+      if (verifiedUser) {
+        const otp = Math.floor(100000 + Math.random() * 871037);
+        req.session.otP = otp;
+        emailconnect
+          .EMAILRESETOTP(req.body.email, req.session.otP)
+          .then((response) => {
+            response.Success = true;
+            res.status(200).send({
+              response,
+              Success: true,
+              message: "OTP Sent successfully",
+            });
+          })
+          .catch((error) => {
+            res
+              .status(500)
+              .send({ Success: false, message: "Error sending OTP" });
+          });
+      } else {
+        res.status(200).send({
+          Success: false,
+          noEmail: true,
+          message: "Enter proper Account",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  verifyedOtp: async (req, res, next) => {
+    try {
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        req.session.emailVerified = true;
+        req.session.emailname = req.body.email;
+        res.status(200).send({
+          success: true,
+          response,
+          message: "OTP verified successfully",
+        });
+      } else {
+        req.session.emailVerified = false;
+        req.session.errmsg = "Invalid Otp";
+        res.status(500).send({ success: false, message: "Invalid Otp" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  updatePassword: async (req, res, next) => {
+    try {
+      if (req.session.emailVerified) {
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        await Merchant.findOneAndUpdate(
+          { email: req.session.emailname },
+          { password: hashedPassword }
+        );
+        res.status(200).send({
+          success: true,
+        });
+      } else {
+        req.session.emailVerified = false;
+        res.status(500).send({ success: false });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   statusProductUpdate: async (req, res, next) => {
     try {
       const datainuser = await Product.findById(req.params.userId);
@@ -225,19 +347,38 @@ module.exports = {
 
       if (vMerchant) {
         response.success = false;
-        res.status(200).send({
+        res.status(201).send({
           response,
           success: false,
           message: "Merchant found",
         });
       } else {
-        res.status(500).send({ success: true, message: "No Merchant found" });
+        res.status(200).send({ success: true, message: "No Merchant found" });
       }
     } catch (error) {
       console.log(error);
       res
         .status(500)
         .send({ success: false, message: "Error verifying Merchant" });
+    }
+  },
+  mobileVerify: async (req, res, next) => {
+    const response = {};
+    try {
+      const newUser = await Merchant.findOne({ mobile: req.body.mobile });
+      if (newUser) {
+        response.success = true;
+        res.status(200).send({
+          response,
+          success: true,
+          message: "User found",
+        });
+      } else {
+        res.status(500).send({ success: false, message: "No user found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ success: false, message: "Error verifying user" });
     }
   },
   emailPasswordVerify: async (req, res, next) => {
@@ -531,6 +672,45 @@ module.exports = {
       req.session.admin.orderThisYear = orderThisYear;
       console.log(orderThisYear, "details of this year");
       return res.redirect("/admin/sales-report");
+    }
+  },
+  changePhoto: async (req, res, next) => {
+    try {
+      const merchantId = req.session.merchant._id;
+
+      if (req.files && req.files.image) {
+        const file = req.files.image;
+        const filePath = `public/images/merchantImages/`;
+        const fileName = `${merchantId}.${file.name.split(".").pop()}`;
+
+        file.mv(filePath + fileName, async (err) => {
+          if (err) {
+            throw err;
+          }
+          console.log("File moved to the destination");
+
+          let updatedUser = await Merchant.findById(merchantId);
+
+          if (!updatedUser.image) {
+            // If the field doesn't exist, create it
+            updatedUser.image = fileName;
+          } else {
+            // If the field exists, update it
+            updatedUser.image = fileName;
+          }
+
+          updatedUser = await updatedUser.save();
+
+          console.log("Image path updated in the database", updatedUser);
+          req.session.user = updatedUser;
+          res.status(200).json({
+            message: "Profile updated successfully",
+            status: 200,
+          });
+        });
+      }
+    } catch (error) {
+      next(error);
     }
   },
 };

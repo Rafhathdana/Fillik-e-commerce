@@ -419,7 +419,7 @@
       $("#changePassword").submit((e) => {
         e.preventDefault();
         $.ajax({
-          url: "/merchant/update-password",
+          url: "/merchant/updatePassword",
           data: $("#changePassword").serialize(),
           method: "post",
           success: (response) => {
@@ -460,7 +460,18 @@
             cancelButtonText: "Cancel",
           }).then((result) => {
             if (result.isConfirmed) {
-              document.getElementById("myForm").submit();
+              const formData = new FormData();
+              formData.append("image", file);
+
+              var xhr = new XMLHttpRequest();
+              xhr.open("POST", "/merchant/changeprofile", true);
+              xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  swal("Profile updated successfully", "success");
+                  window.location.reload();
+                }
+              };
+              xhr.send(formData);
             }
           });
         }

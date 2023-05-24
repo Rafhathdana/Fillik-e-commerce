@@ -18,6 +18,16 @@
         <div class="card mb-4">
           <div class="card-body text-center">
             <form id="myForm">
+              <% if(userData.image){ %>
+              <img
+                src="/images/userImages/<%=userData.image%>"
+                alt="avatar"
+                class="rounded-circle img-fluid"
+                style="width: 150px"
+                onclick="insertImage()"
+              />
+
+              <% }else{ %>
               <img
                 src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                 alt="avatar"
@@ -25,6 +35,7 @@
                 style="width: 150px"
                 onclick="insertImage()"
               />
+              <% } %>
             </form>
             <h5 class="my-3"><%= userData.fullName %></h5>
           </div>
@@ -437,7 +448,7 @@
         input.addEventListener("change", handleFileSelection);
         input.click();
       }
-    
+
       function handleFileSelection(event) {
         const file = event.target.files[0];
         if (file) {
@@ -450,32 +461,26 @@
           }).then((result) => {
             if (result.isConfirmed) {
               const formData = new FormData();
-              formData.append("file", file);
-    
-              fetch("/changeprofile", {
-                method: "POST",
-                body: formData,
-              })
-                .then((response) => {
-                  // Handle the response from the server
-                  if (response.ok) {
-                    // Successful response
-                    // You can show a success message or perform any other action
-                    console.log("Image changed successfully");
-                  } else {
-                    // Error response
-                    console.log("Failed to change image");
-                  }
-                })
-                .catch((error) => {
-                  // Handle any errors that occur during the AJAX request
-                  console.log("An error occurred:", error);
-                });
+              formData.append("image", file);
+              // console.log("formaaa", formData);
+              // console.log("eee ", formData.get("image"));
+              let temp = {
+                name: "heheheh",
+              };
+              var xhr = new XMLHttpRequest();
+              xhr.open("POST", "/changeprofile", true);
+              xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                  swal("Profile updated successfully", "success");
+                  window.location.reload();
+                }
+              };
+              xhr.send(formData);
             }
           });
         }
       }
-    
+
       function deleteAddress(id) {
         Swal.fire({
           text: "Are you sure?",
@@ -512,6 +517,5 @@
         });
       }
     </script>
-    
   </main>
 </div>

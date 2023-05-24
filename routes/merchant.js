@@ -30,6 +30,7 @@ router.get(
 ); //almost
 router.get("/signup", merchantauth, merchantController.getSignIn); //almost
 router.get("/login", merchantauth, merchantController.getLogin); //almost
+router.get("/otpLogin", merchantauth, merchantController.getSignOtpIn);
 router.get(
   "/addproduct",
   merchantverify,
@@ -43,9 +44,19 @@ router.get(
   filterController.getAllCategory,
   productController.getProductList
 );
-router.get("/profile", merchantverify, merchantController.getProfile);
 router.post("/signup", merchantauth, merchantController.postSignup);
 router.post("/login", merchantauth, merchantController.postSignin);
+router.post("/mobileexists", merchantController.mobileVerify);
+router.get("/forgetPassword", merchantauth, merchantController.forgetPassword);
+router.post(
+  "/verifyotpLogin",
+  merchantauth,
+  merchantController.verifyMobileOtp
+); //otp login
+router.post("/emailOtp", merchantauth, merchantController.sendOtpEmail);
+router.post("/verifyedotp", merchantauth, merchantController.verifyedOtp); //verify otp when forget password is occured
+router.post("/updatePassword", merchantController.updatePassword); //change password
+router.get("/profile", merchantverify, merchantController.getProfile);
 router.get(
   "/editproduct/:Id",
   merchantverify,
@@ -103,4 +114,5 @@ router.post(
   merchantController.salesList
 );
 router.post("/updateOrderStatus", merchantverify, orderControllers.updateOrder);
+router.post("/changeprofile",merchantverify, merchantController.changePhoto);
 module.exports = router;

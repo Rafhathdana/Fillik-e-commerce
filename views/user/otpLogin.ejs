@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <meta name="generator" content="Hugo 0.111.3" />
-    <title>Fillik Merchant</title>
+    <title>Fillik Login</title>
     <link
       href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
       rel="stylesheet"
@@ -199,6 +199,11 @@
                 >back</a
               >
             </div>
+            <div class="d-flex justify-content-between links">
+              <a onclick="resend()" class="text-white d-none" id="present"
+                >Resend Otp</a
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -311,6 +316,23 @@
       }
     }
   });
+  function resend() {
+    const mobileInput = document.getElementById("mobile").value;
+
+    if (mobileInput) {
+      validateMobile(mobileInput);
+    } else {
+      const alertDiv = $("#raf");
+      alertDiv.text("Mobile not exist");
+      alertDiv.removeClass("d-none");
+      alertDiv.addClass("alert-success");
+
+      setTimeout(function () {
+        alertDiv.addClass("d-none");
+      }, 4000);
+      normalSection();
+    }
+  }
   function validateMobile(mobile) {
     fetch("/mobileexists", {
       method: "POST",
