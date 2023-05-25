@@ -182,7 +182,7 @@ module.exports = {
 
   postFilter: async (req, res, next) => {
     try {
-      const { minPrice, maxPrice, sizes } = req.body;
+      const { minPrice, maxPrice } = req.body;
       const category = req.body["category[]"];
       const colour = req.body["colour[]"];
       const pattern = req.body["pattern[]"];
@@ -233,11 +233,7 @@ module.exports = {
         filter.colour = { $in: colour };
       }
       if (pattern) {
-        filter.colour = { $in: pattern };
-      }
-
-      if (sizes) {
-        filter.sizes = { $in: sizes };
+        filter.pattern = { $in: pattern };
       }
 
       req.filterData = filter;
@@ -250,7 +246,7 @@ module.exports = {
   statusFilterUpdate: async (req, res, next) => {
     try {
       const datainuser = await filterproduct.findById(req.params.userId);
-    
+
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
