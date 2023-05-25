@@ -371,6 +371,7 @@ module.exports = {
         loggedIn,
         fullName,
         productsList,
+        wishlist: req.wishlist,
         categories,
         pagination,
       });
@@ -427,6 +428,8 @@ module.exports = {
         loggedIn,
         fullName,
         productsList,
+        wishlist: req.wishlist,
+
         categories,
         pagination,
       });

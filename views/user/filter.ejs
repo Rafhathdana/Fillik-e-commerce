@@ -421,6 +421,7 @@
     }
 
     toChangeFilter();
+    console.log(window[`selected${optionName}s`]); // log the selected options array
   }
 
   function singleChange(value, optionName) {
@@ -442,6 +443,7 @@
         minPrice: minPrice,
       },
       success: function (response) {
+        console.log(response);
         $("#product").html(response);
       },
       error: function (xhr, status, error) {
@@ -494,6 +496,7 @@
 
   searchInput.addEventListener("keyup", function (event) {
     const searchQuery = event.target.value;
+    console.log(searchQuery + " bnmb");
     // Build query string with updated filter values
     $.ajax({
       url: "/searchItem",
@@ -509,6 +512,7 @@
         minPrice: minPrice,
       },
       success: function (response) {
+        console.log(response);
         $("#product").html(response);
       },
       error: function (xhr, status, error) {

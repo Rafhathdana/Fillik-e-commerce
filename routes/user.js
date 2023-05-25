@@ -83,6 +83,7 @@ router.get(
 router.post(
   "/postfilter",
   filterController.postFilter,
+  wish,
   userController.productFilterList
 );
 router.get(
@@ -207,6 +208,7 @@ router.get("/cancelledpayment/:id", verify, orderControllers.removeOrder);
 router.post("/changeQuantity", verify, userController.changeProductQuantity);
 router.post(
   "/searchItem",
+  wish,
   filterController.postFilter,
   userController.searchProductFilterList
 );
