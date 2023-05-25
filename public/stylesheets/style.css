@@ -214,8 +214,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  transition: transform 0.3s ease-out;
-  transform-origin: 0 0;
+  transition: none;
   z-index: 10;
 }
 
