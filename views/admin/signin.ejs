@@ -362,7 +362,11 @@
           showOTPSection();
         } else {
           normalSection();
-          swal("OTP Not sended. Please try again.");
+          swal({
+            title: "OTP Not sent",
+            text: "Please try again.",
+            icon: "error",
+          });
         }
       })
       .catch((error) => {
