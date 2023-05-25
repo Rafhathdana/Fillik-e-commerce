@@ -317,7 +317,7 @@ module.exports = {
   },
 
   getLogin: (req, res, next) => {
-    res.render("admin/signin2", {
+    res.render("admin/signin", {
       title: "admin",
       err_msg: req.session.adminerrmsg,
       adminLoggedin: null,
@@ -340,7 +340,7 @@ module.exports = {
   postSignin: async (req, res) => {
     try {
       const newAdmin = await Admin.findOne({ email: req.body.email });
-  
+
       if (newAdmin) {
         if (newAdmin.isActive === true) {
           bcrypt
@@ -519,7 +519,7 @@ module.exports = {
   statusUserUpdate: async (req, res, next) => {
     try {
       const datainuser = await users.findById(req.params.userId);
-   
+
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -546,7 +546,7 @@ module.exports = {
   statusMerchantUpdate: async (req, res, next) => {
     try {
       const datainuser = await merchants.findById(req.params.userId);
-   
+
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -682,7 +682,6 @@ module.exports = {
 
         await newBanner.save();
 
-       
         res.redirect("/admin/login");
       });
     } catch (error) {
