@@ -18,6 +18,16 @@
         <div class="card mb-4">
           <div class="card-body text-center">
             <form id="myForm">
+              <% if(merchantData.image){ %>
+              <img
+                src="/images/merchantImages/<%=merchantData.image%>"
+                alt="avatar"
+                class="rounded-circle img-fluid"
+                style="width: 150px"
+                onclick="insertImage()"
+              />
+
+              <% }else{ %>
               <img
                 src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
                 alt="avatar"
@@ -25,6 +35,7 @@
                 style="width: 150px"
                 onclick="insertImage()"
               />
+              <% } %>
             </form>
             <h5 class="my-3"><%= merchantData.brandName %></h5>
           </div>

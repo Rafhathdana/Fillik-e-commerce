@@ -340,7 +340,6 @@ module.exports = {
   postSignin: async (req, res) => {
     try {
       const newAdmin = await Admin.findOne({ email: req.body.email });
-
       if (newAdmin) {
         if (newAdmin.isActive === true) {
           bcrypt
@@ -350,6 +349,7 @@ module.exports = {
                 console.log("user exist");
                 req.session.admin = newAdmin;
                 req.session.adminLoggedIn = true;
+                req.session.otP = null;
                 res.redirect("/admin/home");
               } else {
                 console.log("password is not matching");
@@ -479,43 +479,59 @@ module.exports = {
 
   sendOtp: async (req, res, next) => {
     try {
-      const Otp = Math.floor(100000 + Math.random() * 871037);
-      req.session.otP = Otp;
-      otp
-        .OTP(req.body.mobile, req.session.otP)
-        .then((response) => {
-          response.success = true;
-          res.status(200).send({
-            response,
-            success: true,
-            message: "OTP Sent successfully",
+      if (!req.session.otpied) {
+        const otP = Math.floor(100000 + Math.random() * 871037);
+        req.session.otP = otP;
+
+        otp
+          .OTP(req.body.mobile, req.session.otP)
+          .then((response) => {
+            req.session.otpied = true;
+            response.success = true;
+            res.status(200).send({
+              response,
+              success: true,
+              message: "OTP sent successfully",
+            });
+          })
+          .catch((error) => {
+            res.status(500).send({
+              success: false,
+              message: "Error sending OTP",
+            });
           });
-        })
-        .catch((error) => {
-          res
-            .status(500)
-            .send({ success: false, message: "Error sending OTP" });
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  },
-  verifyOtp: async (req, res, next) => {
-    try {
-      if (parseInt(req.body.userOtp) === req.session.otP) {
-        res.status(200).send({
-          success: true,
-          response,
-          message: "OTP verified successfully",
-        });
       } else {
-        req.session.errmsg = "Invalid Otp";
-        res.status(500).send({ success: false, message: "Invalid Otp" });
+        res.status(200).send({
+          success: false,
+          message: "OTP already sent",
+        });
       }
     } catch (error) {
       console.log(error);
     }
   },
+
+  verifyOtp: async (req, res, next) => {
+    try {
+      req.session.otpied = null;
+      if (parseInt(req.body.userOtp) === req.session.otP) {
+        res.status(200).send({
+          success: true,
+          response: req.session.otP,
+          message: "OTP verified successfully",
+        });
+      } else {
+        req.session.errmsg = "Invalid OTP";
+        res.status(500).send({
+          success: false,
+          message: "Invalid OTP",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   statusUserUpdate: async (req, res, next) => {
     try {
       const datainuser = await users.findById(req.params.userId);
@@ -559,6 +575,31 @@ module.exports = {
           { isActive: value },
           { new: true }
         )
+        .then((updatedUser) => {
+          res.sendStatus(204);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  statusBannerUpdate: async (req, res, next) => {
+    try {
+      const datainuser = await Banner.findById(req.params.userId);
+
+      let value;
+      if (datainuser && datainuser.isActive) {
+        value = false;
+      } else {
+        value = true;
+      }
+      Banner.findOneAndUpdate(
+        { _id: req.params.userId },
+        { isActive: value },
+        { new: true }
+      )
         .then((updatedUser) => {
           res.sendStatus(204);
         })
@@ -689,6 +730,24 @@ module.exports = {
       res.redirect("/admin/login");
     }
   },
+  postEditBannerList: async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const banner = await Banner.findById(id);
+
+      banner.smallHead = req.body.smallHead;
+      banner.bigHead = req.body.bigHead;
+      banner.link = req.body.link;
+
+      await banner.save();
+
+      res.redirect("/admin/login");
+    } catch (error) {
+      console.log(error);
+      res.redirect("/admin/login");
+    }
+  },
+
   getBannerList: async (req, res, next) => {
     try {
       const count = parseInt(req.query.count) || 10;
@@ -721,6 +780,23 @@ module.exports = {
       console.log(error);
     }
   },
+  getEditBannerList: async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const banner = await Banner.findById(id);
+
+      res.render("admin/editBanner", {
+        title: "Edit Banner",
+        fullName: req.session.admin.fullName,
+        adminLoggedIn: req.session.adminLoggedIn,
+        author: "Admin#1233!",
+        banner: banner,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   salesMerchantReport: async (req, res, next) => {
     res.render("admin/salesMerchantReport", {
       title: "sales Report",
@@ -740,5 +816,40 @@ module.exports = {
       pagination: req.pagination,
       salesSalesReport: req.salesSalesReport,
     });
+  },
+  changebanner: async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      let bannerDetails = await Banner.findById(id);
+
+      if (req.files && req.files.image) {
+        const file = req.files.image;
+        const filePath = `public/images/bannerImages/`;
+        const fileName = `${bannerDetails.image}` || `${id}`;
+
+        file.mv(filePath + fileName, async (err) => {
+          if (err) {
+            throw err;
+          }
+          console.log("File moved to the destination");
+
+          if (!bannerDetails.image) {
+            // If the field doesn't exist, create it
+            bannerDetails.image = fileName;
+          } else {
+            // If the field exists, update it
+            bannerDetails.image = fileName;
+          }
+
+          bannerDetails = await bannerDetails.save();
+          res.status(200).json({
+            message: "Banner updated successfully",
+            status: 200,
+          });
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
   },
 };

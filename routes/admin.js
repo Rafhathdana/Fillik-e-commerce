@@ -96,15 +96,16 @@ router.post(
   filterController.statusFilterUpdate
 );
 router.post(
+  "/statusBannerUpdate/:userId",
+  adminVerify,
+  filterController.statusFilterUpdate
+);
+router.post(
   "/statusMerchantUpdate/:userId",
   adminVerify,
   adminController.statusMerchantUpdate
 );
-router.get(
-  "/userprofile/:userId",
-  adminVerify,
-  adminController.getUserProfile
-);
+router.get("/userprofile/:userId", adminVerify, adminController.getUserProfile);
 router.get(
   "/merchantprofile/:userId",
   adminVerify,
@@ -152,4 +153,8 @@ router.get(
   orderControllers.getsalesSalesReport,
   adminController.salesSalesReport
 );
+router.get("/editBanner/:id", adminVerify, adminController.getEditBannerList);
+router.post("/editBanner/:id", adminVerify, adminController.postEditBannerList);
+router.post("/changebanner/:id", adminController.changebanner);
+
 module.exports = router;

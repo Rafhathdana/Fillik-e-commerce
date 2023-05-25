@@ -15,11 +15,11 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>small Head</th>
-              <th>Big Head</th>
-              <th>Link</th>
-              <th>Image</th>
-              <th>Action</th>
+              <th class="col-2">Small Head</th>
+              <th class="col-2">Big Head</th>
+              <th class="col-3">Link</th>
+              <th class="col-1">Image</th>
+              <th class="col-3">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -32,7 +32,7 @@
                 <img src="/images/bannerImages/<%= banner[i].image %>" />
               </td>
               <td>
-                <div class="d-flex align-items-center">
+                <div class="align-items-center">
                   <button
                     type="button"
                     class="btn btn-success btn-sm btn-icon-text mr-3"
@@ -41,10 +41,12 @@
                     Edit
                     <i class="typcn typcn-edit btn-icon-append"></i>
                   </button>
+                  <br />
+                  <br/>
                   <button
                     type="button"
                     class="btn btn-danger btn-sm btn-icon-text"
-                    onclick="confirmDelete('<%= banner[i]._id %>')"
+                    onclick="confirmStatus('<%= banner[i]._id %>')"
                   >
                     Block
                     <i class="typcn typcn-delete-outline btn-icon-append"></i>
@@ -59,20 +61,16 @@
     </div>
   </div>
   <br />
-  <br />
-  <br />
-  <br />
 </div>
 <script>
-  function confirmDelete(Id) {
-    if (confirm("Are you sure you want to delete this user?")) {
-      // User confirmed, redirect to the delete user URL with the user's _id
-      fetch(`/admin/deleteCategory/${Id}`, { method: "DELETE" })
+  function confirmStatus(userId) {
+    if (confirm("Are you sure you want to Block this Category Code?")) {
+      fetch(`/admin/statusBannerUpdate/${userId}`, { method: "POST" })
         .then((res) => {
           if (res.ok) {
             window.location.reload();
           } else {
-            swal("unable to delete Category");
+            swal("unable to update Status");
           }
         })
         .catch((err) => {
@@ -81,7 +79,7 @@
         });
     } else {
       // User cancelled, do nothing
-      console.log("cancelled deletion ");
+      console.log("Category blocking was cancelled ");
     }
   }
 </script>
