@@ -161,10 +161,10 @@ router.post("/wishlist", (req, res, next) => {
     : userController.cachePostWishList(req, res, next);
 }); //need to test after login
 router.get(
-  "/wishlist",
+  "/wishlist",filterController.getAllCategory,
+  filterController.getFilter,
   cart,
   wish,
-  filterController.getAllCategory,
   userController.WishListData
 ); //need to test after login
 router.post("/addAddress", verify, addressControllers.postAddress); //need to test after login
