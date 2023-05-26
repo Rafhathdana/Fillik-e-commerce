@@ -1158,6 +1158,7 @@ module.exports = {
 
     for (const key in cart) {
       const item = cart[key];
+
       try {
         const product = await Products.findOne(
           {
@@ -1302,7 +1303,7 @@ module.exports = {
         };
         const productsList = items.flatMap((item) => item.product);
 
-        res.render("user/productList", {
+        res.render("user/wishlist", {
           title: "Wish List",
           fullName: req.session.user.fullName,
           loggedin: req.session.userLoggedIn,
@@ -1315,6 +1316,7 @@ module.exports = {
           pattern: req.pattern,
           genderType: req.genderType,
         });
+        return;
       } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Server error" });
@@ -1348,7 +1350,7 @@ module.exports = {
       };
 
       const productsList = products;
-      res.render("user/productList", {
+      res.render("user/wishlist", {
         title: "Wish List",
         loggedin: false,
         cartItems: req.cartItems,
@@ -1360,6 +1362,7 @@ module.exports = {
         pattern: req.pattern,
         genderType: req.genderType,
       });
+      return;
     }
   },
   changePhoto: async (req, res, next) => {
