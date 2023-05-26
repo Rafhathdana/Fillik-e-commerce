@@ -612,11 +612,13 @@ module.exports = {
     }
   },
   getCartVariableLocal: async (req, res, next) => {
-    const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
-    const cart = cache.mget(cartKeys) || {};
+    const cartKeys = Object.keys(req.session.cart || {}).filter((key) =>
+      key.startsWith("cart:")
+    );
+    const cart = req.session.cart || {};
     const cartItems = [];
 
-    for (const key in cart) {
+    for (const key of cartKeys) {
       const item = cart[key];
       try {
         const product = await Products.findOne(
@@ -627,7 +629,7 @@ module.exports = {
             images: 1,
             name: 1,
             ourPrice: 1,
-            orginalPrice: 1,
+            originalPrice: 1,
             _id: 0,
           }
         );
@@ -637,7 +639,7 @@ module.exports = {
             images: product.images,
             name: product.name,
             ourPrice: product.ourPrice,
-            orginalPrice: product.orginalPrice,
+            originalPrice: product.originalPrice,
             size: item.size,
             quantity: item.quantity,
           });
@@ -650,7 +652,7 @@ module.exports = {
     req.cartItems = cartItems;
 
     res.render("user/sidecart", {
-      title: "cart List",
+      title: "Cart List",
       loggedin: false,
       cartItems: req.cartItems,
       noShow: true,
@@ -881,11 +883,13 @@ module.exports = {
       const userId = req.session.user._id;
 
       // Add cart items to user's cart in the database
-      const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
-      const cart = cache.mget(cartKeys) || {};
+      const cartKeys = Object.keys(req.session.cart || {}).filter((key) =>
+        key.startsWith("cart:")
+      );
+      const cart = req.session.cart || {};
       const cartItems = [];
 
-      for (const key in cart) {
+      for (const key of cartKeys) {
         const cartItem = cart[key];
         if (cartItem && cartItem.productId && cartItem.size) {
           cartItems.push({
@@ -910,13 +914,13 @@ module.exports = {
       }
 
       // Add wishlist items to user's wishlist in the database
-      const wishlistKeys = cache
-        .keys()
-        .filter((key) => key.startsWith("wishlist:"));
-      const wishlist = cache.mget(wishlistKeys) || {};
+      const wishlistKeys = Object.keys(req.session.wishlist || {}).filter(
+        (key) => key.startsWith("wishlist:")
+      );
+      const wishlist = req.session.wishlist || {};
       const wishlistItems = [];
 
-      for (const key in wishlist) {
+      for (const key of wishlistKeys) {
         const wishlistItem = wishlist[key];
         const wishlistExists = await Wishlist.exists({
           userId: userId,
@@ -935,10 +939,9 @@ module.exports = {
         }
       }
 
-      // Clear cache after adding to user's cart and wishlist in the database
-      if (cache.clear && typeof cache.clear === "function") {
-        cache.clear();
-      }
+      // Clear session data after adding to user's cart and wishlist in the database
+      req.session.cart = {};
+      req.session.wishlist = {};
 
       res.redirect("/");
     } catch (error) {
@@ -1147,10 +1150,10 @@ module.exports = {
       cartItems: req.cartItems,
       wishlist: req.wishlist,
     });
-  },
+  }, // Get the cart data for the current session
+  // Get the cart data for the current session
   getCartLocal: async (req, res, next) => {
-    const cartKeys = cache.keys().filter((key) => key.startsWith("cart:"));
-    const cart = cache.mget(cartKeys) || {};
+    const cart = req.session.cart || {};
     const items = [];
 
     for (const key in cart) {
@@ -1187,11 +1190,9 @@ module.exports = {
     next();
   },
 
+  // Get the wishlist data for the current session
   getUserLocalWishList: async (req, res, next) => {
-    const wishlistKeys = cache
-      .keys()
-      .filter((key) => key.startsWith("wishlist:"));
-    const wishlistData = cache.mget(wishlistKeys) || {};
+    const wishlistData = req.session.wishlist || {};
     const items = {};
 
     for (const key in wishlistData) {
@@ -1206,10 +1207,16 @@ module.exports = {
     next();
   },
 
+  // Update the cart data for the current session
+  // Update the cart data for the current session
   cachePostCart: async (req, res, next) => {
     try {
+      if (!req.session.cart) {
+        req.session.cart = {}; // Initialize the cart object if it doesn't exist
+      }
+
       const place = "cart:" + req.body.productId + req.body.size;
-      const placeData = cache.get(place) || {};
+      const placeData = req.session.cart[place] || {};
 
       let cartItem;
       if (!placeData.productId) {
@@ -1223,42 +1230,47 @@ module.exports = {
         cartItem.quantity = req.body.quantity || cartItem.quantity + 1;
       }
 
-      cache.set(place, cartItem);
+      req.session.cart[place] = cartItem;
 
       res.status(200).send({
         success: true,
         message: "success",
       });
     } catch (error) {
-      console.error("Error updating cart in cache:", error);
+      console.error("Error updating cart in session:", error);
       res.sendStatus(500);
       next(error);
     }
   },
 
+  // Update the wishlist data for the current session
   cachePostWishList: async (req, res, next) => {
     try {
       const place = "wishlist:" + req.body.productId;
       const type = req.body.type;
+
+      if (!req.session.wishlist) {
+        req.session.wishlist = {};
+      }
+
       if (type === "add") {
-        cache.set(place, req.body.productId);
+        req.session.wishlist[place] = req.body.productId;
         console.log("done");
       } else if (type === "remove") {
-        cache.del(place);
+        delete req.session.wishlist[place];
         console.log("done");
       }
-      console.log("done");
+
       res.status(200).send({
         success: true,
         message: "success",
       });
     } catch (error) {
-      console.error("Error updating wishlist in cache:", error);
+      console.error("Error updating wishlist in session:", error);
       res.sendStatus(500);
       next(error);
     }
   },
-
   WishListData: async (req, res, next) => {
     if (req.session.userLoggedIn) {
       try {
@@ -1308,12 +1320,11 @@ module.exports = {
         res.status(500).json({ message: "Server error" });
       }
     } else {
-      const wishlistKeys = cache
-        .keys()
-        .filter((key) => key.startsWith("wishlist:"));
-      const wishlistData = cache.mget(wishlistKeys) || {};
+      const wishlistData = req.session.wishlist || {};
+      const wishlistKeys = Object.keys(wishlistData);
       let products = [];
-      for (const key in wishlistData) {
+
+      for (const key of wishlistKeys) {
         const wishlistItem = wishlistData[key];
         try {
           const product = await Products.findOne({
