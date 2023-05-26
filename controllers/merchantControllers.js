@@ -265,7 +265,7 @@ module.exports = {
   statusProductUpdate: async (req, res, next) => {
     try {
       const datainuser = await Product.findById(req.params.userId);
- 
+
       let value;
       if (datainuser && datainuser.isActive) {
         value = false;
@@ -288,6 +288,7 @@ module.exports = {
     }
   },
   getProfile: async (req, res, next) => {
+    req.session.merchant = await Merchant.findById(req.session.merchant._id);
     res.render("merchant/profile", {
       title: "profile",
       brandName: req.session.merchant.brandName,
@@ -577,7 +578,6 @@ module.exports = {
         today.getMonth(),
         today.getDate() - today.getDay() + 6
       );
-    
     } else if (selector.startsWith("day")) {
       day = new Date(selector.slice(4));
       day.setHours(0, 0, 0, 0);

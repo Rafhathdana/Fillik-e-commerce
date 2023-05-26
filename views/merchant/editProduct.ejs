@@ -244,32 +244,71 @@
                 >
               </div>
               <div class="form-group">
-                <% for(let i=1;i<= productEdit[0].images.length;i++){%>
+                <% for(let i=1; i<=productEdit[0].images.length; i++){ %>
                 <label class="block mt-4 text-sm">
                   <img
-                    src="/images/productImages/<%=productEdit[0].images[i-1]%>"
+                    src="/images/productImages/<%= productEdit[0].images[i-1] %>"
                     alt=""
                     style="width: 100px; height: auto"
-                    id="view<%=i%>"
+                    id="view<%= i %>"
                   />
                   <span class="text-gray-700 dark:text-gray-400">IMAGE</span>
                   <input
                     class="form-control block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                    placeholder="image<%=i%>"
+                    placeholder="image<%= i %>"
                     type="file"
                     name="images[]"
-                    id="image<%=i%>"
+                    id="image<%= i %>"
                     required
-                    onchange="previewImage(event, 'view<%=i%>')"
+                    onchange="previewImage(event, 'view<%= i %>')"
                   />
                 </label>
                 <% } %>
               </div>
-              <!-- in case of file uploading use in above form as enctype="multipart/form-data" -->
 
+              <!-- Additional image input -->
+              <div class="form-group">
+                <label class="form-label categoryname" for="image-input"
+                  >Additional Image</label
+                >
+                <div class="form-file">
+                  <input
+                    type="file"
+                    class="form-file-input"
+                    id="images"
+                    name="images[]"
+                    accept="image/*"
+                    multiple
+                    onchange="previewImages(event)"
+                  />
+                  <label class="form-file-label" for="images">
+                    <span class="form-file-text">Choose a file...</span>
+                    <span class="form-file-button">Browse</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="preview-container" class="row gx-3 mt-5"></div>
+              <template id="image-preview-template">
+                <div class="col-md-2">
+                  <div class="raf">
+                    <img class="raf-img-top" src="" alt="" />
+                    <div class="raf-body">
+                      <button
+                        type="button"
+                        class="btn1 btn-sm"
+                        onclick="removeImage(event)"
+                      >
+                        X
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
               <button
                 type="submit"
                 id="button"
+                onclick="submitForm('<%= productEdit[0]._id%>')"
                 class="btn btn-gradient-primary me-2"
               >
                 Submit
@@ -285,171 +324,158 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-
 <script>
-  function editProduct() {
-    let name = document.getElementById("name").value;
-    const formData = new FormData();
-    formData.append("name", name);
-    fetch("/merchant/editproduct/<%=productEdit[0]._id%>", {
-      method: "POST",
-      body: JSON.stringify(formData),
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((response) => {
-        alert("RES");
-        return response.json(); // get the response body
-      })
-      .then((data) => {
-        if (data.success) {
-          swal("done", success);
-        }
-      })
-      .catch((err) => alert(err));
+  const form = document.querySelector("#myForm");
+  const clearBtn = document.querySelector("#clearBtn");
+
+  clearBtn.addEventListener("click", (event) => {
+    event.preventDefault(); // prevent the button from submitting the form
+    form.reset(); // reset all form fields to their default values
+  });
+
+  function previewImages(event) {
+    const previewContainer = document.getElementById("preview-container");
+    previewContainer.innerHTML = ""; // Clear previous previews
+    const files = event.target.files;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = function () {
+        const imagePreviewTemplate = document.getElementById(
+          "image-preview-template"
+        );
+        const imagePreview = imagePreviewTemplate.content.cloneNode(true);
+        imagePreview.querySelector("img").src = reader.result;
+        previewContainer.appendChild(imagePreview);
+      };
+      reader.readAsDataURL(file);
+    }
   }
-  $(document).ready(function () {
+
+  function removeImage(event) {
+    const raf = event.target.closest(".raf");
+    raf.remove();
+    const previewContainer = document.getElementById("preview-container");
+    const files = document.getElementById("images").files;
+    if (previewContainer.children.length < files.length) {
+      document.getElementById("images").value = ""; // Clear selected files if images were removed
+    }
+  }
+</script>
+<script>
+  function submitForm(id) {
+    var name = document.getElementsByName("name")[0].value;
+    var genderType =
+      document.getElementsByName("genderType")[0].options[
+        document.getElementsByName("genderType")[0].selectedIndex
+      ].value;
+    var category =
+      document.getElementsByName("category")[0].options[
+        document.getElementsByName("category")[0].selectedIndex
+      ].value;
+    var colour =
+      document.getElementsByName("colour")[0].options[
+        document.getElementsByName("colour")[0].selectedIndex
+      ].value;
+    var pattern =
+      document.getElementsByName("pattern")[0].options[
+        document.getElementsByName("pattern")[0].selectedIndex
+      ].value;
+    var originalPrice = document.getElementsByName("originalPrice")[0].value;
+    var sellerPrice = document.getElementsByName("sellerPrice")[0].value;
+    var small = document.getElementsByName("small")[0].value;
+    var medium = document.getElementsByName("medium")[0].value;
+    var large = document.getElementsByName("large")[0].value;
+    var extraLarge = document.getElementsByName("extraLarge")[0].value;
+    var moreinfo = document.getElementsByName("moreinfo")[0].value;
+    // Check if any of the values is null
+    if (
+      name === null ||
+      genderType === null ||
+      category === null ||
+      colour === null ||
+      pattern === null ||
+      originalPrice === null ||
+      sellerPrice === null ||
+      small === null ||
+      medium === null ||
+      large === null ||
+      extraLarge === null ||
+      moreinfo === null
+    ) {
+      return;
+    }
+
+    // Define custom validation methods
     $.validator.addMethod(
-      "noSpecialChars",
+      "integer",
       function (value, element) {
-        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
+        return this.optional(element) || /^[0-9]+$/.test(value);
       },
-      "Special characters and spaces are not allowed"
+      "Please enter a valid integer."
     );
-    $.validator.addMethod(
-      "number",
-      function (value, element) {
-        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
-      },
-      "Numbers only allowed"
-    );
+
     $.validator.addMethod(
       "price",
       function (value, element) {
-        const sellerPrice = parseFloat(value);
-        const originalPrice = parseFloat($("#orginalPrice").val());
-        const maximumPrice = originalPrice * 0.952380952; // 95.2380952% of the original price
-
-        if (sellerPrice < maximumPrice) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-      function (params, element) {
         const originalPrice = parseFloat($("#originalPrice").val());
         const maximumPrice = originalPrice * 0.952380952;
-        return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
-          2
-        )}`;
-      }
+        return (
+          this.optional(element) ||
+          (value <= maximumPrice &&
+            value >= originalPrice &&
+            /^[0-9]+(\.[0-9]{1,2})?$/.test(value))
+        );
+      },
+      "The seller price must be within MRP, and the maximum price is Rs{maximumPrice.toFixed(2)}"
     );
 
+    // Perform form validation
     $("#myForm").validate({
       rules: {
-        name: {
+        originalPrice: {
           required: true,
-          noSpecialChars: true,
-        },
-        description: {
-          required: true,
-        },
-        genderType: {
-          required: true,
-        },
-        category: {
-          required: true,
-        },
-        colour: {
-          required: true,
-        },
-        pattern: {
-          required: true,
-        },
-        orginalPrice: {
-          required: true,
-          number: true,
+          integer: true,
         },
         sellerPrice: {
           required: true,
-          number: true,
           price: true,
         },
-
         small: {
           required: true,
-          number: true,
+          integer: true,
         },
         medium: {
           required: true,
-          number: true,
+          integer: true,
         },
         large: {
           required: true,
-          number: true,
+          integer: true,
         },
         extraLarge: {
           required: true,
-          number: true,
-        },
-        moreinfo: {
-          required: true,
+          integer: true,
         },
       },
       messages: {
-        name: {
-          required: "Please enter the name of the product",
-          noSpecialChars: "Special characters and spaces are not allowed",
-        },
-        description: {
-          required: "Please enter the description",
-        },
-        genderType: {
-          required: "Please select the gender type",
-        },
-        category: {
-          required: "Please select the category",
-        },
-        colour: {
-          required: "Please select the color",
-        },
-        pattern: {
-          required: "Please select the pattern",
-        },
-        orginalPrice: {
-          required: "Please enter the original price",
-          number: "Please enter a valid number",
+        originalPrice: {
+          required: "Please enter the original price.",
         },
         sellerPrice: {
-          required: "Please enter the seller price",
-          number: "Please enter a valid number",
-          price: function (params, element) {
-            const originalPrice = parseFloat($("#orginalPrice").val());
-            const maximumPrice = originalPrice * 0.952380952;
-            return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
-              2
-            )}`;
-          },
+          required: "Please enter the seller price.",
         },
         small: {
-          required: "Please enter the quantity for the small size",
-          number: "Please enter a valid number",
+          required: "Please enter the quantity for small size.",
         },
         medium: {
-          required: "Please enter the quantity for the medium size",
-          number: "Please enter a valid number",
+          required: "Please enter the quantity for medium size.",
         },
         large: {
-          required: "Please enter the quantity for the large size",
-          number: "Please enter a valid number",
+          required: "Please enter the quantity for large size.",
         },
         extraLarge: {
-          required: "Please enter the quantity for the extra-large size",
-          number: "Please enter a valid number",
-        },
-        moreinfo: {
-          required: "Please provide more information",
+          required: "Please enter the quantity for extra large size.",
         },
       },
       highlight: function (element) {
@@ -470,8 +496,47 @@
         }
       },
     });
-  });
+
+    // Submit the form if it's valid
+    if ($("#myForm").valid()) {
+      var file = document.getElementsByName("images").files[0];
+
+      Swal.fire({
+        title: "Are you sure you want to upload?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formData = new FormData();
+          formData.append("image", file);
+          formData.append("name", name);
+          formData.append("genderType", genderType);
+          formData.append("category", category);
+          formData.append("pattern", pattern);
+          formData.append("originalPrice", originalPrice);
+          formData.append("small", small);
+          formData.append("medium", medium);
+          formData.append("large", large);
+          formData.append("extraLarge", extraLarge);
+          formData.append("moreinfo", moreinfo);
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", `/merchant/editproduct/${id}`, true);
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              swal("Data updated successfully", "success");
+              window.location.reload();
+            }
+          };
+          xhr.send(formData);
+        }
+      });
+    }
+  }
 </script>
+
 <script>
   function previewImage(event, viewId) {
     const file = event.target.files[0];

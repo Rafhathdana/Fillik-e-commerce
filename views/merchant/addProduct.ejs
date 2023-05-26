@@ -260,6 +260,7 @@
               <button
                 type="submit"
                 id="button"
+                onclick="submitForm()"
                 class="btn btn-gradient-primary me-2"
               >
                 Submit
@@ -275,177 +276,6 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-
-<script>
-  $(document).ready(function () {
-    $.validator.addMethod(
-      "noSpecialChars",
-      function (value, element) {
-        return this.optional(element) || /^(?!\s)[a-zA-Z ]+$/.test(value);
-      },
-      "Special characters and spaces are not allowed"
-    );
-    $.validator.addMethod(
-      "number",
-      function (value, element) {
-        return this.optional(element) || /^(?!0)[0-9]+$/.test(value);
-      },
-      "Numbers only allowed"
-    );
-    $.validator.addMethod(
-      "price",
-      function (value, element) {
-        const sellerPrice = parseFloat(value);
-        const originalPrice = parseFloat($("#orginalPrice").val());
-        const maximumPrice = originalPrice * 0.952380952; // 95.2380952% of the original price
-
-        if (sellerPrice < maximumPrice) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-      function (params, element) {
-        const originalPrice = parseFloat($("#originalPrice").val());
-        const maximumPrice = originalPrice * 0.952380952;
-        return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
-          2
-        )}`;
-      }
-    );
-
-    $("#myForm").validate({
-      rules: {
-        name: {
-          required: true,
-          noSpecialChars: true,
-        },
-        description: {
-          required: true,
-        },
-        genderType: {
-          required: true,
-        },
-        category: {
-          required: true,
-        },
-        colour: {
-          required: true,
-        },
-        pattern: {
-          required: true,
-        },
-        orginalPrice: {
-          required: true,
-          number: true,
-        },
-        sellerPrice: {
-          required: true,
-          number: true,
-          price: true,
-        },
-
-        small: {
-          required: true,
-          number: true,
-        },
-        medium: {
-          required: true,
-          number: true,
-        },
-        large: {
-          required: true,
-          number: true,
-        },
-        extraLarge: {
-          required: true,
-          number: true,
-        },
-        moreinfo: {
-          required: true,
-        },
-      },
-      messages: {
-        name: {
-          required: "Please enter the name of the product",
-          noSpecialChars: "Special characters and spaces are not allowed",
-        },
-        description: {
-          required: "Please enter the description",
-        },
-        genderType: {
-          required: "Please select the gender type",
-        },
-        category: {
-          required: "Please select the category",
-        },
-        colour: {
-          required: "Please select the color",
-        },
-        pattern: {
-          required: "Please select the pattern",
-        },
-        orginalPrice: {
-          required: "Please enter the original price",
-          number: "Please enter a valid number",
-        },
-        sellerPrice: {
-          required: "Please enter the seller price",
-          number: "Please enter a valid number",
-          price: function (params, element) {
-            const originalPrice = parseFloat($("#orginalPrice").val());
-            const maximumPrice = originalPrice * 0.952380952;
-            return `The seller price must be within MRP, and the maximum price is Rs${maximumPrice.toFixed(
-              2
-            )}`;
-          },
-        },
-        small: {
-          required: "Please enter the quantity for the small size",
-          number: "Please enter a valid number",
-        },
-        medium: {
-          required: "Please enter the quantity for the medium size",
-          number: "Please enter a valid number",
-        },
-        large: {
-          required: "Please enter the quantity for the large size",
-          number: "Please enter a valid number",
-        },
-        extraLarge: {
-          required: "Please enter the quantity for the extra-large size",
-          number: "Please enter a valid number",
-        },
-        moreinfo: {
-          required: "Please provide more information",
-        },
-      },
-      highlight: function (element) {
-        $(element).closest(".form-group").addClass("is-invalid");
-      },
-      unhighlight: function (element) {
-        $(element).closest(".form-group").removeClass("is-invalid");
-      },
-      errorElement: "div",
-      errorClass: "invalid-feedback",
-      errorPlacement: function (error, element) {
-        if (element.parent(".input-group").length) {
-          error.insertAfter(element.parent());
-        } else if (element.hasClass("file-input")) {
-          error.insertAfter(element.closest(".custom-file"));
-        } else {
-          error.insertAfter(element);
-        }
-      },
-    });
-
-    $.validator.addMethod(
-      "required",
-      $.validator.methods.required,
-      "Please agree to the Terms & Conditions"
-    );
-  });
-</script>
 <script>
   const form = document.querySelector("#myForm");
   const clearBtn = document.querySelector("#clearBtn");
@@ -481,6 +311,168 @@
     const files = document.getElementById("images").files;
     if (previewContainer.children.length < files.length) {
       document.getElementById("images").value = ""; // Clear selected files if images were removed
+    }
+  }
+</script>
+<script>
+  function submitForm() {
+    var name = document.getElementsByName("name")[0].value;
+    var genderType =
+      document.getElementsByName("genderType")[0].options[
+        document.getElementsByName("genderType")[0].selectedIndex
+      ].value;
+    var category =
+      document.getElementsByName("category")[0].options[
+        document.getElementsByName("category")[0].selectedIndex
+      ].value;
+    var colour =
+      document.getElementsByName("colour")[0].options[
+        document.getElementsByName("colour")[0].selectedIndex
+      ].value;
+    var pattern =
+      document.getElementsByName("pattern")[0].options[
+        document.getElementsByName("pattern")[0].selectedIndex
+      ].value;
+    var originalPrice = document.getElementsByName("originalPrice")[0].value;
+    var sellerPrice = document.getElementsByName("sellerPrice")[0].value;
+    var small = document.getElementsByName("small")[0].value;
+    var medium = document.getElementsByName("medium")[0].value;
+    var large = document.getElementsByName("large")[0].value;
+    var extraLarge = document.getElementsByName("extraLarge")[0].value;
+    var moreinfo = document.getElementsByName("moreinfo")[0].value;
+    // Check if any of the values is null
+    if (
+      name === null ||
+      genderType === null ||
+      category === null ||
+      colour === null ||
+      pattern === null ||
+      originalPrice === null ||
+      sellerPrice === null ||
+      small === null ||
+      medium === null ||
+      large === null ||
+      extraLarge === null ||
+      moreinfo === null
+    ) {
+      return;
+    }
+
+    // Define custom validation methods
+    $.validator.addMethod(
+      "integer",
+      function (value, element) {
+        return this.optional(element) || /^[0-9]+$/.test(value);
+      },
+      "Please enter a valid integer."
+    );
+
+    $.validator.addMethod(
+      "price",
+      function (value, element) {
+        const originalPrice = parseFloat($("#originalPrice").val());
+        const maximumPrice = originalPrice * 0.952380952;
+        return (
+          this.optional(element) ||
+          (value <= maximumPrice &&
+            value >= originalPrice &&
+            /^[0-9]+(\.[0-9]{1,2})?$/.test(value))
+        );
+      },
+      "The seller price must be within MRP, and the maximum price is Rs{maximumPrice.toFixed(2)}"
+    );
+
+    // Perform form validation
+    $("#myForm").validate({
+      rules: {
+        originalPrice: {
+          required: true,
+          integer: true,
+        },
+        sellerPrice: {
+          required: true,
+          price: true,
+        },
+        small: {
+          required: true,
+          integer: true,
+        },
+        medium: {
+          required: true,
+          integer: true,
+        },
+        large: {
+          required: true,
+          integer: true,
+        },
+        extraLarge: {
+          required: true,
+          integer: true,
+        },
+      },
+      messages: {
+        originalPrice: {
+          required: "Please enter the original price.",
+        },
+        sellerPrice: {
+          required: "Please enter the seller price.",
+        },
+        small: {
+          required: "Please enter the quantity for small size.",
+        },
+        medium: {
+          required: "Please enter the quantity for medium size.",
+        },
+        large: {
+          required: "Please enter the quantity for large size.",
+        },
+        extraLarge: {
+          required: "Please enter the quantity for extra large size.",
+        },
+      },
+    });
+
+    // Submit the form if it's valid
+    if ($("#myForm").valid()) {
+      var file = document.getElementById("images").files[0];
+      if (!file) {
+        // File input is empty, handle the error here
+        alert("Please select an image to upload.");
+        return;
+      }
+
+      Swal.fire({
+        title: "Are you sure you want to upload?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formData = new FormData();
+          formData.append("image", file);
+          formData.append("name", name);
+          formData.append("genderType", genderType);
+          formData.append("category", category);
+          formData.append("pattern", pattern);
+          formData.append("originalPrice", originalPrice);
+          formData.append("small", small);
+          formData.append("medium", medium);
+          formData.append("large", large);
+          formData.append("extraLarge", extraLarge);
+          formData.append("moreinfo", moreinfo);
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/merchant/addproduct", true);
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              swal("Data updated successfully", "success");
+              window.location.reload();
+            }
+          };
+          xhr.send(formData);
+        }
+      });
     }
   }
 </script>

@@ -44,7 +44,7 @@
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
-            <form action="/admin/editBanner" method="post">
+            <form action="/admin/editBanner/<%= banner._id %>" method="post">
               <div class="row">
                 <div class="mb-3 col-md-12">
                   <label class="form-label" for="inputFirstName"
@@ -203,12 +203,14 @@
   <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
   <script>
     // Disable right-click context menu
     document.addEventListener("contextmenu", function (event) {
       event.preventDefault();
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     function insertImage(id) {
@@ -216,11 +218,13 @@
       input.type = "file";
       input.accept = "image/jpeg, image/png";
       input.setAttribute("max-size", "2097152");
-      input.addEventListener("change", handleFileSelection);
+      input.addEventListener("change", (event) =>
+        handleFileSelection(event, id)
+      );
       input.click();
     }
 
-    function handleFileSelection(event) {
+    function handleFileSelection(event, id) {
       const file = event.target.files[0];
       if (file) {
         Swal.fire({

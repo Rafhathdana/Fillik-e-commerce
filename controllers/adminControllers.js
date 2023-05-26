@@ -820,6 +820,7 @@ module.exports = {
   changebanner: async (req, res, next) => {
     try {
       const id = req.params.id;
+      console.log(id);
       let bannerDetails = await Banner.findById(id);
 
       if (req.files && req.files.image) {

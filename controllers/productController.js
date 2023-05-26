@@ -112,70 +112,68 @@ module.exports = {
       console.log(error);
     }
   },
+
   postAddProduct: async (req, res, next) => {
     try {
-      const images = [];
-      let inumb = 0;
       const productcode = Date.now().toString();
-      const filePath = `${__dirname}/../public/images/productImages/`;
 
-      var storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-          cb(null, filePath);
-        },
-        filename: function (req, file, cb) {
-          const originalName = file.originalname;
-          const fileNameParts = originalName.split(".");
-          const fileExtension = fileNameParts[fileNameParts.length - 1];
-          const fileName = `product-${productcode}-${inumb}.${fileExtension}`;
+      const images = [];
+      console.log(req.file, req.files);
+      console.log(req.body);
+      if (req.files) {
+        const files = req.files.images;
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const filePath = `public/images/productImages/`;
+          const fileName = `product-${productcode}-${i}.${file.name
+            .split(".")
+            .pop()}`;
 
-          images.push(fileName);
-          inumb++;
-          cb(null, fileName);
-        },
-      });
+          file.mv(filePath + fileName, async (err) => {
+            if (err) {
+              throw err;
+            }
 
-      const upload = multer({ storage });
+            images.push(fileName);
 
-      // use upload.array instead of upload.single
-      upload.array("images", 10)(req, res, async (err) => {
-        if (err) {
-          console.error(err);
-          res.redirect("/merchant/signup");
-          return;
+            if (i === files.length - 1) {
+              // All files uploaded, proceed with creating the product
+              const newProduct = new Product({
+                productcode: productcode,
+                merchantid: req.session.merchant._id,
+                name: req.body.name,
+                description: req.body.description,
+                category: req.body.category,
+                colour: req.body.colour,
+                pattern: req.body.pattern,
+                orginalPrice: parseInt(req.body.orginalPrice),
+                sellerPrice: parseInt(req.body.sellerPrice),
+                ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
+                genderType: req.body.genderType,
+                Quantity: {
+                  small: parseInt(req.body.small),
+                  medium: parseInt(req.body.medium),
+                  large: parseInt(req.body.large),
+                  extraLarge: parseInt(req.body.extraLarge),
+                },
+                moreinfo: req.body.moreinfo,
+                images: images,
+                isActive: true,
+              });
+
+              // Create new product after all data is available
+              await newProduct.save();
+
+              res.redirect("/merchant/login");
+            }
+          });
         }
-
-        const newProduct = new Product({
-          productcode: productcode,
-          merchantid: req.session.merchant._id,
-          name: req.body.name,
-          description: req.body.description,
-          category: req.body.category,
-          colour: req.body.colour,
-          pattern: req.body.pattern,
-          orginalPrice: parseInt(req.body.orginalPrice),
-          sellerPrice: parseInt(req.body.sellerPrice),
-          ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
-          genderType: req.body.genderType,
-          Quantity: {
-            small: parseInt(req.body.small),
-            medium: parseInt(req.body.medium),
-            large: parseInt(req.body.large),
-            extraLarge: parseInt(req.body.extraLarge),
-          },
-          moreinfo: req.body.moreinfo,
-          images: images,
-          isActive: true,
-        });
-
-        // create new product after all data is available
-        await newProduct.save();
-
-     
-        res.redirect("/merchant/login");
-      });
+      } else {
+        console.error("No images were uploaded");
+        res.redirect("/merchant/signup");
+      }
     } catch (error) {
-      console.log(error + "hai");
+      console.log(error);
       res.redirect("/merchant/signup");
     }
   },
@@ -240,63 +238,54 @@ module.exports = {
   postEditProduct: async (req, res, next) => {
     try {
       const id = req.params.Id;
+      console.log(id);
+      const product = await Product.findById(id);
+      console.log(product);
       const images = [];
-      let inumb = 0;
-      const productcode = await Product.findById(id).select("productcode");
-      const filePath = `${__dirname}/../public/images/productImages/`;
-    
+      console.log(req.files, req.body);
+      if (req.files && req.files["images[]"]) {
+        const files = req.files["images[]"];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const filePath = `public/images/productImages/`;
+          const fileName = `product-${product.productcode}-${i}.${file.name
+            .split(".")
+            .pop()}`;
 
-      var storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-          cb(null, filePath);
-        },
-        filename: function (req, file, cb) {
-          const originalName = file.originalname;
-          const fileNameParts = originalName.split(".");
-          const fileExtension = fileNameParts[fileNameParts.length - 1];
-          const fileName = `product-${productcode}-${inumb}.${fileExtension}`;
+          await file.mv(filePath + fileName);
           images.push(fileName);
-          inumb++;
-          cb(null, fileName);
-        },
-      });
-
-      const upload = multer({ storage });
-
-      // use upload.array instead of upload.single
-      upload.array("images", 10)(req, res, async (err) => {
-        if (err) {
-          console.error(err);
-          res.redirect("/merchant/signup");
-          return;
         }
+      } else {
+        console.error("No images were uploaded");
+        res.redirect("/merchant/signup");
+        return;
+      }
 
-   
-        const updatedProduct = {
-          name: req.body.name,
-          description: req.body.description,
-          category: req.body.category,
-          colour: req.body.colour,
-          pattern: req.body.pattern,
-          orginalPrice: parseInt(req.body.orginalPrice),
-          sellerPrice: parseInt(req.body.sellerPrice),
-          ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
-          genderType: req.body.genderType,
-          Quantity: {
-            small: parseInt(req.body.small),
-            medium: parseInt(req.body.medium),
-            large: parseInt(req.body.large),
-            extraLarge: parseInt(req.body.extraLarge),
-          },
-        };
-        const updatedProductDoc = await Product.findByIdAndUpdate(
-          { _id: new mongoose.Types.ObjectId(id) },
-          updatedProduct
-        );
-        res.redirect("/merchant/login");
-      });
+      const updatedProduct = {
+        name: req.body.name,
+        description: req.body.description,
+        category: req.body.category,
+        colour: req.body.colour,
+        pattern: req.body.pattern,
+        originalPrice: parseInt(req.body.originalPrice),
+        sellerPrice: parseInt(req.body.sellerPrice),
+        ourPrice: parseInt((req.body.sellerPrice / 100) * 105),
+        genderType: req.body.genderType,
+        Quantity: {
+          small: parseInt(req.body.small),
+          medium: parseInt(req.body.medium),
+          large: parseInt(req.body.large),
+          extraLarge: parseInt(req.body.extraLarge),
+        },
+        moreinfo: req.body.moreinfo,
+        images: images,
+      };
+
+      await Product.findByIdAndUpdate(id, updatedProduct);
+
+      res.redirect("/merchant/login");
     } catch (error) {
-      console.log(error + "hai");
+      console.log(error);
       res.redirect("/merchant/signup");
     }
   },
