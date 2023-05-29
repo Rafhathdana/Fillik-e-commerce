@@ -151,16 +151,13 @@
             </div>
           </form>
           <div class="d-flex justify-content-between links">
-            <a href="#" class="text-white" id="forget">Forgot Password</a>
+            <a href="/login" class="text-white" id="forget">Normal Login </a>
             <a href="/signup" class="text-white">Create New User</a>
           </div>
-          <div class="d-flex justify-content-between links">
-            <a href="/login" class="text-white" id="forget">Nromal Login </a>
-            <!-- <a href="/signup" class="text-white">Create New User</a> -->
-          </div>
+
           <div id="otp-section" class="d-none">
             <form>
-              <h6>OTP</h6>
+              <h6>OTP <span id="mainTimer"></span></h6>
               <div class="pin-input">
                 <% for (let i = 1; i < 7; i++) { %>
                 <input
@@ -176,6 +173,7 @@
                 class="btn btn-verify-otp btn-primary btn-lg mt-3"
                 type="button"
                 id="verifyOtp"
+                onClick="verifyOTPButton() "
                 style="
                   background-color: rgb(0, 0, 0);
                   color: white;
@@ -195,14 +193,19 @@
               <a
                 onclick="normalSection()"
                 class="text-white d-none"
-                id="present"
+                id="backbutton"
+                style="cursor: pointer"
                 >back</a
               >
-            </div>
-            <div class="d-flex justify-content-between links">
-              <a onclick="resend()" class="text-white d-none" id="present"
-                >Resend Otp</a
-              >
+              <a
+                onclick="resend()"
+                class="text-white d-none"
+                id="resendOtp"
+                style="cursor: pointer"
+                >Resend OTP <span id="timer"></span
+              ></a>
+
+              <!-- Element to display the timer -->
             </div>
           </div>
         </div>
@@ -212,6 +215,54 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
+
+<script>
+  var timer;
+  var countdown = 60; // Timer countdown in seconds
+  var mainTimeCount = 300; // Main timer countdown in seconds
+
+  function startTimer() {
+    countdown = 60;
+    mainTimeCount = 300;
+
+    // Disable the resend button
+    document.getElementById("resendOtp").style.color = "grey";
+    document.getElementById("resendOtp").style.pointerEvents = "none";
+
+    // Start the countdown
+    timer = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimer() {
+    countdown--;
+    mainTimeCount--;
+
+    if (mainTimeCount <= 0) {
+      // Reload the page when the main timer reaches 0
+      clearInterval(timer);
+      location.reload();
+    } else {
+      // Update the main timer display
+      document.getElementById("mainTimer").textContent =
+        "Enter OTP In: " + mainTimeCount + "s";
+    }
+
+    if (countdown <= 0) {
+      // Enable the resend button when the countdown reaches 0
+      clearInterval(timer);
+      document.getElementById("resendOtp").style.color = "";
+      document.getElementById("resendOtp").style.pointerEvents = "auto";
+      document.getElementById("timer").textContent = ""; // Clear the timer display
+    } else {
+      // Update the timer display
+      document.getElementById("timer").textContent = "  in: " + countdown + "s";
+    }
+  }
+
+  // Start the timer initially
+</script>
+
 <script>
   $(document).ready(function () {
     $.validator.addMethod(
@@ -294,7 +345,8 @@
 <script>
   const signupForm = document.getElementById("signin-form");
   const otpSection = document.getElementById("otp-section");
-  const present = document.getElementById("present");
+  const resendOtp = document.getElementById("resendOtp");
+  const backbutton = document.getElementById("backbutton");
   signupForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const validator = $("#signin-form").validate();
@@ -317,20 +369,22 @@
     }
   });
   function resend() {
-    const mobileInput = document.getElementById("mobile").value;
+    if (countdown <= 0) {
+      const mobileInput = document.getElementById("mobile").value;
 
-    if (mobileInput) {
-      validateMobile(mobileInput);
-    } else {
-      const alertDiv = $("#raf");
-      alertDiv.text("Mobile not exist");
-      alertDiv.removeClass("d-none");
-      alertDiv.addClass("alert-success");
+      if (mobileInput) {
+        validateMobile(mobileInput);
+      } else {
+        const alertDiv = $("#raf");
+        alertDiv.text("Mobile not exist");
+        alertDiv.removeClass("d-none");
+        alertDiv.addClass("alert-success");
 
-      setTimeout(function () {
-        alertDiv.addClass("d-none");
-      }, 4000);
-      normalSection();
+        setTimeout(function () {
+          alertDiv.addClass("d-none");
+        }, 4000);
+        normalSection();
+      }
     }
   }
   function validateMobile(mobile) {
@@ -347,7 +401,6 @@
         return response.json(); // get the response body
       })
       .then((data) => {
-
         if (data.success) {
           sendOTP(mobile);
         } else {
@@ -373,8 +426,8 @@
         return response.json(); // get the response body
       })
       .then((data) => {
-
         if (data.success) {
+          startTimer();
           showOTPSection();
         } else {
           normalSection();
@@ -390,17 +443,18 @@
   function showOTPSection() {
     signupForm.classList.add("d-none");
     otpSection.classList.remove("d-none");
-    present.classList.remove("d-none");
+    resendOtp.classList.remove("d-none");
+    backbutton.classList.remove("d-none");
   }
 
   function normalSection() {
     otpSection.classList.add("d-none");
     signupForm.classList.remove("d-none");
-    present.classList.add("d-none");
+    resendOtp.classList.add("d-none");
+    backbutton.classList.add("d-none");
   }
 
-  const verifyOTPButton = document.querySelector(".btn-verify-otp");
-  verifyOTPButton.addEventListener("click", async () => {
+  function verifyOTPButton() {
     let otp = "";
     for (let i = 1; i <= 6; i++) {
       otp += document.getElementById(`box${i}`).value;
@@ -409,7 +463,7 @@
     } else {
       swal("Invalid OTP!");
     }
-  });
+  }
 
   async function verifyOTP(otp) {
     const processing = "Please Wait";

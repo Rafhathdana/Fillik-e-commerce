@@ -474,6 +474,7 @@ module.exports = {
                 },
               },
             },
+            { $sort: { updatedAt: 1 } },
             { $skip: startIndex },
             { $limit: count },
           ],
@@ -726,7 +727,7 @@ module.exports = {
         },
         { $skip: startIndex },
         { $limit: count },
-        { $sort: { lastModified: -1 } },
+        { $sort: { updatedAt: 1 } },
       ]).exec(),
       Order.countDocuments(),
     ]);
@@ -780,7 +781,6 @@ module.exports = {
           },
         },
       ]);
-
 
       if (saleCount && saleCount.length > 0) {
         return saleCount[0].totalQuantity;
@@ -871,7 +871,6 @@ module.exports = {
     let pendingOrder = 0;
     orderList.forEach((order) => {
       order.products.forEach((product) => {
-    
         if (
           product.currentStatus[product.currentStatus.length - 1]
             .currentStatus === "Completed"
@@ -1782,7 +1781,6 @@ module.exports = {
         { $skip: startIndex },
         { $limit: count },
       ]);
-
 
       const orderList = result[0].orders;
 

@@ -10,6 +10,8 @@ const productController = require("../controllers/productController");
 const contactController = require("../controllers/contactController");
 
 /* GET home page. */
+
+// Middleware: Check if user is authenticated, redirect to home page if already logged in
 function userauth(req, res, next) {
   if (req.session && req.session.user && req.session.userLoggedIn) {
     res.redirect("/");
@@ -17,6 +19,8 @@ function userauth(req, res, next) {
     next();
   }
 }
+
+// Middleware: Check if user is verified, redirect to login page if not
 function verify(req, res, next) {
   if (req.session && req.session.user && req.session.userLoggedIn) {
     next();
@@ -24,6 +28,8 @@ function verify(req, res, next) {
     res.redirect("/login");
   }
 }
+
+// Middleware: Check if user is logged in, handle cart based on user session
 function cart(req, res, next) {
   if (req.session && req.session.user && req.session.userLoggedIn) {
     userController.getUserCart(req, res, next);
@@ -31,6 +37,8 @@ function cart(req, res, next) {
     userController.getCartLocal(req, res, next);
   }
 }
+
+// Middleware: Check if user is logged in, handle wishlist based on user session
 function wish(req, res, next) {
   if (req.session && req.session.user && req.session.userLoggedIn) {
     userController.getUserWishlist(req, res, next);
@@ -39,12 +47,31 @@ function wish(req, res, next) {
   }
 }
 
-//login and sign up section
+// Login section
+router.get("/forgetPassword", userauth, userController.forgetPassword); // Forget password page
+
+// Login and sign up section
 router.get("/signup", userauth, cart, userController.getSignUp);
 router.get("/login", userauth, cart, userController.getSignIn);
 router.get("/otpLogin", userauth, cart, userController.getSignOtpIn);
+router.post(
+  "/verifyotpLogin",
+  userauth,
+  cart,
+  wish,
+  userController.verifyMobileOtp,
+  userController.signinconvert
+); // OTP login
 
-//login and sign up post methods
+// Login after submission
+router.post("/emailOtp", userauth, userController.sendOtpEmail); // Send emailed OTP
+router.post("/emailexists", userController.emailVerify); // Check email exists
+router.post("/mobileexists", userController.mobileVerify); // Check mobile exists
+router.post("/sendotp", userController.sendOtp); // OTP send section
+router.post("/verifyotp", userController.verifyOtp); // OTP verify section
+router.post("/verifyedotp", userController.verifyedOtp); // Verify OTP when forget password occurs
+
+// Login and sign up post methods
 router.post("/signup", userauth, cart, userController.postSignup);
 router.post(
   "/login",
@@ -54,20 +81,16 @@ router.post(
   userController.postSignin,
   userController.signinconvert
 );
-router.post("/sendotp", userController.sendOtp); // otp send section
-router.post("/verifyotp", userController.verifyOtp); //otp verify section
-router.post("/verifyedotp", userController.verifyedOtp); //verify otp when forget password is occured
-router.post("/updatePassword", userController.updatePassword); //change password
-router.post(
-  "/verifyotpLogin",
-  userauth,
-  cart,
-  wish,
-  userController.verifyMobileOtp,
-  userController.signinconvert
-); //otp login
 
-// home
+// Filter
+router.post(
+  "/searchItem",
+  wish,
+  filterController.postFilter,
+  userController.searchProductFilterList
+); // Search post method
+
+// Home
 router.get(
   "/",
   filterController.getFilter,
@@ -78,8 +101,7 @@ router.get(
   userController.productHome
 );
 
-// product filter
-
+// Product filter
 router.post(
   "/postfilter",
   filterController.postFilter,
@@ -95,7 +117,7 @@ router.get(
   productController.productList
 );
 
-// product list
+// Product list
 router.get(
   "/productlist",
   filterController.getAllCategory,
@@ -104,33 +126,42 @@ router.get(
   wish,
   productController.productList
 );
-// cart
-router.get(
-  "/cart",
-  verify,
-  couponController.getCouponsList,
-  addressControllers.getAddress,
-  userController.getCart
-);
 
-//detailed product view
+// Detailed product view
 router.get(
   "/productview/:productId",
   cart,
   wish,
   productController.getProductView
 );
-//profile
-router.get(
-  "/profile",
-  verify,
-  addressControllers.getAddress,
-  userController.getProfile
-);
-//edit your profile
-router.get("/editprofile", verify, userController.getEditProfile);
-router.post("/profile", verify, userController.editUserProfile); //post to edit profile
 
+// Wishlist area
+router.post("/wishlist", (req, res, next) => {
+  req.session.userLoggedIn
+    ? userController.postAddWishList(req, res, next)
+    : userController.cachePostWishList(req, res, next);
+}); // Add to wishlist submission
+
+router.get(
+  "/wishlist",
+  filterController.getAllCategory,
+  filterController.getFilter,
+  cart,
+  wish,
+  userController.WishListData
+); // Wishlist page
+
+// Address area
+router.post("/addAddress", verify, addressControllers.postAddress); // Address submission
+router.delete("/deleteAddress", verify, addressControllers.deleteAddress); // Delete address
+
+// Order area
+router.post(
+  "/addOrder",
+  verify,
+  orderControllers.postOrder,
+  orderControllers.payment
+); // Order submission
 router.get(
   "/ordersList",
   verify,
@@ -138,7 +169,7 @@ router.get(
   wish,
   orderControllers.getUserOrdersList,
   userController.userOrdersList
-);
+); // Ordered list
 router.get(
   "/ordersView/:id",
   verify,
@@ -146,77 +177,67 @@ router.get(
   wish,
   orderControllers.getOrdersList,
   userController.OrdersList
-);
-// router.get("/ordersView/:id", verify, orderControllers.getOrderview);
+); // Order detailed view
+router.post("/updateOrderStatus", verify, orderControllers.updateOrder); // Change order status
 
-router.get("/logout", userController.logout);
+// Cart area
+router.get(
+  "/cart",
+  verify,
+  couponController.getCouponsList,
+  addressControllers.getAddress,
+  userController.getCart
+); // Cart page
 router.post("/addToCart", (req, res, next) => {
   req.session.userLoggedIn
     ? userController.postAddCart(req, res, next)
     : userController.cachePostCart(req, res, next);
-}); //need to test after login
-router.post("/wishlist", (req, res, next) => {
-  req.session.userLoggedIn
-    ? userController.postAddWishList(req, res, next)
-    : userController.cachePostWishList(req, res, next);
-}); //need to test after login
-router.get(
-  "/wishlist",filterController.getAllCategory,
-  filterController.getFilter,
-  cart,
-  wish,
-  userController.WishListData
-); //need to test after login
-router.post("/addAddress", verify, addressControllers.postAddress); //need to test after login
-router.delete("/deleteAddress", verify, addressControllers.deleteAddress); //need to test after login
-router.post(
-  "/addOrder",
-  verify,
-  orderControllers.postOrder,
-  orderControllers.payment
-); //need to test after login
-router.post("/applyCoupon", verify, couponController.applyCoupon); //need to test after login
+}); // Add to cart submission
 
 router.post("/postFromCart", (req, res, next) => {
   req.session.userLoggedIn
     ? userController.getVariableCart(req, res, next)
     : userController.getCartVariableLocal(req, res, next);
-}); //pending after logedin
-
+}); // Add cart
 router.post(
   "/postFromMainCart",
   verify,
   addressControllers.getAddress,
   userController.getMainVariableCart
-);
+); // Getting cart page reload
+router.delete("/deleteFromCart", userController.deleteItemCrt); // Delete from cart
+router.post("/changeQuantity", verify, userController.changeProductQuantity); // Change quantity
+router.post("/applyCoupon", verify, couponController.applyCoupon); // Code apply area
 
-router.get("/forgetPassword", userauth, userController.forgetPassword);
-router.post("/emailOtp", userauth, userController.sendOtpEmail);
-
-router.post("/emailexists", userController.emailVerify);
-router.post("/mobileexists", userController.mobileVerify);
-router.delete("/deleteFromCart", userController.deleteItemCrt);
-router.post("/updateOrderStatus", verify, orderControllers.updateOrder);
-router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost);
+// Cart after submission
+router.post("/verifyPayment", verify, orderControllers.verifyPaymentPost); // Verify payment success or not
+router.get("/cancelledpayment/:id", verify, orderControllers.removeOrder); // Cancelled payment, then delete order
 router.get(
   "/paymentSuccess/:id",
   verify,
   orderControllers.removeCartItemAndQuantity,
   userController.getPaymentSucces
-);
-router.get("/cancelledpayment/:id", verify, orderControllers.removeOrder);
-router.post("/changeQuantity", verify, userController.changeProductQuantity);
-router.post(
-  "/searchItem",
-  wish,
-  filterController.postFilter,
-  userController.searchProductFilterList
-);
+); // Payment success page
 
-router.get("/about", cart, wish, userController.about);
-router.get("/contact", cart, wish, userController.contact);
-router.post("/contact", verify, contactController.addUserComplaint);
-router.post("/contactguest", contactController.addGuestComplaint);
-router.post("/changeprofile", userController.changePhoto);
+// Profile area
+router.post("/changeprofile", userController.changePhoto); // Change profile
+// Profile
+router.get(
+  "/profile",
+  verify,
+  addressControllers.getAddress,
+  userController.getProfile
+);
+// Edit your profile
+router.get("/editprofile", verify, userController.getEditProfile);
+router.post("/profile", verify, userController.editUserProfile); // Post to edit profile
+router.post("/updatePassword", userController.updatePassword); // Change password
+
+// Other pages
+router.get("/about", cart, wish, userController.about); // About page
+router.get("/contact", cart, wish, userController.contact); // Contact page
+router.post("/contact", verify, contactController.addUserComplaint); // Contact form submit of user
+router.post("/contactguest", contactController.addGuestComplaint); // Contact form submit
+router.get("/logout", userController.logout); // Logout
 
 module.exports = router;

@@ -291,13 +291,16 @@ module.exports = {
 
   verifyMobileOtp: async (req, res, next) => {
     try {
+      console.log("rafhath");
       if (parseInt(req.body.userOtp) === req.session.otP) {
+        console.log("rafeeq");
         const newUser = await User.findOne({ mobile: req.body.mobile });
         if (newUser) {
           if (newUser.isActive === true) {
             console.log("user exists");
             req.session.user = newUser;
             req.session.userLoggedIn = true;
+            next();
           } else {
             req.session.errmsg = "Account was Blocked. Contact Us.";
             res.status(402).redirect("/login");
@@ -954,10 +957,11 @@ module.exports = {
   },
 
   getPaymentSucces: (req, res) => {
-    res.render("user/paymentSuccess", {
+    res.render("user/paymentsuccess", {
       title: "Users List",
       fullName: req.session.user.fullName,
       loggedin: req.session.userLoggedIn,
+      noShow: true,
     });
   },
   changeProductQuantity: async (req, res, next) => {

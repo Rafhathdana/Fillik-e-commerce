@@ -291,6 +291,7 @@ module.exports = {
     req.session.merchant = await Merchant.findById(req.session.merchant._id);
     res.render("merchant/profile", {
       title: "profile",
+      author: "Merchant#123!",
       brandName: req.session.merchant.brandName,
       merchantLoggedin: req.session.merchantLoggedIn,
       merchantData: req.session.merchant,
@@ -301,6 +302,7 @@ module.exports = {
       title: "Edit Profile",
       brandName: req.session.merchant.brandName,
       merchantLoggedin: req.session.merchantLoggedIn,
+      author: "Merchant#123!",
       merchantEdit: req.session.merchant,
     });
   },
